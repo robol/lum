@@ -59,6 +59,8 @@ class Connection():
         bind_dn = get("bind_dn")
         self.__base_dn = get("base_dn")
 
+	self.__users_ou = get("users_ou")
+
         # Retrieve password from the file specified in
         # the configuration file
         try:
@@ -75,7 +77,7 @@ class Connection():
             raise LumError('Error connecting to the server, check your credentials')
 
 	if not self.is_present(get("users_ou")):
-		self.add_ou(get("users_ou"))
+	    self.add_ou(get("users_ou"))
 
     def add_user(self, user):
         """
@@ -84,15 +86,24 @@ class Connection():
         users_ou = self.__get("users_ou")
         if not self.is_present(users_ou):
             raise LumError("users organizationalUnit not present, maybe you need to create it?")
-        dn = "uid=%s,%s" % (user['uid'], users_ou)
+        dn = "uid=%s,%s" % (user['uid'][0], users_ou)
         self.__ldap.add_s(dn, ldap.modlist.addModlist(user.to_ldif()))
+
+    def delete_user(self, user):
+	pass
+
+    def is_user_present(self, username):
+	"""
+	Test if user is present
+	"""
+	return self.is_present ("uid=%s" % username)
 
     def is_present(self, object):
         """
         Test if object is present in database
         """
 	# Strip base_dn
-	object = object.strip(self.__base_dn).strip(",")
+	object = object.split(",")[0]
         res = self.__ldap.search_s(self.__base_dn, ldap.SCOPE_SUBTREE, object)
         if len(res) == 0:
             return False
@@ -108,9 +119,7 @@ class Connection():
                                'top']
         ldif['ou'] = [re.findall(r"ou=(\w+),", ou)[0]]
 
-        print "LDIWriter output"
         ldifwriter.unparse(ou, ldif)
-        print "self.__ldap.add_s(%s, ...)" % ou
         self.__ldap.add_s(ou, ldap.modlist.addModlist(ldif))
 
     def get_user(self, key = None):
@@ -118,4 +127,4 @@ class Connection():
         Get user that match the given key or all users if
         key is not given.
         """
-        pass
+	pass

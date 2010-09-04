@@ -13,22 +13,26 @@ class UserModel():
                  login_shell = "/bin/sh", additional_data = None):
 
         self.__ldif = dict ()
-        self.__ldif['objectClass'] = ["inetOrgPerson",
-                                      "posixAccount",
-                                      "person",
-                                      "shadowAccount",
-                                      "organizationalPerson",
-                                      "top"]
         
-        self.__ldif['uid'] = [str(username)]
-        self.__ldif['cn'] = [str(username)]
-        self.__ldif['sn'] = [str(sn)]
-        self.__ldif['gecos'] = [" ".join([given_name, sn])]
-        self.__ldif['givenName'] = [str(given_name)]
-        self.__ldif['uidNumber'] = [str(uid)]
-        self.__ldif['gidNumber'] = [str(gid)]
-        self.__ldif['loginShell'] = [str(login_shell)]
-        self.__ldif['homeDirectory'] = ["/home/%s" % username]
+        if username is not None:
+		    self.__ldif['objectClass'] = ["inetOrgPerson",
+		                                  "posixAccount",
+		                                  "person",
+		                                  "shadowAccount",
+		                                  "organizationalPerson",
+		                                  "top"]
+		    
+		    self.__ldif['uid'] = [str(username)]
+		    self.__ldif['cn'] = [str(username)]
+		    self.__ldif['sn'] = [str(sn)]
+		    self.__ldif['gecos'] = [" ".join([given_name, sn])]
+		    self.__ldif['givenName'] = [str(given_name)]
+		    self.__ldif['uidNumber'] = [str(uid)]
+		    self.__ldif['gidNumber'] = [str(gid)]
+		    self.__ldif['loginShell'] = [str(login_shell)]
+		    self.__ldif['homeDirectory'] = ["/home/%s" % username]
+        
+        self.dn = None
 
         if additional_data is None:
             return
@@ -40,6 +44,30 @@ class UserModel():
 
     def to_ldif(self):
         return dict(self.__ldif)
+        
+    def fill_from_dict(self, dic):
+    	self.__ldif = dict(dic)
+    	
+    def get_uid(self):
+    	return self.__ldif['uid'][0]
+    
+    def get_given_name(self):
+    	return self.__ldif['givenName'][0]
+    
+    def get_surname(self):
+    	return self.__ldif['sn'][0]
+    	
+    def __repr__(self):
+    	return "<lum.LdapProtocol.UserModel \"%s a.k.a %s %s\">" % (self.get_uid(), self.get_given_name(), self.get_surname())
+        
+def ldap_to_user_model(ldap_result):
+	"""
+	Convert an ldap returned value to a UserModel object
+	"""
+	user = UserModel (None, None, None, None, None)
+	user.fill_from_dict (ldap_result[1])
+	user.dn = ldap_result[0]
+	return user
 
 class Connection():
 
@@ -90,7 +118,12 @@ class Connection():
         self.__ldap.add_s(dn, ldap.modlist.addModlist(user.to_ldif()))
 
     def delete_user(self, user):
-	pass
+		"""
+		Delete an user given the uid or the UserModel
+		"""
+		if isinstance(user, UserModel):
+			user = user['uid'][0]
+		self.__ldap.delete_s("uid=%s,%s" % (user, self.__users_ou))
 
     def is_user_present(self, username):
 	"""
@@ -121,10 +154,17 @@ class Connection():
 
         ldifwriter.unparse(ou, ldif)
         self.__ldap.add_s(ou, ldap.modlist.addModlist(ldif))
+        
+    def get_user(self, uid):
+    	return self.get_users(uid)[0]
 
-    def get_user(self, key = None):
-        """
-        Get user that match the given key or all users if
-        key is not given.
-        """
-	pass
+    def get_users(self, key = None):
+	"""
+	Get user that match the given key or all users if
+	key is not given.
+	"""
+	if key is None:
+		key = "*"
+	users = self.__ldap.search_s(self.__base_dn, ldap.SCOPE_SUBTREE, "uid=%s" % key)
+	return map(ldap_to_user_model, users)
+

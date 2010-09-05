@@ -16,7 +16,11 @@ pygtk.require("2.0")
 class lumApp():
 
 	def __init__(self, datapath):
-	
+		
+		# Save datapath that we will need to call all
+		# other Dialogs
+		self.__datapath = datapath
+		
 		# Load interface file
 		self.__builder = gtk.Builder()
 		self.__builder.add_from_file(os.path.join(datapath, "ui/LumApp.ui"))

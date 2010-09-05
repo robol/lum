@@ -4,14 +4,11 @@
 import sys
 sys.path.insert(0, "/home/leonardo/src/lum")
 import lum.ldapProtocol as ldap
-import ConfigParser
 
-c = ConfigParser.ConfigParser ()
-c.add_section("LDAP")
-c.read("lum.conf")
+password = sys.argv[1]
 
 print "> Testing ldap connection...",
-connection = ldap.Connection(c)
+connection = ldap.Connection(password)
 print "done"
 
 if connection.is_user_present("test"):

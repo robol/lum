@@ -4,7 +4,9 @@
 
 import ldap, ldap.modlist, re, ldif, sys
 from exceptions import LumError
+from configuration import Configuration
 
+# This is just for debug
 ldifwriter = ldif.LDIFWriter(sys.stdout)
 
 class UserModel():
@@ -58,12 +60,16 @@ class UserModel():
     	return self.__ldif['sn'][0]
     	
     def __repr__(self):
-    	return "<lum.LdapProtocol.UserModel \"%s a.k.a %s %s\">" % (self.get_uid(), self.get_given_name(), self.get_surname())
+    	return "<lum.LdapProtocol.UserModel \"%s a.k.a %s %s\">" % (self.get_uid(), 
+    																self.get_given_name(), 
+    																self.get_surname())
         
 def ldap_to_user_model(ldap_result):
 	"""
 	Convert an ldap returned value to a UserModel object
 	"""
+	# Initialize an empty user model and fill it with the data 
+	# returned from the database
 	user = UserModel (None, None, None, None, None)
 	user.fill_from_dict (ldap_result[1])
 	user.dn = ldap_result[0]
@@ -71,10 +77,12 @@ def ldap_to_user_model(ldap_result):
 
 class Connection():
 
-    def __init__(self, config, password = None):
+    def __init__(self, password):
         """
         Create a connection to the specified uri
         """
+        
+        config = Configuration()
 
         # Piccola funzioncina comoda per ottenere dati
         # dalla configurazione
@@ -87,16 +95,7 @@ class Connection():
         bind_dn = get("bind_dn")
         self.__base_dn = get("base_dn")
 
-	self.__users_ou = get("users_ou")
-
-        # Retrieve password from the file specified in
-        # the configuration file
-        try:
-            if password is None:
-                with open(get("secret_file"), 'r') as f:
-                    password = f.read().strip("\n")
-        except IOError, e:
-            raise LumError('Error opening password file %s' % get("secret_file"))
+        self.__users_ou = get("users_ou")
 
         # Bind to the database with the provided credentials
         try:

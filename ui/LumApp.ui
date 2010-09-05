@@ -2,8 +2,22 @@
 <interface>
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy project-wide -->
+  <object class="GtkListStore" id="user_store">
+    <columns>
+      <!-- column-name username -->
+      <column type="gchararray"/>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+      <!-- column-name group -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
   <object class="GtkWindow" id="window">
     <property name="title" translatable="yes">Ldap User Manager</property>
+    <property name="default_width">480</property>
+    <property name="default_height">200</property>
+    <signal name="destroy" handler="on_window_destroy"/>
+    <signal name="destroy_event" handler="window_destroy_event_cb"/>
     <child>
       <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
@@ -56,12 +70,12 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem" id="imagemenuitem5">
+                      <object class="GtkImageMenuItem" id="quit_menu_item">
                         <property name="label">gtk-quit</property>
                         <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="gtk_main_quit"/>
+                        <signal name="activate" handler="on_quit_menu_item_activate"/>
                       </object>
                     </child>
                   </object>
@@ -151,9 +165,12 @@
             <child>
               <object class="GtkLabel" id="label1">
                 <property name="visible">True</property>
+                <property name="xalign">1</property>
+                <property name="xpad">5</property>
                 <property name="label" translatable="yes">Cerca utente:</property>
               </object>
               <packing>
+                <property name="expand">False</property>
                 <property name="position">0</property>
               </packing>
             </child>
@@ -235,15 +252,5 @@
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkListStore" id="user_store">
-    <columns>
-      <!-- column-name username -->
-      <column type="gchararray"/>
-      <!-- column-name name -->
-      <column type="gchararray"/>
-      <!-- column-name group -->
-      <column type="gchararray"/>
-    </columns>
   </object>
 </interface>

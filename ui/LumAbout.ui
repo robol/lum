@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="2.16"/>
+  <!-- interface-naming-policy project-wide -->
+  <object class="GtkAboutDialog" id="about_dialog">
+    <property name="border_width">5</property>
+    <property name="destroy_with_parent">True</property>
+    <property name="type_hint">normal</property>
+    <property name="has_separator">False</property>
+    <property name="program_name">Lum</property>
+    <property name="version">0.1-alpha</property>
+    <property name="copyright" translatable="yes">Copyright (C) 2010 Leonardo Robol</property>
+    <property name="website">http://poisson.phc.unipi.it/~robol/wordpress/programmi/lum/</property>
+    <property name="website_label" translatable="yes">Sito web ufficiale</property>
+    <property name="license" translatable="yes">Lum is freesoftware; </property>
+    <property name="authors">Leonardo Robol</property>
+    <property name="documenters">Leonardo Robol</property>
+    <child internal-child="vbox">
+      <object class="GtkVBox" id="dialog-vbox1">
+        <property name="visible">True</property>
+        <property name="spacing">2</property>
+        <child>
+          <placeholder/>
+        </child>
+        <child internal-child="action_area">
+          <object class="GtkHButtonBox" id="dialog-action_area1">
+            <property name="visible">True</property>
+            <property name="layout_style">end</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

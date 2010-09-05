@@ -18,14 +18,17 @@ class Configuration():
 	the user Confugration file."""
 
 	def __init__(self):
+	
 		
 		# Check if configuration directory exists
 		# or can be created. If it doesn't, load default
 		# settings and do not save new values
 		if (self.user_has_directory()):
 			self.__persistent = True
+			self.__lock_file = os.path.expanduser("~/.lum/.lock")
 		else:
 			self.__persistent = False
+			self.__lock_file = "/tmp/.lock_lum"
 			
 		# Load configuration default values and, if it exists,
 		# load values in the configuration file
@@ -71,7 +74,7 @@ class Configuration():
 	def lock(self):
 		"""Lock configuration directory"""
 		while os.path.exists(self.__lock_file):
-			sleep(30)
+			sleep(0.03)
 		with open(self.__lock_file, "w") as lock_file:
 			lock_file.write("Lum lock")
 	
@@ -92,5 +95,9 @@ class Configuration():
 				self.__persistent = False
 			finally:
 				self.unlock()
-				
-				
+	
+	def has_option(self, section, option):
+		"""Check if option exists in section"""
+		return self.__conf.has_option(section, option)
+	
+

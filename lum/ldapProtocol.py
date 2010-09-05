@@ -90,6 +90,7 @@ class Connection():
         self.__get = get
 
         self.__config = config
+        
         self.__ldap = ldap.initialize(get("uri"))
 
         bind_dn = get("bind_dn")

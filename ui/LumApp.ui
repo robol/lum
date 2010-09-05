@@ -10,6 +10,8 @@
       <column type="gchararray"/>
       <!-- column-name group -->
       <column type="gchararray"/>
+      <!-- column-name image -->
+      <column type="GdkPixbuf"/>
     </columns>
   </object>
   <object class="GtkWindow" id="window">
@@ -38,6 +40,7 @@
                         <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_connect_menu_item_activate"/>
                       </object>
                     </child>
                     <child>
@@ -75,6 +78,28 @@
                   <object class="GtkMenu" id="menu2">
                     <property name="visible">True</property>
                     <child>
+                      <object class="GtkImageMenuItem" id="new_user_menu_item">
+                        <property name="label">gtk-new</property>
+                        <property name="visible">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_new_user_menu_item_activate"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="edit_user_menu_item">
+                        <property name="label">gtk-edit</property>
+                        <property name="visible">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separatormenuitem2">
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkImageMenuItem" id="delete_user_menu_item">
                         <property name="label">gtk-delete</property>
                         <property name="visible">True</property>
@@ -95,11 +120,12 @@
                   <object class="GtkMenu" id="menu3">
                     <property name="visible">True</property>
                     <child>
-                      <object class="GtkImageMenuItem" id="imagemenuitem10">
+                      <object class="GtkImageMenuItem" id="about_menu_item">
                         <property name="label">gtk-about</property>
                         <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_about_menu_item_activate"/>
                       </object>
                     </child>
                   </object>
@@ -150,6 +176,17 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="model">user_store</property>
+            <child>
+              <object class="GtkTreeViewColumn" id="treeviewcolumn1">
+                <property name="sizing">autosize</property>
+                <child>
+                  <object class="GtkCellRendererPixbuf" id="cellrendererpixbuf1"/>
+                  <attributes>
+                    <attribute name="pixbuf">3</attribute>
+                  </attributes>
+                </child>
+              </object>
+            </child>
             <child>
               <object class="GtkTreeViewColumn" id="username_column">
                 <property name="resizable">True</property>

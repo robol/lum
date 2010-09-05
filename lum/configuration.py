@@ -9,7 +9,7 @@
 #
 
 import os
-from ConfigParser import ConfigParser
+from ConfigParser import SafeConfigParser as ConfigParser
 
 class Configuration():
 	"""Configuration objects allow

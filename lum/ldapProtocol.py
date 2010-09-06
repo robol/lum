@@ -139,6 +139,8 @@ class Connection():
 			'objectClass': ['posixGroup', 'top'],
 		}
 		
+		ldifwriter.unparse(dn, group_ldif)
+		
 		self.__ldap.add_s(dn, ldap.modlist.addModlist(group_ldif))
 		
 	def next_free_uid(self):
@@ -150,7 +152,6 @@ class Connection():
 	def next_free_gid(self):
 		"""Determine next free gid"""
 		groups_ou = self.__config.get("LDAP", "groups_ou")
-		print groups_ou
 		groups = self.__ldap.search_s(groups_ou, ldap.SCOPE_ONELEVEL, "cn=*")
 		
 		if len(groups) == 0: 
@@ -186,6 +187,15 @@ class Connection():
 				return groups[0][1]['gidNumber'][0]
 		else:
 			return None
+	
+	def group_from_gid(self, gid):
+		"""Return group name"""
+		if self.__ldap is not None:
+			group = self.__ldap.search_s(self.__config.get("LDAP", "groups_ou"),
+										 ldap.SCOPE_ONELEVEL, "gidNumber=%d" % int(gid))
+			if len(group) == 0:
+				return "unknown"
+			return group[0][1]['cn'][0]
 
 	def is_present(self, ob):
 		"""

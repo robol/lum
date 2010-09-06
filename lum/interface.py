@@ -135,8 +135,8 @@ class lumApp(gobject.GObject):
 	def push_user(self, usermodel):
 		"""Add a user on the treeview in the main window"""
 		user_store = self.__builder.get_object("user_store")
-		user_store.append ((usermodel['uid'][0], usermodel['givenName'][0], usermodel['sn'][0],
-						   self.__user_image))
+		user_store.append ((usermodel['uid'][0], " ".join([usermodel['givenName'][0], usermodel['sn'][0]]),
+						   self.__connection.group_from_gid(usermodel['gidNumber'][0]), self.__user_image))
 		self.__user_model_store[usermodel['uidNumber'][0]] = usermodel
 		
 		
@@ -197,9 +197,12 @@ class lumNewUserDialog():
 			sn = self.__builder.get_object("sn_entry").get_text()
 			home = self.__builder.get_object("home_entry").get_text()
 			shell = self.__builder.get_object("shell_entry").get_text()
-			uid = 0
-			group = self.__builder.get_object("group_entry").get_text()
 			
+			# Set uid to 0 so ldapProtocol will autodetermine the first free uid
+			# when creating the user
+			uid = 0
+			
+			group = self.__builder.get_object("group_entry").get_text()
 			gid = self.__connection.gid_from_group(group)
 			
 			# Ask the user if he intended to create the group

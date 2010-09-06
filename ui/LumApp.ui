@@ -17,7 +17,7 @@
   <object class="GtkWindow" id="window">
     <property name="title" translatable="yes">Ldap User Manager</property>
     <property name="default_width">480</property>
-    <property name="default_height">200</property>
+    <property name="default_height">400</property>
     <signal name="destroy" handler="on_window_destroy"/>
     <signal name="destroy_event" handler="window_destroy_event_cb"/>
     <child>

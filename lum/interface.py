@@ -127,6 +127,7 @@ class lumApp(gobject.GObject):
 	def reload_user_list(self, menu_item = None):
 		"""Reload user list in the main window"""
 		if self.__check_connection():
+			self.__builder.get_object("user_store").clear()
 			users = self.__connection.get_users()
 			for user in users:
 				self.push_user(user)
@@ -146,12 +147,14 @@ class lumApp(gobject.GObject):
 		
 	def create_new_user_dialog(self, menu_item):
 		"""Create new user"""
-		new_user_dialog = lumUserDialog(self.__datapath)
+		self.__check_connection()
+		new_user_dialog = lumNewUserDialog(self.__datapath, self.__connection)
 		new_user_dialog.run()
 		
 		if new_user_dialog.usermodel is not None:
 			if self.__check_connection():
 				self.__connection.add_user(new_user_dialog.usermodel)
+		self.reload_user_list()
 			
 	def __check_connection(self):
 		if self.__connection is None:
@@ -171,27 +174,16 @@ class lumAbout():
 		dialog.run ()
 		dialog.destroy ()
 		
-class lumUserDialog():
+class lumNewUserDialog():
 
-	def __init__(self, datapath, usermodel = None):
+	def __init__(self, datapath, connection):
 		
 		self.__builder = gtk.Builder()
 		self.__builder.add_from_file(os.path.join(datapath, "ui/LumNewUserDialog.ui"))
 		
 		self.__window = self.__builder.get_object("new_user_dialog")
-		
+		self.__connection = connection
 		self.usermodel = None
-		
-		# Fill the data
-		if usermodel is not None:
-			self.__builder.get_object("username_entry").set_text(usermodel['username'])
-			self.__builder.get_object("givenName_entry").set_text(usermodel['givenName'])
-			self.__builder.get_object("sn_entry").set_text(usermodel['sn'])
-			self.__builder.get_object("home_entry").set_text(usermodel['homeDirectory'])
-			self.__builder.get_object("shell_entry").set_text(usermodel['loginShell'])
-			self.__builder.get_object("uid_spinbutton").set_value(usermodel['uid'])
-			self.__builder.get_object("gid_spinbutton").set_value(usermodel['gid'])
-		
 		
 	def run(self):
 		"""Run dialog"""
@@ -205,8 +197,24 @@ class lumUserDialog():
 			sn = self.__builder.get_object("sn_entry").get_text()
 			home = self.__builder.get_object("home_entry").get_text()
 			shell = self.__builder.get_object("shell_entry").get_text()
-			uid = self.__builder.get_object("uid_spinbutton").get_value()
-			gid = self.__builder.get_object("gid_spinbutton").get_value()
+			uid = 0
+			group = self.__builder.get_object("group_entry").get_text()
+			
+			gid = self.__connection.gid_from_group(group)
+			
+			# Ask the user if he intended to create the group
+			if gid is None:
+				messageDialog = gtk.MessageDialog(type = gtk.MESSAGE_QUESTION, buttons = gtk.BUTTONS_YES_NO)
+				messageDialog.set_markup("Il gruppo <b>%s</b> non esiste, crearlo ora?" % group)
+				messageDialog.set_title("Gruppo inesistente")
+				
+				if messageDialog.run() == gtk.RESPONSE_YES:
+					self.__connection.add_group(group)
+					gid = self.__connection.gid_from_group(group)
+				else:
+					return None
+				
+				messageDialog.destroy()
 			
 			self.usermodel = UserModel(username = username, given_name = givenName, 
 									   sn = sn, uid = uid, gid = gid, login_shell = shell)

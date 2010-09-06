@@ -76,6 +76,9 @@ def ldap_to_user_model(ldap_result):
 	user = UserModel (None, None, None, None, None)
 	user.fill_from_dict (ldap_result[1])
 	user.dn = ldap_result[0]
+	
+	if not ldap_result[1].has_key("givenName"):
+		user['givenName'] = user['uid']
 	return user
 
 class Connection():

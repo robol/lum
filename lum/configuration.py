@@ -99,5 +99,9 @@ class Configuration():
 	def has_option(self, section, option):
 		"""Check if option exists in section"""
 		return self.__conf.has_option(section, option)
+		
+	def remove_option(self, section, option):
+		"""Remove option"""
+		self.__conf.remove_option(section, option)
 	
 

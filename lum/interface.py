@@ -61,6 +61,8 @@ class lumApp(gobject.GObject):
 			'on_connect_menu_item_activate': 	self.connect,
 			'on_reload_user_list_menu_item_activate': 	self.reload_user_list,
 			'on_delete_user_menu_item_activate':		self.delete_user,
+			'on_filter_entry_changed':					self.refilter,
+			'on_forget_password_menu_item_activate':	self.forget_password,
 		}
 		
 		# Autoconnect signals
@@ -69,8 +71,12 @@ class lumApp(gobject.GObject):
 		# Create initial configuration
 		self.__configuration = Configuration()
 		
+		# Activate filter
+		self.__treefilter = self.__builder.get_object("user_store").filter_new()
+		self.__treefilter.set_visible_func(self.filter_users)
 		
-		
+		# Change the model of the treeview
+		self.__builder.get_object("user_treeview").set_model(self.__treefilter)
 		
 	def start(self):
 		"""Start lumApp"""
@@ -120,6 +126,26 @@ class lumApp(gobject.GObject):
 		else:
 			self.statusbar_update("Connection to %s initialized" % self.__configuration.get("LDAP", "uri"))
 			self.reload_user_list()
+			
+	def filter_users(self, model, treeiter, user_data = None):
+		"""Filter users based on what is placed in filter_entry"""
+		key = self.__builder.get_object("filter_entry").get_text()
+		
+		if key == "":
+			return True
+		
+		if key in model.get_value(treeiter, 0):
+			return True
+		if key in model.get_value(treeiter, 1):
+			return True
+		if key in model.get_value(treeiter, 2):
+			return True
+			
+		return False
+		
+	def refilter(self, entry):
+		self.__treefilter.refilter()
+		
 		
 	def show_about_dialog(self, menu_item):
 		"""Show about dialog"""
@@ -140,6 +166,12 @@ class lumApp(gobject.GObject):
 			del self.__user_model_store[username]
 			user_store.remove(treeiter)
 			self.__connection.delete_user(username)
+			self.statusbar_update("User %s deleted." % username)
+			
+	def forget_password(self, menu_item = None):
+		if self.__configuration.has_option("LDAP", "password"):
+			gnomekeyring.item_delete_sync('login', int(self.__configuration.get("LDAP", "password")))
+			self.__configuration.remove_option("LDAP", "password")
 		
 	def clear_user_list(self):
 		self.__builder.get_object("user_store").clear()
@@ -175,6 +207,7 @@ class lumApp(gobject.GObject):
 		if new_user_dialog.usermodel is not None:
 			if self.__check_connection():
 				self.__connection.add_user(new_user_dialog.usermodel)
+				self.statusbar_update("User %s created correctly." % new_user_dialog.usermodel['uid'][0])
 		self.reload_user_list()
 			
 	def __check_connection(self):
@@ -226,7 +259,7 @@ class lumNewUserDialog():
 		
 		# Guess user home
 		home = self.__builder.get_object("home_entry")
-		if home.get_text() == "":
+		if home.get_text() == "" and username != "":
 			home.set_text("/home/" + username)
 		
 	def run(self):

@@ -18,6 +18,7 @@
     <property name="title" translatable="yes">Ldap User Manager</property>
     <property name="default_width">480</property>
     <property name="default_height">400</property>
+    <property name="icon">lum_logo.png</property>
     <signal name="destroy" handler="on_window_destroy"/>
     <signal name="destroy_event" handler="window_destroy_event_cb"/>
     <child>
@@ -50,6 +51,15 @@
                         <property name="image">image1</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_reload_user_list_menu_item_activate"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="forget_password_menu_item">
+                        <property name="label" translatable="yes">Dimentica password</property>
+                        <property name="visible">True</property>
+                        <property name="image">image2</property>
+                        <property name="use_stock">False</property>
+                        <signal name="activate" handler="on_forget_password_menu_item_activate"/>
                       </object>
                     </child>
                     <child>
@@ -164,10 +174,11 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="entry1">
+              <object class="GtkEntry" id="filter_entry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">●</property>
+                <signal name="changed" handler="on_filter_entry_changed"/>
               </object>
               <packing>
                 <property name="padding">10</property>
@@ -266,5 +277,9 @@
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
     <property name="stock">gtk-refresh</property>
+  </object>
+  <object class="GtkImage" id="image2">
+    <property name="visible">True</property>
+    <property name="stock">gtk-undo</property>
   </object>
 </interface>

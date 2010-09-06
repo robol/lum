@@ -205,6 +205,15 @@ class lumNewUserDialog():
 			group = self.__builder.get_object("group_entry").get_text()
 			gid = self.__connection.gid_from_group(group)
 			
+			if self.__connection.is_present("uid=%s" % username):
+				messageDialog = gtk.MessageDialog(type = gtk.MESSAGE_ERROR, buttons = gtk.BUTTONS_OK)
+				messageDialog.set_markup("L'utente è già esistente!\nSpecificare un diverso username")
+				messageDialog.set_title("Utente già esistente")
+				messageDialog.run()
+				messageDialog.destroy()
+				self.__window.destroy()
+				return None
+			
 			# Ask the user if he intended to create the group
 			if gid is None:
 				messageDialog = gtk.MessageDialog(type = gtk.MESSAGE_QUESTION, buttons = gtk.BUTTONS_YES_NO)
@@ -215,6 +224,7 @@ class lumNewUserDialog():
 					self.__connection.add_group(group)
 					gid = self.__connection.gid_from_group(group)
 				else:
+					self.__window.destroy()
 					return None
 				
 				messageDialog.destroy()

@@ -43,6 +43,9 @@ class UserModel():
 
     def __getitem__(self, item):
         return self.__ldif[item]
+        
+    def __setitem__(self, item, value):
+    	self.__ldif[item] = value
 
     def to_ldif(self):
         return dict(self.__ldif)
@@ -84,8 +87,8 @@ class Connection():
 		
 		config = Configuration()
 
-		# Piccola funzioncina comoda per ottenere dati
-		# dalla configurazione
+		# Just to make getting config values more 
+		# comfortable
 		get = lambda x : config.get("LDAP", x)
 		self.__get = get
 
@@ -103,6 +106,7 @@ class Connection():
 			self.__ldap.simple_bind_s(bind_dn, password)
 		except Exception, e:
 			raise LumError('Error connecting to the server, check your credentials')
+		
 		# Check if there are missing ou and add them
 		if not self.is_present(get("users_ou")):
 			print "Adding missing OrganizationalUnit: %s" % get("users_ou")
@@ -119,8 +123,10 @@ class Connection():
 		users_ou = self.__get("users_ou")
 		if not self.is_present(users_ou):
 			raise LumError("users organizational unit not present!")
-		if (user['uid'] == 0):
-			user['uid'] = self.next_free_uid()
+			
+		# This means that we have to autodetermine the first free uid
+		if (int(user['uidNumber'][0]) == 0):
+			user['uidNumber'] = [str(self.next_free_uid())]
 		
 		# Distinguished name
 		dn = "uid=%s,%s" % (user['uid'][0], users_ou)
@@ -146,7 +152,9 @@ class Connection():
 	def next_free_uid(self):
 		"""Determine next free uid"""
 		users = self.get_users()
-		uids = map(lambda x : int(x['uid']), users)
+		uids = map(lambda x : int(x['uidNumber'][0]), users)
+		if len(uids) == 0:
+			return 1100
 		return (max(uids) + 1)
 		
 	def next_free_gid(self):

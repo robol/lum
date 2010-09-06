@@ -145,8 +145,6 @@ class Connection():
 			'objectClass': ['posixGroup', 'top'],
 		}
 		
-		ldifwriter.unparse(dn, group_ldif)
-		
 		self.__ldap.add_s(dn, ldap.modlist.addModlist(group_ldif))
 		
 	def next_free_uid(self):

@@ -15,6 +15,7 @@
     <property name="license" translatable="yes">Lum is freesoftware; </property>
     <property name="authors">Leonardo Robol</property>
     <property name="documenters">Leonardo Robol</property>
+    <property name="artists">Icone: http://www.famfamfam.com/lab/icons/silk/</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">
         <property name="visible">True</property>

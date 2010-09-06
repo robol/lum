@@ -60,6 +60,7 @@ class lumApp(gobject.GObject):
 			'on_new_user_menu_item_activate':	self.create_new_user_dialog,
 			'on_connect_menu_item_activate': 	self.connect,
 			'on_reload_user_list_menu_item_activate': 	self.reload_user_list,
+			'on_delete_user_menu_item_activate':		self.delete_user,
 		}
 		
 		# Autoconnect signals
@@ -124,10 +125,31 @@ class lumApp(gobject.GObject):
 		"""Show about dialog"""
 		lumAbout(self.__datapath)
 		
+	def delete_user(self, menu_item = None):
+		"""Delete the selected user"""
+		user_store, treeiter = self.__builder.get_object("user_treeview").get_selection().get_selected()
+		if treeiter is None:
+			m = gtk.MessageDialog(type = gtk.MESSAGE_ERROR, buttons = gtk.BUTTONS_OK)
+			m.set_markup("No user selected!")
+			m.set_title("Error")
+			m.run()
+			m.destroy()
+		else:
+			# Get username from the liststore
+			username = user_store.get_value(treeiter, 0)
+			del self.__user_model_store[username]
+			user_store.remove(treeiter)
+			self.__connection.delete_user(username)
+		
+	def clear_user_list(self):
+		self.__builder.get_object("user_store").clear()
+		self.__user_model_store = {}
+		
+		
 	def reload_user_list(self, menu_item = None):
 		"""Reload user list in the main window"""
 		if self.__check_connection():
-			self.__builder.get_object("user_store").clear()
+			self.clear_user_list()
 			users = self.__connection.get_users()
 			for user in users:
 				self.push_user(user)
@@ -137,8 +159,7 @@ class lumApp(gobject.GObject):
 		user_store = self.__builder.get_object("user_store")
 		user_store.append ((usermodel['uid'][0], " ".join([usermodel['givenName'][0], usermodel['sn'][0]]),
 						   self.__connection.group_from_gid(usermodel['gidNumber'][0]), self.__user_image))
-		self.__user_model_store[usermodel['uidNumber'][0]] = usermodel
-		
+		self.__user_model_store[usermodel['uid'][0]] = usermodel
 		
 	def statusbar_update(self, message):
 		"""Update statusbar with new message"""

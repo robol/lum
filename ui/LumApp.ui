@@ -44,6 +44,15 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkImageMenuItem" id="reload_user_list_menu_item">
+                        <property name="label" translatable="yes">Aggiorna lista utenti</property>
+                        <property name="visible">True</property>
+                        <property name="image">image1</property>
+                        <property name="use_stock">False</property>
+                        <signal name="activate" handler="on_reload_user_list_menu_item_activate"/>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkImageMenuItem" id="preferences_menu_item">
                         <property name="label">gtk-preferences</property>
                         <property name="visible">True</property>
@@ -242,5 +251,9 @@
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkImage" id="image1">
+    <property name="visible">True</property>
+    <property name="stock">gtk-refresh</property>
   </object>
 </interface>

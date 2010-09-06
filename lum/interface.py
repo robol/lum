@@ -9,18 +9,32 @@
 
 import pygtk
 import gtk
+import gobject
 import os
 import gnomekeyring
 
+# Require a recent pygtk version
 pygtk.require("2.0")
 
+# Import modules from lum
 from ldapProtocol import UserModel, Connection
 from configuration import Configuration
 from exceptions import LumError
 
-class lumApp():
+class lumApp(gobject.GObject):
 
 	def __init__(self, datapath):
+	
+		# Images
+		self.__user_image = gtk.Image()
+		self.__user_image.set_from_file(os.path.join(datapath, "ui/user.png"))
+		self.__user_image = self.__user_image.get_pixbuf()
+		
+		# Internal space for usermodels
+		self.__user_model_store = {}
+		
+		# Gobject constructor
+		gobject.GObject.__init__ (self)
 		
 		# Save datapath that we will need to call all
 		# other Dialogs
@@ -45,6 +59,7 @@ class lumApp():
 			'on_about_menu_item_activate':		self.show_about_dialog,
 			'on_new_user_menu_item_activate':	self.create_new_user_dialog,
 			'on_connect_menu_item_activate': 	self.connect,
+			'on_reload_user_list_menu_item_activate': 	self.reload_user_list,
 		}
 		
 		# Autoconnect signals
@@ -72,7 +87,6 @@ class lumApp():
 			password = gnomekeyring.item_get_info_sync('login', int(pw_id)).get_secret()
 		except Exception, e:
 			
-			print e
 			# Ask for password...
 			password_dialog = lumPasswordEntry(self.__datapath)
 			password = password_dialog.run()
@@ -84,6 +98,8 @@ class lumApp():
 											  
 				self.__configuration.set("LDAP", "password", str(pw_id))
 		
+		# Notify user of connection
+		self.statusbar_update("Connecting to %s." % self.__configuration.get('LDAP', 'uri'))
 		
 		try:
 			self.__connection = Connection(password)
@@ -98,10 +114,35 @@ class lumApp():
 			error_box.destroy()
 			
 			self.__connection = None
+			
+			self.statusbar_update("Connection failed.")
+		else:
+			self.statusbar_update("Connection to %s initialized" % self.__configuration.get("LDAP", "uri"))
+			self.reload_user_list()
 		
 	def show_about_dialog(self, menu_item):
 		"""Show about dialog"""
 		lumAbout(self.__datapath)
+		
+	def reload_user_list(self, menu_item = None):
+		"""Reload user list in the main window"""
+		if self.__check_connection():
+			users = self.__connection.get_users()
+			for user in users:
+				self.push_user(user)
+				
+	def push_user(self, usermodel):
+		"""Add a user on the treeview in the main window"""
+		user_store = self.__builder.get_object("user_store")
+		user_store.append ((usermodel['uid'][0], usermodel['givenName'][0], usermodel['sn'][0],
+						   self.__user_image))
+		self.__user_model_store[usermodel['uidNumber'][0]] = usermodel
+		
+		
+	def statusbar_update(self, message):
+		"""Update statusbar with new message"""
+		statusbar = self.__builder.get_object("statusbar")
+		statusbar.push(0, message)
 		
 	def create_new_user_dialog(self, menu_item):
 		"""Create new user"""
@@ -109,10 +150,10 @@ class lumApp():
 		new_user_dialog.run()
 		
 		if new_user_dialog.usermodel is not None:
-			if self.check_connection():
+			if self.__check_connection():
 				self.__connection.add_user(new_user_dialog.usermodel)
 			
-	def check_connection(self):
+	def __check_connection(self):
 		if self.__connection is None:
 			self.connect ()
 		return (self.__connection is not None)

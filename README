@@ -1,0 +1,9 @@
+== Cos'è ==
+
+lum è una semplice interfaccia grafica per gestire
+degli utenti su un server LDAP. 
+
+Mira a NON essere uno strumento generale per gestire
+dati su LDAP, ma semplicemente gli utenti, in modo
+da poter essere semplice come la schermata
+Utenti/Gruppi di GNOME.

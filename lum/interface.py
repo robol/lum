@@ -17,7 +17,7 @@ import gnomekeyring
 pygtk.require("2.0")
 
 # Import modules from lum
-from ldapProtocol import UserModel, Connection
+from ldap_protocol import UserModel, Connection
 from configuration import Configuration
 from exceptions import LumError
 

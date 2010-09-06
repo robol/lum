@@ -69,8 +69,10 @@ class lumApp():
 		# Get password from keyring
 		try:
 			pw_id = self.__configuration.get("LDAP", "password")
-			password = gnomekeyring.item_get_info_sync('login', pw_id, ).get_secret()
-		except:
+			password = gnomekeyring.item_get_info_sync('login', int(pw_id)).get_secret()
+		except Exception, e:
+			
+			print e
 			# Ask for password...
 			password_dialog = lumPasswordEntry(self.__datapath)
 			password = password_dialog.run()
@@ -81,18 +83,21 @@ class lumApp():
 											  password, True)
 											  
 				self.__configuration.set("LDAP", "password", str(pw_id))
-				
-				try:
-					self.__connection = Connection(password)
-				except LumError:
-					error_box = gtk.MessageDialog(parent = self.__window, type = gtk.MESSAGE_ERROR,
-										buttons = gtk.BUTTONS_OK)
-					error_box.set_title("Errore di connessione")
-					error_box.set_markup("Errore durante la connessione al server, controllare le proprie credenziali!")
-					error_box.run()
-					error_box.destroy()
-			else:
-				self.__connection = None
+		
+		
+		try:
+			self.__connection = Connection(password)
+		except LumError:
+			
+			error_box = gtk.MessageDialog(parent = self.__window, type = gtk.MESSAGE_ERROR,
+								buttons = gtk.BUTTONS_OK)
+			
+			error_box.set_title("Errore di connessione")
+			error_box.set_markup("Errore durante la connessione al server, controllare le proprie credenziali!")
+			error_box.run()
+			error_box.destroy()
+			
+			self.__connection = None
 		
 	def show_about_dialog(self, menu_item):
 		"""Show about dialog"""

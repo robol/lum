@@ -175,8 +175,12 @@ class lumAbout():
 		dialog.destroy ()
 		
 class lumNewUserDialog():
-
+	
 	def __init__(self, datapath, connection):
+		
+		signals = {
+			'on_username_entry_focus_out_event': 	self.guess_params,
+		}
 		
 		self.__builder = gtk.Builder()
 		self.__builder.add_from_file(os.path.join(datapath, "ui/LumNewUserDialog.ui"))
@@ -184,6 +188,25 @@ class lumNewUserDialog():
 		self.__window = self.__builder.get_object("new_user_dialog")
 		self.__connection = connection
 		self.usermodel = None
+		
+		self.__builder.connect_signals(signals)
+		
+	def guess_params(self, widget = None, event_data = None):
+		"""Guess parameters"""
+		if widget is None:
+			widget = self.__builder.get_object("username_entry")
+		
+		username = widget.get_text()
+		
+		# Guess Surname
+		sn = self.__builder.get_object("sn_entry")
+		if sn.get_text() == "":
+			sn.set_text(username.split(".")[-1].capitalize())
+		
+		# Guess user home
+		home = self.__builder.get_object("home_entry")
+		if home.get_text() == "":
+			home.set_text("/home/" + username)
 		
 	def run(self):
 		"""Run dialog"""
@@ -198,19 +221,21 @@ class lumNewUserDialog():
 			home = self.__builder.get_object("home_entry").get_text()
 			shell = self.__builder.get_object("shell_entry").get_text()
 			
-			# Set uid to 0 so ldapProtocol will autodetermine the first free uid
+			# Set uid to 0 so ldap_protocol will autodetermine the first free uid
 			# when creating the user
 			uid = 0
 			
 			group = self.__builder.get_object("group_entry").get_text()
 			gid = self.__connection.gid_from_group(group)
 			
+			# Check if this is an existent user
 			if self.__connection.is_present("uid=%s" % username):
-				messageDialog = gtk.MessageDialog(type = gtk.MESSAGE_ERROR, buttons = gtk.BUTTONS_OK)
-				messageDialog.set_markup("L'utente è già esistente!\nSpecificare un diverso username")
-				messageDialog.set_title("Utente già esistente")
-				messageDialog.run()
-				messageDialog.destroy()
+				
+				m = gtk.MessageDialog(type = gtk.MESSAGE_ERROR, buttons = gtk.BUTTONS_OK)
+				m.set_markup("L'utente è già esistente!\nSpecificare un diverso username")
+				m.set_title("Utente già esistente")
+				m.run()
+				m.destroy ()
 				self.__window.destroy()
 				return None
 			

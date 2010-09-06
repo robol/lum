@@ -94,6 +94,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="invisible_char">●</property>
+                            <signal name="focus_out_event" handler="on_username_entry_focus_out_event"/>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>

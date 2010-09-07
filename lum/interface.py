@@ -31,6 +31,8 @@ class lumApp(gobject.GObject):
 		self.__user_image = self.__user_image.get_pixbuf()
 		
 		# Internal space for usermodels
+		# Usermodel will be saved in a dictionary using uids as keys,
+		# so it will be easy to get them even from entry in the treeview
 		self.__user_model_store = {}
 		
 		# Gobject constructor
@@ -89,41 +91,42 @@ class lumApp(gobject.GObject):
 	def connect(self, menu_item = None):
 		"""Connect to server"""
 		# Get password from keyring
-		try:
-			pw_id = self.__configuration.get("LDAP", "password")
-			password = gnomekeyring.item_get_info_sync('login', int(pw_id)).get_secret()
-		except Exception, e:
 			
-			# Ask for password...
-			password_dialog = lumPasswordEntry(self.__datapath)
-			password = password_dialog.run()
-			if password is not None:
-			
-				pw_id = gnomekeyring.item_create_sync('login', gnomekeyring.ITEM_GENERIC_SECRET,
-											  self.__configuration.get("LDAP", "bind_dn"), dict(),
-											  password, True)
-											  
-				self.__configuration.set("LDAP", "password", str(pw_id))
+		password = self.ask_password()
 		
 		# Notify user of connection
 		self.statusbar_update("Connecting to %s." % self.__configuration.get('LDAP', 'uri'))
 		
+		# Try to connect to the specified server
 		try:
 			self.__connection = Connection(password)
 		except LumError:
 			
-			error_box = gtk.MessageDialog(parent = self.__window, type = gtk.MESSAGE_ERROR,
-								buttons = gtk.BUTTONS_OK)
+			# If we can't, maybe password is wrong, so ask it again
+			self.forget_password()
+			password = self.ask_password()
 			
-			error_box.set_title("Errore di connessione")
-			error_box.set_markup("Errore durante la connessione al server, controllare le proprie credenziali!")
-			error_box.run()
-			error_box.destroy()
+			# and retry the connection. But if we fail even this time, then
+			# abort
+			try:
+				self.__connection = Connection(password)
+			except:
 			
-			self.__connection = None
+				# You had two opportunities, and both are gone. 
+				error_box = gtk.MessageDialog(parent = self.__window, type = gtk.MESSAGE_ERROR,
+									buttons = gtk.BUTTONS_OK)
 			
-			self.statusbar_update("Connection failed.")
-		else:
+				error_box.set_title("Errore di connessione")
+				error_box.set_markup("Errore durante la connessione al server, controllare le proprie credenziali!")
+				error_box.run()
+				error_box.destroy()
+				
+				self.__connection = None
+				
+				self.statusbar_update("Connection failed.")
+		
+		# If you managed to open the connection, show it in the status bar
+		if self.__connection is not None:
 			self.statusbar_update("Connection to %s initialized" % self.__configuration.get("LDAP", "uri"))
 			self.reload_user_list()
 			
@@ -143,7 +146,35 @@ class lumApp(gobject.GObject):
 			
 		return False
 		
+	def ask_password(self):
+		"""A simple routine that ask for password, if it is not yet in
+		the keyring"""
+		display_name = "@".join([self.__configuration.get("LDAP", "bind_dn"), self.__configuration.get("LDAP", "uri")])
+		if gnomekeyring.is_available():
+			for pw_id in gnomekeyring.list_item_ids_sync('login'):
+				pw = gnomekeyring.item_get_info_sync("login", pw_id)
+				if pw.get_display_name() == display_name:
+					return pw.get_secret()
+		
+		# Ask for password...
+		password_dialog = lumPasswordEntry(self.__datapath)
+		password = password_dialog.run()
+		if password is not None:
+		
+			atts = { 
+				'application': 'Ldap User Manager',
+				'username':		self.__configuration.get("LDAP", "bind_dn"),
+				'server':		self.__configuration.get("LDAP", "uri"),
+				'protocol':		'ldap',
+				'port':			'389',
+			}
+			
+			pw_id = gnomekeyring.item_create_sync('login', gnomekeyring.ITEM_GENERIC_SECRET,
+										  display_name, atts, password, True)
+		return password
+		
 	def refilter(self, entry):
+		"""Callback to refilter treeview"""
 		self.__treefilter.refilter()
 		
 		
@@ -169,9 +200,12 @@ class lumApp(gobject.GObject):
 			self.statusbar_update("User %s deleted." % username)
 			
 	def forget_password(self, menu_item = None):
-		if self.__configuration.has_option("LDAP", "password"):
-			gnomekeyring.item_delete_sync('login', int(self.__configuration.get("LDAP", "password")))
-			self.__configuration.remove_option("LDAP", "password")
+		if not gnomekeyring.is_available():
+			return None
+		display_name = "@".join([self.__configuration.get("LDAP", "bind_dn"), self.__configuration.get("LDAP", "uri")])
+		for pw_id in gnomekeyring.list_item_ids_sync("login"):
+			if gnomekeyring.item_get_info_sync("login", pw_id).get_display_name() == display_name:
+				gnomekeyring.item_delete_sync('login', pw_id)
 		
 	def clear_user_list(self):
 		self.__builder.get_object("user_store").clear()
@@ -330,5 +364,21 @@ class lumPasswordEntry():
 			
 		self.__dialog.destroy ()
 		return password
+		
+class lumConnectDialog():
+
+	def __init__(self, datapath, configuration):
+		
+		self.__builder = gtk.Builder()
+		self.__builder.add_from_file(os.path.join(datapath, "ui/LumConnectDialog.ui"))
+		
+		self.__dialog = self.__builder.get_object("connect_dialog")
+		
+	def run(self):
+	
+		if self.__dialog.run() == 1:
+			return True
+		else:
+			return False
 	
 

@@ -7,7 +7,7 @@
 # Date: 5 Sep 2010
 #
 
-from lum.interface import lumApp
+from lum.interface.app import lumApp
 import sys, os, gtk
 
 if __name__ == "__main__":

@@ -96,8 +96,15 @@ class lumApp(gobject.GObject):
 		
 	def connect(self, menu_item = None):
 		"""Connect to server"""
+		
+		# Determine which server to connect to
+		connect_dialog = lumConnectDialog(self.__datapath, self.__configuration)
+		uri, bind_dn = connect_dialog.run()
+		print uri,bind_dn
+		if uri is None:
+			return
+		
 		# Get password from keyring
-			
 		password = self.ask_password()
 		
 		# Notify user of connection

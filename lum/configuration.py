@@ -95,10 +95,22 @@ class Configuration():
 				self.__persistent = False
 			finally:
 				self.unlock()
+				
+	def options(self):
+		return self.__conf.options()
+		
+	def remove_section(self, section):
+		self.__conf.remove_section(section)
+		
+	def has_section(self, section):
+		return self.__conf.has_section(section)
 	
 	def has_option(self, section, option):
 		"""Check if option exists in section"""
 		return self.__conf.has_option(section, option)
+		
+	def add_section(self, section):
+		self.__conf.add_section(section)
 		
 	def remove_option(self, section, option):
 		"""Remove option"""

@@ -12,6 +12,7 @@ import gtk
 import gobject
 import os
 import gnomekeyring
+import time
 
 # Require a recent pygtk version
 pygtk.require("2.0")
@@ -94,6 +95,7 @@ class lumApp(gobject.GObject):
 		# Some initial values
 		self.__uri, self.__bind_dn = None, None
 		
+	
 	def sort(self, model, iter1, iter2):
 		return (model.get_value(iter1, 0) > model.get_value(iter2, 0))
 		
@@ -103,6 +105,8 @@ class lumApp(gobject.GObject):
 		# Show all
 		self.__window.show_all()
 		self.__connection = None
+		
+		self.__group_dict = dict()
 
 		
 	def connect(self, menu_item = None):
@@ -260,20 +264,22 @@ class lumApp(gobject.GObject):
 		if self.__check_connection():
 			self.clear_user_list()
 			users = self.__connection.get_users()
+			self.__group_dict = self.__connection.get_groups()
 			for user in users:
 				self.push_user(user)
+
 				
 	def push_user(self, usermodel):
 		"""Add a user on the treeview in the main window"""
 		user_store = self.__builder.get_object("user_store")
-		#		user_store.append ((usermodel['uid'][0], " ".join([usermodel['givenName'][0], usermodel['sn'][0]]),
-		#						   self.__connection.group_from_gid(usermodel['gidNumber'][0]), self.__user_image))
 		if not usermodel.has_key('givenName'):
 			usermodel['givenName'] = [""]
 		if not usermodel.has_key('sn'):
 			usermodel['sn'] = [""]
+		if self.__group_dict.has_key(usermodel['gidNumber'][0]):
+			usermodel['gidNumber'] = [self.__group_dict[usermodel['gidNumber'][0]]]
 		user_store.append((usermodel['uid'][0], usermodel['givenName'][0] + " " + usermodel['sn'][0],
-							self.__connection.group_from_gid(usermodel['gidNumber'][0]), self.__user_image))
+							usermodel['gidNumber'][0], self.__user_image))
 		self.__user_model_store[usermodel['uid'][0]] = usermodel
 		
 	def statusbar_update(self, message):

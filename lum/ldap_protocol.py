@@ -115,6 +115,8 @@ class Connection():
 
 	def add_user(self, user):
 		"""
+		if result_type == ldap.RES_SEARCH_RESULT:
+			raise StopIteration
 		Add a user to the LDAP database
 		"""
 		users_ou = self.__users_ou
@@ -233,6 +235,32 @@ class Connection():
 		"""
 		if key is None:
 			key = "*"
-		users = self.__ldap.search_s(self.__base_dn, ldap.SCOPE_SUBTREE, "uid=%s" % key)
-		return map(lambda x : x[1], users)
+		msgid = self.__ldap.search(self.__base_dn, ldap.SCOPE_SUBTREE, "uid=%s" % key)
+		return UserIterator(self.__ldap, msgid)
+		
+	def get_groups(self, key = None):
+		if key is None:
+			key = "*"
+		groups = map(lambda x : x[1], self.__ldap.search_s(self.__groups_ou, ldap.SCOPE_ONELEVEL, "cn=%s" % key))
+		ret = dict()
+		for group in groups:
+			ret[group['gidNumber'][0]] = group['cn'][0]
+		return ret
+		
+class UserIterator():
+
+	def __init__(self, ldap_connection, msgid):
+		self.__ldap = ldap_connection
+		self.__msgid = msgid
+		
+	def __iter__(self):
+		return self
+		
+	def next(self):
+		result_type, data = self.__ldap.result(msgid = self.__msgid, all = 0)
+		for user in data:
+			return user[1]
+		if result_type == ldap.RES_SEARCH_RESULT:
+			raise StopIteration
+		
 

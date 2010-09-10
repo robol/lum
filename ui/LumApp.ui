@@ -221,6 +221,7 @@
                     <property name="resizable">True</property>
                     <property name="title">Username</property>
                     <property name="expand">True</property>
+                    <property name="sort_column_id">1</property>
                     <child>
                       <object class="GtkCellRendererText" id="cellrenderertext1"/>
                       <attributes>

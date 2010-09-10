@@ -86,8 +86,16 @@ class lumApp(gobject.GObject):
 		# Change the model of the treeview
 		self.__builder.get_object("user_treeview").set_model(self.__treefilter)
 		
+		# Make the list sorted
+		user_store = self.__builder.get_object("user_store")
+		user_store.set_sort_func(1, self.sort)
+		user_store.set_sort_column_id(1, gtk.SORT_ASCENDING)
+		
 		# Some initial values
 		self.__uri, self.__bind_dn = None, None
+		
+	def sort(self, model, iter1, iter2):
+		return (model.get_value(iter1, 0) > model.get_value(iter2, 0))
 		
 	def start(self):
 		"""Start lumApp"""
@@ -258,8 +266,14 @@ class lumApp(gobject.GObject):
 	def push_user(self, usermodel):
 		"""Add a user on the treeview in the main window"""
 		user_store = self.__builder.get_object("user_store")
-		user_store.append ((usermodel['uid'][0], " ".join([usermodel['givenName'][0], usermodel['sn'][0]]),
-						   self.__connection.group_from_gid(usermodel['gidNumber'][0]), self.__user_image))
+		#		user_store.append ((usermodel['uid'][0], " ".join([usermodel['givenName'][0], usermodel['sn'][0]]),
+		#						   self.__connection.group_from_gid(usermodel['gidNumber'][0]), self.__user_image))
+		if not usermodel.has_key('givenName'):
+			usermodel['givenName'] = [""]
+		if not usermodel.has_key('sn'):
+			usermodel['sn'] = [""]
+		user_store.append((usermodel['uid'][0], usermodel['givenName'][0] + " " + usermodel['sn'][0],
+							self.__connection.group_from_gid(usermodel['gidNumber'][0]), self.__user_image))
 		self.__user_model_store[usermodel['uid'][0]] = usermodel
 		
 	def statusbar_update(self, message):

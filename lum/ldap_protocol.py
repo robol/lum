@@ -234,5 +234,5 @@ class Connection():
 		if key is None:
 			key = "*"
 		users = self.__ldap.search_s(self.__base_dn, ldap.SCOPE_SUBTREE, "uid=%s" % key)
-		return map(ldap_to_user_model, users)
+		return map(lambda x : x[1], users)
 

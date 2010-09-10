@@ -1,6 +1,8 @@
 #
 # -*- coding: utf-8 -*-
 
+import gtk, os
+
 class lumAbout():
 	
 	def __init__(self, datapath):

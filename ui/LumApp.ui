@@ -178,6 +178,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">●</property>
+                <property name="primary_icon_stock">gtk-find</property>
                 <signal name="changed" handler="on_filter_entry_changed"/>
               </object>
               <packing>

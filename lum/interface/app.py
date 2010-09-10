@@ -97,7 +97,7 @@ class lumApp(gobject.GObject):
 		
 	
 	def sort(self, model, iter1, iter2):
-		return (model.get_value(iter1, 0) > model.get_value(iter2, 0))
+		return (model.get_value(iter1, 0).lower() > model.get_value(iter2, 0).lower())
 		
 	def start(self):
 		"""Start lumApp"""

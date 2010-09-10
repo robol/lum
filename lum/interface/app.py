@@ -103,34 +103,45 @@ class lumApp(gobject.GObject):
 		# Determine which server to connect to
 		connect_dialog = lumConnectDialog(self.__datapath, self.__configuration)
 		uri, bind_dn, base_dn, users_ou, groups_ou = connect_dialog.run()
+		
+		# Update internal information
 		self.__uri = uri 
 		self.__bind_dn = bind_dn
+		self.__base_dn = base_dn
+		self.__users_ou = users_ou
+		self.__groups_ou = groups_ou
+		
 		if uri is None:
 			return
 		
+		# Add base_dn if necessary
+		if not self.__bind_dn.endswith(self.__base_dn): self.__bind_dn += ",%s" % self.__base_dn
+		if not self.__users_ou.endswith(self.__base_dn): self.__users_ou += ",%s" % self.__base_dn
+		if not self.__groups_ou.endswith(self.__base_dn): self.__groups_ou += ",%s" % self.__base_dn
+		
 		# Get password from keyring
-		password = self.ask_password(bind_dn, uri)
+		password = self.ask_password()
 		
 		# Notify user of connection
 		self.statusbar_update("Connecting to %s." % uri)
 		
 		# Try to connect to the specified server
 		try:
-			self.__connection = Connection(uri = uri, bind_dn = bind_dn, password = password, 
-										   base_dn = base_dn, users_ou = users_ou, 
-										   groups_ou = groups_ou)
+			self.__connection = Connection(uri = self.__uri, bind_dn = self.__bind_dn, password = password, 
+										   base_dn = self.__base_dn, users_ou = self.__users_ou, 
+										   groups_ou = self.__groups_ou)
 		except LumError:
 			
 			# If we can't, maybe password is wrong, so ask it again
 			self.forget_password()
-			password = self.ask_password(bind_dn, uri)
+			password = self.ask_password()
 			
 			# and retry the connection. But if we fail even this time, then
 			# abort
 			try:
-				self.__connection = Connection(uri = uri, bind_dn = bind_dn, password = password, 
-										   base_dn = "dc=virty", users_ou = "ou=People,dc=virty", 
-										   groups_ou = "ou=Groups,dc=virty")
+				self.__connection = Connection(uri = self.__uri, bind_dn = self.__bind_dn, password = password, 
+										   base_dn = self.__base_dn, users_ou = self.__users_ou, 
+										   groups_ou = self.__groups_ou)
 			except:
 			
 				# You had two opportunities, and both are gone. 
@@ -167,10 +178,10 @@ class lumApp(gobject.GObject):
 			
 		return False
 		
-	def ask_password(self, uri, bind_dn):
+	def ask_password(self):
 		"""A simple routine that ask for password, if it is not yet in
 		the keyring"""
-		display_name = "@".join([bind_dn, uri])
+		display_name = "@".join([self.__bind_dn, self.__uri])
 		if gnomekeyring.is_available():
 			for pw_id in gnomekeyring.list_item_ids_sync('login'):
 				pw = gnomekeyring.item_get_info_sync("login", pw_id)
@@ -184,8 +195,8 @@ class lumApp(gobject.GObject):
 		
 			atts = { 
 				'application': 'Ldap User Manager',
-				'username':		bind_dn,
-				'server':		uri,
+				'username':		self.__bind_dn,
+				'server':		self.__uri,
 				'protocol':		'ldap',
 				'port':			'389',
 			}

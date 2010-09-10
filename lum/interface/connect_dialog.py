@@ -38,7 +38,7 @@ class lumConnectDialog():
 		image.set_from_file(os.path.join("ui/server.png"))
 		self.__pixbuf = image.get_pixbuf()
 		
-		self.__credentials = (None, None)
+		self.__credentials = (None, None, None, None, None)
 		self.__old_uri = None
 		
 		for uri in self.__configuration.sections():
@@ -66,12 +66,9 @@ class lumConnectDialog():
 	def run(self):
 	
 		# If the user click Cancel we return None
-		if self.__dialog.run() == 0:
-			self.__dialog.destroy()
-			return (None, None)
-		else:
-			self.__dialog.destroy()
-			return self.__credentials
+		self.__dialog.run ()
+		self.__dialog.destroy()
+		return self.__credentials
 			
 			
 	def on_connect_button_cb(self, button):
@@ -82,7 +79,8 @@ class lumConnectDialog():
 		t_model, t_iter = treeview.get_selection().get_selected()
 		
 		if t_iter is None:
-			self.__credentials = (None, None)
+			# TODO: Messagebox
+			self.__credentials = (None, None, None, None, None)
 		else:
 			self.__credentials = (t_model.get_value(t_iter, 1),
 								  t_model.get_value(t_iter, 2),

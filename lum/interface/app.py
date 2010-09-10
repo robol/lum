@@ -216,7 +216,7 @@ class lumApp(gobject.GObject):
 		
 	def delete_user(self, menu_item = None):
 		"""Delete the selected user"""
-		user_store, treeiter = self.__builder.get_object("user_treeview").get_selection().get_selected()
+		user_model, treeiter = self.__builder.get_object("user_treeview").get_selection().get_selected()
 		if treeiter is None:
 			m = gtk.MessageDialog(type = gtk.MESSAGE_ERROR, buttons = gtk.BUTTONS_OK)
 			m.set_markup("No user selected!")
@@ -225,9 +225,10 @@ class lumApp(gobject.GObject):
 			m.destroy()
 		else:
 			# Get username from the liststore
-			username = user_store.get_value(treeiter, 0)
+			username = user_model.get_value(treeiter, 0)
 			del self.__user_model_store[username]
-			user_store.remove(treeiter)
+			user_store = self.__builder.get_object("user_store")
+			user_store.remove(user_model.convert_iter_to_child_iter(treeiter))
 			self.__connection.delete_user(username)
 			self.statusbar_update("User %s deleted." % username)
 			

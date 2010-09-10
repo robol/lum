@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import gtk, os
+from lum.ldap_protocol import UserModel
 
 class lumNewUserDialog():
 	

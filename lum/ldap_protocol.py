@@ -83,26 +83,20 @@ def ldap_to_user_model(ldap_result):
 
 class Connection():
 
-	def __init__(self, password):
+	def __init__(self, uri, bind_dn, password, base_dn, users_ou, groups_ou):
 		"""
 		Create a connection to the specified uri
 		"""
 		
-		config = Configuration()
-
-		# Just to make getting config values more 
-		# comfortable
-		get = lambda x : config.get("LDAP", x)
-		self.__get = get
-
-		self.__config = config
+		# Save data
+		self.__uri = uri
+		self.__bind_dn = bind_dn
+		self.__base_dn = base_dn
+		self.__password = password
+		self.__users_ou = users_ou
+		self.__groups_ou = groups_ou
 		
-		self.__ldap = ldap.initialize(get("uri"))
-
-		bind_dn = get("bind_dn")
-		self.__base_dn = get("base_dn")
-
-		self.__users_ou = get("users_ou")
+		self.__ldap = ldap.initialize(uri)
 
 		# Bind to the database with the provided credentials
 		try:
@@ -111,19 +105,19 @@ class Connection():
 			raise LumError('Error connecting to the server, check your credentials')
 		
 		# Check if there are missing ou and add them
-		if not self.is_present(get("users_ou")):
-			print "Adding missing OrganizationalUnit: %s" % get("users_ou")
-			self.add_ou(get("users_ou"))
+		if not self.is_present(self.__users_ou):
+			print "Adding missing OrganizationalUnit: %s" % self.__users_ou
+			self.add_ou(self.__users_ou)
 		
-		if not self.is_present(get("groups_ou")):
-			print "Adding missing OrganizationalUnit: %s" % get("groups_ou")
-			self.add_ou(get("groups_ou"))
+		if not self.is_present(self.__groups_ou):
+			print "Adding missing OrganizationalUnit: %s" % self.__groups_ou
+			self.add_ou(self.__groups_ou)
 
 	def add_user(self, user):
 		"""
 		Add a user to the LDAP database
 		"""
-		users_ou = self.__get("users_ou")
+		users_ou = self.__users_ou
 		if not self.is_present(users_ou):
 			raise LumError("users organizational unit not present!")
 			
@@ -138,7 +132,7 @@ class Connection():
 		
 	def add_group(self, group_name):
 		"""Add a new group"""
-		groups_ou = self.__get("groups_ou")
+		groups_ou = self.__groups_ou
 		
 		dn = "cn=%s,%s" % (group_name, groups_ou)
 		
@@ -160,7 +154,7 @@ class Connection():
 		
 	def next_free_gid(self):
 		"""Determine next free gid"""
-		groups_ou = self.__config.get("LDAP", "groups_ou")
+		groups_ou = self.__groups_ou
 		groups = self.__ldap.search_s(groups_ou, ldap.SCOPE_ONELEVEL, "cn=*")
 		
 		if len(groups) == 0: 
@@ -188,7 +182,7 @@ class Connection():
 	def gid_from_group(self, group_name):
 		"""Return gid of the given group"""
 		if self.__ldap is not None:
-			groups = self.__ldap.search_s(self.__config.get("LDAP", "base_dn"),
+			groups = self.__ldap.search_s(self.__base_dn,
 										  ldap.SCOPE_SUBTREE, "cn=%s" % group_name)
 			if len(groups) == 0:
 				return None
@@ -200,7 +194,7 @@ class Connection():
 	def group_from_gid(self, gid):
 		"""Return group name"""
 		if self.__ldap is not None:
-			group = self.__ldap.search_s(self.__config.get("LDAP", "groups_ou"),
+			group = self.__ldap.search_s(self.__groups_ou,
 										 ldap.SCOPE_ONELEVEL, "gidNumber=%d" % int(gid))
 			if len(group) == 0:
 				return "unknown"

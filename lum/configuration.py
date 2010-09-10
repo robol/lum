@@ -34,14 +34,6 @@ class Configuration():
 		# load values in the configuration file
 		self.__conf = ConfigParser()
 		
-		# Add an [LDAP] section
-		self.__conf.add_section ("LDAP")
-		self.__conf.set("LDAP", "uri", "ldap://localhost")
-		self.__conf.set("LDAP", "base_dn", "dc=example,dc=com")
-		self.__conf.set("LDAP", "bind_dn", "cn=admin,dc=example,dc=com")
-		self.__conf.set("LDAP", "users_ou", "ou=People,dc=example,dc=com")
-		self.__conf.set("LDAP", "groups_ou", "ou=Groups,dc=example,dc=com")
-		
 		if self.__persistent and os.path.exists(self.__conf_file):
 			try:
 				self.__conf.read(self.__conf_file)
@@ -98,6 +90,9 @@ class Configuration():
 				
 	def options(self):
 		return self.__conf.options()
+		
+	def sections(self):
+		return self.__conf.sections()
 		
 	def remove_section(self, section):
 		self.__conf.remove_section(section)

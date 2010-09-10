@@ -86,6 +86,9 @@ class lumApp(gobject.GObject):
 		# Change the model of the treeview
 		self.__builder.get_object("user_treeview").set_model(self.__treefilter)
 		
+		# Some initial values
+		self.__uri, self.__bind_dn = None, None
+		
 	def start(self):
 		"""Start lumApp"""
 		
@@ -99,30 +102,35 @@ class lumApp(gobject.GObject):
 		
 		# Determine which server to connect to
 		connect_dialog = lumConnectDialog(self.__datapath, self.__configuration)
-		uri, bind_dn = connect_dialog.run()
-		print uri,bind_dn
+		uri, bind_dn, base_dn, users_ou, groups_ou = connect_dialog.run()
+		self.__uri = uri 
+		self.__bind_dn = bind_dn
 		if uri is None:
 			return
 		
 		# Get password from keyring
-		password = self.ask_password()
+		password = self.ask_password(bind_dn, uri)
 		
 		# Notify user of connection
-		self.statusbar_update("Connecting to %s." % self.__configuration.get('LDAP', 'uri'))
+		self.statusbar_update("Connecting to %s." % uri)
 		
 		# Try to connect to the specified server
 		try:
-			self.__connection = Connection(password)
+			self.__connection = Connection(uri = uri, bind_dn = bind_dn, password = password, 
+										   base_dn = base_dn, users_ou = users_ou, 
+										   groups_ou = groups_ou)
 		except LumError:
 			
 			# If we can't, maybe password is wrong, so ask it again
 			self.forget_password()
-			password = self.ask_password()
+			password = self.ask_password(bind_dn, uri)
 			
 			# and retry the connection. But if we fail even this time, then
 			# abort
 			try:
-				self.__connection = Connection(password)
+				self.__connection = Connection(uri = uri, bind_dn = bind_dn, password = password, 
+										   base_dn = "dc=virty", users_ou = "ou=People,dc=virty", 
+										   groups_ou = "ou=Groups,dc=virty")
 			except:
 			
 				# You had two opportunities, and both are gone. 
@@ -140,7 +148,7 @@ class lumApp(gobject.GObject):
 		
 		# If you managed to open the connection, show it in the status bar
 		if self.__connection is not None:
-			self.statusbar_update("Connection to %s initialized" % self.__configuration.get("LDAP", "uri"))
+			self.statusbar_update("Connection to %s initialized" % uri)
 			self.reload_user_list()
 			
 	def filter_users(self, model, treeiter, user_data = None):
@@ -159,10 +167,10 @@ class lumApp(gobject.GObject):
 			
 		return False
 		
-	def ask_password(self):
+	def ask_password(self, uri, bind_dn):
 		"""A simple routine that ask for password, if it is not yet in
 		the keyring"""
-		display_name = "@".join([self.__configuration.get("LDAP", "bind_dn"), self.__configuration.get("LDAP", "uri")])
+		display_name = "@".join([bind_dn, uri])
 		if gnomekeyring.is_available():
 			for pw_id in gnomekeyring.list_item_ids_sync('login'):
 				pw = gnomekeyring.item_get_info_sync("login", pw_id)
@@ -176,8 +184,8 @@ class lumApp(gobject.GObject):
 		
 			atts = { 
 				'application': 'Ldap User Manager',
-				'username':		self.__configuration.get("LDAP", "bind_dn"),
-				'server':		self.__configuration.get("LDAP", "uri"),
+				'username':		bind_dn,
+				'server':		uri,
 				'protocol':		'ldap',
 				'port':			'389',
 			}
@@ -215,7 +223,9 @@ class lumApp(gobject.GObject):
 	def forget_password(self, menu_item = None):
 		if not gnomekeyring.is_available():
 			return None
-		display_name = "@".join([self.__configuration.get("LDAP", "bind_dn"), self.__configuration.get("LDAP", "uri")])
+		if self.__uri is None or self.__bind_dn is None:
+			return None
+		display_name = "@".join([self.__bind_dn, self.__uri])
 		for pw_id in gnomekeyring.list_item_ids_sync("login"):
 			if gnomekeyring.item_get_info_sync("login", pw_id).get_display_name() == display_name:
 				gnomekeyring.item_delete_sync('login', pw_id)

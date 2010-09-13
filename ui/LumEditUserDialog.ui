@@ -16,7 +16,7 @@
             <child>
               <object class="GtkLabel" id="label4">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Modificare i dati dell'utente e premere salva per rendere le modifiche permanenti</property>
+                <property name="label" translatable="yes">Modificare i dati dell'utente e premere salva per rendere le modifiche permanenti.</property>
                 <property name="wrap">True</property>
               </object>
               <packing>

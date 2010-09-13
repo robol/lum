@@ -183,11 +183,11 @@ class lumApp(gobject.GObject):
 		if key == "":
 			return True
 		
-		if key in model.get_value(treeiter, 0):
+		if key in model.get_value(treeiter, 0).lower():
 			return True
-		if key in model.get_value(treeiter, 1):
+		if key in model.get_value(treeiter, 1).lower():
 			return True
-		if key in model.get_value(treeiter, 2):
+		if key in model.get_value(treeiter, 2).lower():
 			return True
 			
 		return False
@@ -306,7 +306,7 @@ class lumApp(gobject.GObject):
 			group = self.__group_dict[usermodel['gidNumber'][0]]
 		else:
 			group = "unknown"
-		user_store.append((usermodel['uid'][0], usermodel['givenName'][0] + " " + usermodel['sn'][0],
+		user_store.append((usermodel['uid'][0], (usermodel['givenName'][0] + " " + usermodel['sn'][0]).strip(),
 							group, self.__user_image))
 		self.__user_model_store[usermodel['uid'][0]] = usermodel
 		

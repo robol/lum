@@ -27,6 +27,7 @@ from about import lumAbout
 from new_user_dialog import lumNewUserDialog
 from connect_dialog import lumConnectDialog
 from password_entry import lumPasswordEntry
+from edit_user_dialog import lumEditUserDialog
 
 class lumApp(gobject.GObject):
 
@@ -72,6 +73,7 @@ class lumApp(gobject.GObject):
 			'on_delete_user_menu_item_activate':		self.delete_user,
 			'on_filter_entry_changed':					self.refilter,
 			'on_forget_password_menu_item_activate':	self.forget_password,
+			'on_edit_user_menu_item_activate':			self.edit_user,
 		}
 		
 		# Autoconnect signals
@@ -267,6 +269,30 @@ class lumApp(gobject.GObject):
 			self.__group_dict = self.__connection.get_groups()
 			for user in users:
 				self.push_user(user)
+			
+				
+	def edit_user(self, menu_item = None):
+		"""Edit selected user"""
+		treeview = self.__builder.get_object("user_treeview")
+		t_model, t_iter = treeview.get_selection().get_selected()
+		if t_iter is None:
+			return
+		username = t_model.get_value(t_iter, 0)
+		
+		usermodel = self.__user_model_store[username]
+		
+		# Create the dialog
+		if isinstance(usermodel, UserModel):
+			usermodel = usermodel.to_ldif()
+		dialog = lumEditUserDialog(self.__datapath, dict(usermodel), self.__group_dict)
+		
+		new_usermodel = dialog.run()
+		if (new_usermodel is not None):
+			self.__connection.modify_user(usermodel, new_usermodel)
+			
+		# TODO: Reload only selected user
+		self.reload_user_list()
+			
 
 				
 	def push_user(self, usermodel):
@@ -277,9 +303,11 @@ class lumApp(gobject.GObject):
 		if not usermodel.has_key('sn'):
 			usermodel['sn'] = [""]
 		if self.__group_dict.has_key(usermodel['gidNumber'][0]):
-			usermodel['gidNumber'] = [self.__group_dict[usermodel['gidNumber'][0]]]
+			group = self.__group_dict[usermodel['gidNumber'][0]]
+		else:
+			group = "unknown"
 		user_store.append((usermodel['uid'][0], usermodel['givenName'][0] + " " + usermodel['sn'][0],
-							usermodel['gidNumber'][0], self.__user_image))
+							group, self.__user_image))
 		self.__user_model_store[usermodel['uid'][0]] = usermodel
 		
 	def statusbar_update(self, message):

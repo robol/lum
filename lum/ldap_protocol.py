@@ -113,7 +113,7 @@ class Connection():
 			print "Adding missing OrganizationalUnit: %s" % self.__groups_ou
 			self.add_ou(self.__groups_ou)
 
-	def add_user(self, user):
+	def add_user(self, user, modify = False):
 		"""
 		if result_type == ldap.RES_SEARCH_RESULT:
 			raise StopIteration
@@ -130,8 +130,28 @@ class Connection():
 		# Distinguished name
 		dn = "uid=%s,%s" % (user['uid'][0], users_ou)
 		
-		self.__ldap.add_s(dn, ldap.modlist.addModlist(user.to_ldif()))
+		if isinstance(user, UserModel):
+			user = user.to_ldif()
+		ldifwriter.unparse(dn, user)
+		self.__ldap.add_s(dn, ldap.modlist.addModlist(user))
+			
+	def modify_user(self, old_user, new_user):
 		
+		users_ou = self.__users_ou
+		if not self.is_present(users_ou):
+			raise LumError("users organizational unit not present!")
+		
+		# Distinguished name
+		new_dn = "uid=%s,%s" % (new_user['uid'][0], users_ou)
+		old_dn = "uid=%s,%s" % (old_user['uid'][0], users_ou)
+		
+		if isinstance(new_user, UserModel):
+			new_user = new_user.to_ldif()
+		if isinstance(old_user, UserModel):
+			old_user = old_user.to_ldif()
+		
+		self.__ldap.modify_s(new_dn, ldap.modlist.modifyModlist(old_user, new_user))
+	
 	def add_group(self, group_name):
 		"""Add a new group"""
 		groups_ou = self.__groups_ou

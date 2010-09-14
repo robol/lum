@@ -20,10 +20,11 @@ class lumUserPasswordDialog():
 			password_2 = self.__builder.get_object("password_entry_2").get_text()
 			
 			if password_1 != password_2:
-				mb = gtk.MessageDialog(buttons = gtk.BUTTONS_OK, type = gtk.MESSAGE_CRITICAL)
+				mb = gtk.MessageDialog(buttons = gtk.BUTTONS_OK, type = gtk.MESSAGE_ERROR)
+				mb.set_markup("Le password inserite non coincidono. Ritentare.")
 				mb.run ()
 				mb.destroy()
-				return self.run(self)
+				return self.run()
 			else:
 				self.__dialog.destroy()
 				return password_1

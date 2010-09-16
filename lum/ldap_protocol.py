@@ -11,75 +11,100 @@ ldifwriter = ldif.LDIFWriter(sys.stdout)
 
 class UserModel():
 
-    def __init__(self, username, given_name, sn, uid, gid,
-                 login_shell = "/bin/sh", additional_data = None):
+    def __init__(self, ldap_output = None):
 
         self.__ldif = dict ()
+        self.__dn = None
         
-        if username is not None:
-		    self.__ldif['objectClass'] = ["inetOrgPerson",
+        if ldap_output is not None:
+        	self.__dn = ldap_output[0]
+        	self.__ldif = dict(ldap_output[1])
+        	if not ldap_output[1].has_key("givenName"):
+        		self.set_given_name("")
+        		
+        else:
+        	self.__ldif['objectClass'] = ["inetOrgPerson",
 		                                  "posixAccount",
 		                                  "person",
 		                                  "shadowAccount",
 		                                  "organizationalPerson",
 		                                  "top"]
-		    
-		    self.__ldif['uid'] = [str(username)]
-		    self.__ldif['cn'] = [str(username)]
-		    self.__ldif['sn'] = [str(sn)]
-		    self.__ldif['gecos'] = [" ".join([given_name, sn])]
-		    self.__ldif['givenName'] = [str(given_name)]
-		    self.__ldif['uidNumber'] = [str(uid)]
-		    self.__ldif['gidNumber'] = [str(gid)]
-		    self.__ldif['loginShell'] = [str(login_shell)]
-		    self.__ldif['homeDirectory'] = ["/home/%s" % username]
-        
-        self.dn = None
+		                                  
+	
 
-        if additional_data is None:
-            return
-        for key in additional_data:
-            self.__ldif[key] = list(str(additional_data[key]))
 
     def __getitem__(self, item):
         return self.__ldif[item]
         
     def __setitem__(self, item, value):
     	self.__ldif[item] = value
+    
+    def get_dn(self):
+    	return self.__dn
+    	
+    def set_dn(self, dn):
+    	self.__dn = dn
 
     def to_ldif(self):
         return dict(self.__ldif)
-        
-    def fill_from_dict(self, dic):
-    	self.__ldif = dict(dic)
     	
     def get_uid(self):
+    	return self.__ldif['uidNumber'][0]
+    	
+    def set_uid(self, uid):
+    	self.__ldif['uidNumber'] = [str(uid)]
+    	
+    def get_username(self):
     	return self.__ldif['uid'][0]
+    
+    def set_username(self, username):
+    	self.__ldif['uid'] = [str(username)]
+    	
+    def get_gid(self):
+    	return self.__ldif['gidNumber'][0]
+    	
+    def set_gid(self, gid):
+    	self.__ldif['gidNumber'] = [str(gid)]
     
     def get_given_name(self):
     	return self.__ldif['givenName'][0]
+    	
+    def get_gecos(self):
+    	return self.__ldif['gecos'][0]
+    	
+    def set_given_name(self, given_name):
+    	self.__ldif['givenName'] = [str(given_name)]
+    	self.__ldif['cn'] = [str(given_name)]
+    	self.__ldif['gecos'] = [str(self.__ldif['givenName'][0] + " " + 
+    							self.__ldif['sn'][0]).strip()]
     
     def get_surname(self):
     	return self.__ldif['sn'][0]
+    	
+    def set_surname(self, sn):
+    	self.__ldif['sn'] = [str(sn)]
+    	self.__ldif['gecos'] = [str(self.__ldif['givenName'][0] + " " + 
+    							self.__ldif['sn'][0]).strip()]
+    	
+    def get_home(self):
+    	return self.__ldif['homeDirectory'][0]
+    	
+    def set_home(self, home):
+    	self.__ldif['homeDirectory'] = [str(home)]
+    	
+    def get_shell(self):
+    	return self.__ldif['loginShell'][0]
+    
+    
+    def set_shell(self, shell):
+    	self.__ldif['loginShell'] = [str(shell)]
     	
     def __repr__(self):
     	return "<lum.LdapProtocol.UserModel \"%s a.k.a %s %s\">" % (self.get_uid(), 
     																self.get_given_name(), 
     																self.get_surname())
         
-def ldap_to_user_model(ldap_result):
-	"""
-	Convert an ldap returned value to a UserModel object
-	"""
-	# Initialize an empty user model and fill it with the data 
-	# returned from the database
-	user = UserModel (None, None, None, None, None)
-	user.fill_from_dict (ldap_result[1])
-	user.dn = ldap_result[0]
-	
-	if not ldap_result[1].has_key("givenName"):
-		user['givenName'] = user['uid']
-	return user
+
 
 class Connection():
 
@@ -129,11 +154,9 @@ class Connection():
 		
 		# Distinguished name
 		dn = "uid=%s,%s" % (user['uid'][0], users_ou)
-		
-		if isinstance(user, UserModel):
-			user = user.to_ldif()
-		ldifwriter.unparse(dn, user)
-		self.__ldap.add_s(dn, ldap.modlist.addModlist(user))
+
+		ldifwriter.unparse(dn, user.to_ldif())
+		self.__ldap.add_s(dn, ldap.modlist.addModlist(user.to_ldif()))
 			
 	def modify_user(self, old_user, new_user):
 		
@@ -142,15 +165,13 @@ class Connection():
 			raise LumError("users organizational unit not present!")
 		
 		# Distinguished name
-		new_dn = "uid=%s,%s" % (new_user['uid'][0], users_ou)
-		old_dn = "uid=%s,%s" % (old_user['uid'][0], users_ou)
+		new_dn = "uid=%s,%s" % (new_user.get_username(), users_ou)
+		old_dn = "uid=%s,%s" % (old_user.get_username(), users_ou)
 		
-		if isinstance(new_user, UserModel):
-			new_user = new_user.to_ldif()
-		if isinstance(old_user, UserModel):
-			old_user = old_user.to_ldif()
-		
-		self.__ldap.modify_s(new_dn, ldap.modlist.modifyModlist(old_user, new_user))
+		ldifwriter.unparse(old_dn, old_user.to_ldif())
+		ldifwriter.unparse(new_dn, new_user.to_ldif())
+		print self.__ldap.modify_s(old_dn, ldap.modlist.modifyModlist(old_user.to_ldif(), new_user.to_ldif()))
+		print ldap.modlist.modifyModlist(old_user.to_ldif(), new_user.to_ldif())
 	
 	def add_group(self, group_name):
 		"""Add a new group"""
@@ -191,9 +212,7 @@ class Connection():
 		"""
 		Delete an user given the uid or the UserModel
 		"""
-		if isinstance(user, UserModel):
-			user = user['uid'][0]
-		self.__ldap.delete_s("uid=%s,%s" % (user, self.__users_ou))
+		self.__ldap.delete_s(user)
 
 	def is_user_present(self, username):
 		"""
@@ -279,7 +298,7 @@ class UserIterator():
 	def next(self):
 		result_type, data = self.__ldap.result(msgid = self.__msgid, all = 0)
 		for user in data:
-			return user[1]
+			return UserModel(user)
 		if result_type == ldap.RES_SEARCH_RESULT:
 			raise StopIteration
 		

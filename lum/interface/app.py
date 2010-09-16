@@ -240,10 +240,10 @@ class lumApp(gobject.GObject):
 		else:
 			# Get username from the liststore
 			username = user_model.get_value(treeiter, 0)
-			del self.__user_model_store[username]
+			user = self.__user_model_store.pop(username)
 			user_store = self.__builder.get_object("user_store")
 			user_store.remove(user_model.convert_iter_to_child_iter(treeiter))
-			self.__connection.delete_user(username)
+			self.__connection.delete_user(user.get_dn())
 			self.statusbar_update("User %s deleted." % username)
 			
 	def forget_password(self, menu_item = None):
@@ -282,13 +282,14 @@ class lumApp(gobject.GObject):
 		usermodel = self.__user_model_store[username]
 		
 		# Create the dialog
-		if isinstance(usermodel, UserModel):
-			usermodel = usermodel.to_ldif()
-		dialog = lumEditUserDialog(self.__datapath, dict(usermodel), self.__group_dict)
+		ldap_data = usermodel.to_ldif()
+		ldap_dn   = "uid=%s,ou=%s" % (usermodel.get_username(), self.__users_ou)
+		old_user = UserModel((ldap_dn, ldap_data))
+		dialog = lumEditUserDialog(self.__datapath, usermodel, self.__group_dict)
 		
 		new_usermodel = dialog.run()
 		if (new_usermodel is not None):
-			self.__connection.modify_user(usermodel, new_usermodel)
+			self.__connection.modify_user(old_user, new_usermodel)
 			
 		# TODO: Reload only selected user
 		self.reload_user_list()
@@ -298,17 +299,13 @@ class lumApp(gobject.GObject):
 	def push_user(self, usermodel):
 		"""Add a user on the treeview in the main window"""
 		user_store = self.__builder.get_object("user_store")
-		if not usermodel.has_key('givenName'):
-			usermodel['givenName'] = [""]
-		if not usermodel.has_key('sn'):
-			usermodel['sn'] = [""]
-		if self.__group_dict.has_key(usermodel['gidNumber'][0]):
-			group = self.__group_dict[usermodel['gidNumber'][0]]
+		if self.__group_dict.has_key(usermodel.get_gid()):
+			group = self.__group_dict[usermodel.get_gid()]
 		else:
 			group = "unknown"
-		user_store.append((usermodel['uid'][0], (usermodel['givenName'][0] + " " + usermodel['sn'][0]).strip(),
+		user_store.append((usermodel.get_username(), usermodel.get_gecos(),
 							group, self.__user_image))
-		self.__user_model_store[usermodel['uid'][0]] = usermodel
+		self.__user_model_store[usermodel.get_username()] = usermodel
 		
 	def statusbar_update(self, message):
 		"""Update statusbar with new message"""
@@ -324,7 +321,7 @@ class lumApp(gobject.GObject):
 		if new_user_dialog.usermodel is not None:
 			if self.__check_connection():
 				self.__connection.add_user(new_user_dialog.usermodel)
-				self.statusbar_update("User %s created correctly." % new_user_dialog.usermodel['uid'][0])
+				self.statusbar_update("User %s created correctly." % new_user_dialog.usermodel.get_username())
 		self.reload_user_list()
 			
 	def __check_connection(self):

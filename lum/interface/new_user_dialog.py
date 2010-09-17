@@ -83,9 +83,16 @@ class lumNewUserDialog():
 					return None
 				
 				messageDialog.destroy()
+				
 			
-			self.usermodel = UserModel(username = username, given_name = givenName, 
-									   sn = sn, uid = uid, gid = gid, login_shell = shell)
+			self.usermodel = UserModel()
+			self.usermodel.set_username(username)
+			self.usermodel.set_gid(gid)
+			self.usermodel.set_surname(sn)
+			self.usermodel.set_given_name(givenName)
+			self.usermodel.set_home(home)
+			self.usermodel.set_shell(shell)
+			
 		self.__window.destroy()
 		
 

@@ -46,9 +46,12 @@ class UserModel():
 
     def to_ldif(self):
         return dict(self.__ldif)
-    	
+    
     def get_uid(self):
-    	return self.__ldif['uidNumber'][0]
+		if self.__ldif.has_key("uidNumber"):
+			return self.__ldif['uidNumber'][0]
+		else:
+			return str(0)
     	
     def set_uid(self, uid):
     	self.__ldif['uidNumber'] = [str(uid)]
@@ -74,16 +77,22 @@ class UserModel():
     def set_given_name(self, given_name):
     	self.__ldif['givenName'] = [str(given_name)]
     	self.__ldif['cn'] = [str(given_name)]
-    	self.__ldif['gecos'] = [str(self.__ldif['givenName'][0] + " " + 
-    							self.__ldif['sn'][0]).strip()]
+    	if self.__ldif.has_key("sn"):
+	    	self.__ldif['gecos'] = [str(self.__ldif['givenName'][0] + " " + 
+    								self.__ldif['sn'][0]).strip()]
+    	else:
+    		self.__ldif['gecos'] = [str(given_name)]
     
     def get_surname(self):
     	return self.__ldif['sn'][0]
     	
     def set_surname(self, sn):
     	self.__ldif['sn'] = [str(sn)]
-    	self.__ldif['gecos'] = [str(self.__ldif['givenName'][0] + " " + 
-    							self.__ldif['sn'][0]).strip()]
+    	if self.__ldif.has_key("givenName"):
+	    	self.__ldif['gecos'] = [str(self.__ldif['givenName'][0] + " " + 
+    								self.__ldif['sn'][0]).strip()]
+    	else:
+    		self.__ldif['gecos'] = [str(sn)]
     	
     def get_home(self):
     	return self.__ldif['homeDirectory'][0]
@@ -148,13 +157,12 @@ class Connection():
 			raise LumError("users organizational unit not present!")
 			
 		# This means that we have to autodetermine the first free uid
-		if (int(user['uidNumber'][0]) == 0):
-			user['uidNumber'] = [str(self.next_free_uid())]
+		if (int(user.get_uid()) == 0):
+			user.set_uid(self.next_free_uid())
 		
 		# Distinguished name
 		dn = "uid=%s,%s" % (user['uid'][0], users_ou)
 
-		ldifwriter.unparse(dn, user.to_ldif())
 		self.__ldap.add_s(dn, ldap.modlist.addModlist(user.to_ldif()))
 			
 	def modify_user(self, old_user, new_user):

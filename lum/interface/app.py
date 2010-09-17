@@ -28,6 +28,7 @@ from new_user_dialog import lumNewUserDialog
 from connect_dialog import lumConnectDialog
 from password_entry import lumPasswordEntry
 from edit_user_dialog import lumEditUserDialog
+from menu_item import lumTreeViewMenu
 
 class lumApp(gobject.GObject):
 
@@ -74,6 +75,9 @@ class lumApp(gobject.GObject):
 			'on_filter_entry_changed':					self.refilter,
 			'on_forget_password_menu_item_activate':	self.forget_password,
 			'on_edit_user_menu_item_activate':			self.edit_user,
+			
+			# Popup menus
+			'on_user_treeview_button_press_event': 		self.on_user_treeview_button_press_event,
 		}
 		
 		# Autoconnect signals
@@ -96,6 +100,9 @@ class lumApp(gobject.GObject):
 		
 		# Some initial values
 		self.__uri, self.__bind_dn = None, None
+		
+		# Create popup menu
+		self.__popup_menu = lumTreeViewMenu(self)
 		
 	
 	def sort(self, model, iter1, iter2):
@@ -227,6 +234,25 @@ class lumApp(gobject.GObject):
 	def show_about_dialog(self, menu_item):
 		"""Show about dialog"""
 		lumAbout(self.__datapath)
+		
+	def on_user_treeview_button_press_event(self, user_treeview, event):
+		"""Catch press button event on treeview and, if the user right
+		clicked on it, open the popup menu"""
+		if event.button == 3:
+			x = int(event.x)
+			y = int(event.y)
+			pathinfo = user_treeview.get_path_at_pos(x,y)
+			if pathinfo is None:
+				return
+			path, col, cellx, celly = pathinfo
+			user_treeview.grab_focus()
+			user_treeview.set_cursor(path, col, 0)
+			model, t_iter = user_treeview.get_selection().get_selected()
+			if t_iter is None:
+				return
+			username = model.get_value(t_iter, 0)
+			self.__popup_menu.username = username
+			self.__popup_menu.popup(None, None, None, event.button, event.time)
 		
 	def delete_user(self, menu_item = None):
 		"""Delete the selected user"""

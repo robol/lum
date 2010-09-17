@@ -207,6 +207,8 @@
                 <property name="model">user_store</property>
                 <property name="headers_clickable">False</property>
                 <property name="search_column">0</property>
+                <signal name="button_press_event" handler="on_user_treeview_button_press_event"/>
+                <signal name="popup_menu" handler="on_user_treeview_button_press_event"/>
                 <child>
                   <object class="GtkTreeViewColumn" id="treeviewcolumn1">
                     <property name="sizing">autosize</property>

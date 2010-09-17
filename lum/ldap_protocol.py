@@ -43,9 +43,6 @@ class UserModel():
     	
     def set_dn(self, dn):
     	self.__dn = dn
-
-    def to_ldif(self):
-        return dict(self.__ldif)
     
     def get_uid(self):
 		if self.__ldif.has_key("uidNumber"):
@@ -103,15 +100,15 @@ class UserModel():
     def get_shell(self):
     	return self.__ldif['loginShell'][0]
     
-    
     def set_shell(self, shell):
     	self.__ldif['loginShell'] = [str(shell)]
     	
-    def __repr__(self):
-    	return "<lum.LdapProtocol.UserModel \"%s a.k.a %s %s\">" % (self.get_uid(), 
-    																self.get_given_name(), 
-    																self.get_surname())
-        
+    def __str__(self):
+    	return "%s a.k.a %s %s" % (self.get_uid(), 
+    								self.get_given_name(), 
+    								self.get_surname())
+    def to_ldif(self):
+        return dict(self.__ldif)
 
 
 class Connection():

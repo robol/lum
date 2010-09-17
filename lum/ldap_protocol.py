@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 #
 
@@ -168,10 +167,7 @@ class Connection():
 		new_dn = "uid=%s,%s" % (new_user.get_username(), users_ou)
 		old_dn = "uid=%s,%s" % (old_user.get_username(), users_ou)
 		
-		ldifwriter.unparse(old_dn, old_user.to_ldif())
-		ldifwriter.unparse(new_dn, new_user.to_ldif())
-		print self.__ldap.modify_s(old_dn, ldap.modlist.modifyModlist(old_user.to_ldif(), new_user.to_ldif()))
-		print ldap.modlist.modifyModlist(old_user.to_ldif(), new_user.to_ldif())
+		self.__ldap.modify_s(old_dn, ldap.modlist.modifyModlist(old_user.to_ldif(), new_user.to_ldif()))
 	
 	def add_group(self, group_name):
 		"""Add a new group"""

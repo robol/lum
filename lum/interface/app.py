@@ -29,10 +29,19 @@ from connect_dialog import lumConnectDialog
 from password_entry import lumPasswordEntry
 from edit_user_dialog import lumEditUserDialog
 from menu_item import lumTreeViewMenu
+from utilities import show_error_dialog, ask_question
+
+lum_application = None
 
 class lumApp(gobject.GObject):
 
     def __init__(self, datapath):
+
+        global lum_application
+        if lum_application is not None:
+            raise LumErorr("Cannot create more that one lum_application!")
+        else:
+            lum_application = self
     
         # Images
         self.__user_image = gtk.Image()
@@ -103,6 +112,9 @@ class lumApp(gobject.GObject):
         
         # Create popup menu
         self.__popup_menu = lumTreeViewMenu(self)
+
+    def __del__(self):
+        lum_application = None
         
     
     def sort(self, model, iter1, iter2):
@@ -198,7 +210,23 @@ class lumApp(gobject.GObject):
             return True
             
         return False
+
+    def __get_selected_user(self):
+        """Obtain usermodel and a treeview iter
+        of the selected user in the treeview"""
+        treeview = self.__builder.get_object("user_treeview")
+        t_model, t_iter = treeview.get_selection().get_selected()
+        if t_iter is None:
+            return (None, None)
+        username = t_model.get_value(t_iter, 0)
+        try:
+            usermodel = self.__user_model_store[username]
+            return (usermodel, t_iter)
+        except KeyError:
+            show_error_dialog("Internal application error! Try reloading user list")
+            return (None, None)
         
+
     def ask_password(self):
         """A simple routine that ask for password, if it is not yet in
         the keyring"""
@@ -247,30 +275,22 @@ class lumApp(gobject.GObject):
             path, col, cellx, celly = pathinfo
             user_treeview.grab_focus()
             user_treeview.set_cursor(path, col, 0)
-            model, t_iter = user_treeview.get_selection().get_selected()
-            if t_iter is None:
-                return
-            username = model.get_value(t_iter, 0)
-            self.__popup_menu.username = username
+            usermodel, t_iter = self.__get_selected_user()
+            self.__popup_menu.username = usermodel.get_username()
             self.__popup_menu.popup(None, None, None, event.button, event.time)
         
     def delete_user(self, menu_item = None):
         """Delete the selected user"""
-        user_model, treeiter = self.__builder.get_object("user_treeview").get_selection().get_selected()
-        if treeiter is None:
-            m = gtk.MessageDialog(type = gtk.MESSAGE_ERROR, buttons = gtk.BUTTONS_OK)
-            m.set_markup("No user selected!")
-            m.set_title("Error")
-            m.run()
-            m.destroy()
-        else:
-            # Get username from the liststore
-            username = user_model.get_value(treeiter, 0)
-            user = self.__user_model_store.pop(username)
-            user_store = self.__builder.get_object("user_store")
-            user_store.remove(user_model.convert_iter_to_child_iter(treeiter))
-            self.__connection.delete_user(user.get_dn())
-            self.statusbar_update("User %s deleted." % username)
+        usermodel, t_iter = self.__get_selected_user()
+
+        # Delete user from internal dictionary
+        self.__user_model_store.remove(usermodel)
+
+        # Delete user from ldap and from the user_store
+        user_store = self.__builder.get_object("user_store")
+        user_store.remove(user_model.convert_iter_to_child_iter(t_iter))
+        self.__connection.delete_user(usermodel.get_dn())
+        self.statusbar_update("User %s deleted." % username)
             
     def forget_password(self, menu_item = None):
         if not gnomekeyring.is_available():
@@ -299,14 +319,10 @@ class lumApp(gobject.GObject):
                 
     def edit_user(self, menu_item = None):
         """Edit selected user"""
-        treeview = self.__builder.get_object("user_treeview")
-        t_model, t_iter = treeview.get_selection().get_selected()
-        if t_iter is None:
+        usermodel, t_iter = self.__get_selected_user()
+        if t_iter is None: 
             return
-        username = t_model.get_value(t_iter, 0)
-        
-        usermodel = self.__user_model_store[username]
-        
+
         # Create the dialog
         ldap_data = usermodel.to_ldif()
         ldap_dn   = "uid=%s,ou=%s" % (usermodel.get_username(), self.__users_ou)
@@ -316,9 +332,19 @@ class lumApp(gobject.GObject):
         new_usermodel = dialog.run()
         if (new_usermodel is not None):
             self.__connection.modify_user(old_user, new_usermodel)
+
+        self.statusbar_update("User %s successfully modified" % new_usermode.get_username())
             
         # TODO: Reload only selected user
         self.reload_user_list()
+
+    def change_password(self):
+        """Change password of selected user"""
+        usermodel, t_iter = self.__get_selected_user()
+        if t_iter is None:
+            return
+
+        # TODO: Implement user change password dialog
             
 
                 
@@ -340,7 +366,9 @@ class lumApp(gobject.GObject):
         
     def create_new_user_dialog(self, menu_item):
         """Create new user"""
-        self.__check_connection()
+        if not self.__check_connection():
+            return None
+
         new_user_dialog = lumNewUserDialog(self.__datapath, self.__connection)
         new_user_dialog.run()
         
@@ -352,8 +380,15 @@ class lumApp(gobject.GObject):
             
     def __check_connection(self):
         if self.__connection is None:
-            self.connect ()
-        return (self.__connection is not None)
+            if ask_question("Not connected to any LDAP server, connect now?"):
+                self.connect ()
+            else:
+                return False
+        if self.__connection is not None:
+            return True
+        else:
+            show_error_dialog("Error while connecting to LDAP server, aborting operation.")
+            return False
         
         
 

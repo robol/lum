@@ -12,14 +12,19 @@ class lumTreeViewMenu(gtk.Menu):
         self.__parent = parent
         self.__edit_button = gtk.MenuItem("Modifica")
         self.__del_button  = gtk.MenuItem("Elimina")
+        self.__pwd_button  = gtk.MenuItem("Cambia password")
+
         self.append (self.__edit_button)
         self.append (self.__del_button)
+        self.append (self.__pwd_button)
         
         self.__edit_button.show()
         self.__del_button.show()
+        self.__pwd_button.show()
         
         self.__edit_button.connect("activate", self.edit)
         self.__del_button.connect("activate",  self.delete)
+        self.__pwd_button.connect("activate",  self.change_password)
         
         self.username = None
         
@@ -29,3 +34,5 @@ class lumTreeViewMenu(gtk.Menu):
     def delete(self, button):
         self.__parent.delete_user()
     
+    def change_password(self, button):
+        self.__parent.change_password()

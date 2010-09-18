@@ -24,7 +24,9 @@ class lumEditUserDialog():
         self.__group_model = self.__builder.get_object("group_model")
                                            
         self.__group_iter = None
-        for gid, group in group_dict.items():
+        group_list = group_dict.items()
+        group_list.sort()
+        for gid, group in group_list:
             it = self.__group_model.append((int(gid), group))
             if gid == usermodel.get_gid():
                 self.__group_iter = it
@@ -39,6 +41,8 @@ class lumEditUserDialog():
         self.__home_entry.set_text(usermodel.get_home())
         
         self.__usermodel = usermodel
+
+        self.__dialog.set_title("Modifica di %s" % usermodel.get_username())
         
         
     def run(self):

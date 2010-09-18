@@ -64,6 +64,8 @@ class lumConnectDialog():
             
             self.__builder.get_object("server_store").append((self.__pixbuf, uri, bind_dn,
                                             base_dn, users_ou, groups_ou))
+
+        self.__dialog.set_title("Connessione al server LDAP")
         
         
     def run(self):

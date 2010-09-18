@@ -8,7 +8,7 @@
 #
 
 from lum.interface.app import lumApp
-import sys, os, gtk
+import sys, os, gtk, signal
 
 if __name__ == "__main__":
     
@@ -26,6 +26,10 @@ if __name__ == "__main__":
     app = lumApp(datapath)
     
     app.start ()
+
+    # Connect signals
+    signal.signal(signal.SIGINT,  lambda x,y : gtk.main_quit())
+    signal.signal(signal.SIGTERM, lambda x,y : gtk.main_quit())
     
     # Start the gtk main loop
     gtk.main()

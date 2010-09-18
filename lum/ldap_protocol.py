@@ -1,12 +1,31 @@
 #
 # -*- coding: utf-8 -*-
 
-import ldap, ldap.modlist, re, ldif, sys
-from exceptions import LumError
+import ldap, ldap.modlist, re, ldif, sys, random
+from crypt import crypt
+from exceptions import *
 from configuration import Configuration
 
 # This is just for debug
 ldifwriter = ldif.LDIFWriter(sys.stdout)
+
+# Utility functions
+def random_string():
+    """Generate a random string to be used as salt
+    for crypt()"""
+    length = 9
+    r = ""
+    possible_letters = [ ".", "/" ]
+    ff = [ "a", "b", "c", "d", "e", "f", "g", "h", "i", 
+           "j", "k", "h", "l", "m", "n", "o", "p", "q", 
+           "r", "s", "t", "u", "v", "w", "x", "y", "z" ]
+    possible_letters.extend(ff)
+    possible_letters.extend(map(lambda x : x.capitalize(), ff))
+    for letter in range(0,length):
+        r += random.choice(possible_letters)
+    return r
+
+    
 
 class UserModel():
 
@@ -16,12 +35,29 @@ class UserModel():
         # ldap data
         self.__ldif = dict ()
         self.__dn = None
+
+        # If ldap_output is a UserModel object use __init__()
+        # as a copy constructor
+        if isinstance(ldap_output, UserModel):
+            dn = ldap_output.get_dn()
+            dictionary = ldap_output.to_ldif()
+
+            # Copy internal objects
+            self.__ldif = dict(dictionary)
+            self.__dn = str(dn)
+
+            # Give reference to originating object away
+            ldap_output = None
     
-        # If ldap_output is passed to UserModel we can assume
+        # If ldap_output is passed to UserModel and is not
+        # a UserModel istance we can assume
         # to build an object representing a real LdapObject
         if ldap_output is not None:
             self.__dn = ldap_output[0]
             self.__ldif = dict(ldap_output[1])
+
+            # If you didn't set a name we can set it
+            # to an empty string
             if not ldap_output[1].has_key("givenName"):
                 self.set_given_name("")
             
@@ -140,6 +176,16 @@ class UserModel():
     def set_shell(self, shell):
         """Set the shell of the user"""
         self.__ldif['loginShell'] = [str(shell)]
+
+    def set_password(self, password, crypt_strategy = "CRYPT"):
+        """Set userPassword field of the user. Only CRYPT
+        is supported at the moment being"""
+        if (crypt_strategy == "CRYPT"):
+            salt = "$1$%s$" % random_string()
+            value = "{CRYPT}" + crypt(password, salt)
+            self.__ldif['userPassword'] = [value]
+        else:
+            raise LumUnsupportedError('$s crypt strategy is not supported')
         
     def __str__(self):
         return "%s a.k.a %s %s" % (self.get_uid(), 
@@ -255,6 +301,23 @@ class Connection():
         """
         self.__ldap.delete_s(user)
 
+    def change_password(self, uid, password):
+        """Change password of selected user. If called when
+        user has no password it will set the passord, making
+        login possible."""
+
+        # Get the user from LDAP
+        user = self.get_user(uid)
+
+        # Create a copy of the old user and change
+        # its password
+        new_user = UserModel(user)
+        new_user.set_password(password)
+
+        # Apply
+        self.modify_user(user, new_user)
+        
+
     def is_user_present(self, username):
         """
         Test if user is present
@@ -306,16 +369,18 @@ class Connection():
         self.__ldap.add_s(ou, ldap.modlist.addModlist(ldif))
         
     def get_user(self, uid):
-        return self.get_users(uid)[0]
+        users = self.__ldap.search_s(self.__users_ou, ldap.SCOPE_ONELEVEL, "uid=%s" % uid)
+        try:
+            return UserModel(users[0])
+        except IndexError:
+            raise LumUserNotFoundError("User %s not found in LDAP" % uid)
 
     def get_users(self, key = None):
         """
         Get user that match the given key or all users if
         key is not given.
         """
-        if key is None:
-            key = "*"
-        msgid = self.__ldap.search(self.__base_dn, ldap.SCOPE_SUBTREE, "uid=%s" % key)
+        msgid = self.__ldap.search(self.__users_ou, ldap.SCOPE_ONELEVEL, "uid=*")
         return UserIterator(self.__ldap, msgid)
         
     def get_groups(self, key = None):

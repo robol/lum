@@ -11,3 +11,9 @@ class LumError(Exception):
 
     def __str__(self):
         return self.__repr__(self)
+
+class LumUserNotFoundError(Exception):
+    pass
+
+class LumUnsupportedError(Exception):
+    pass

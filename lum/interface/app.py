@@ -29,6 +29,7 @@ from connect_dialog import lumConnectDialog
 from password_entry import lumPasswordEntry
 from edit_user_dialog import lumEditUserDialog
 from menu_item import lumTreeViewMenu
+from change_user_password_dialog import lumChangeUserPasswordDialog
 from utilities import show_error_dialog, ask_question
 
 lum_application = None
@@ -344,8 +345,13 @@ class lumApp(gobject.GObject):
         if t_iter is None:
             return
 
-        # TODO: Implement user change password dialog
-            
+        password_dialog = lumChangeUserPasswordDialog(self.__datapath, usermodel.get_username())
+        new_password = password_dialog.run()
+        if new_password is None:
+            return False
+        else:
+            self.__connection.change_password(usermodel.get_username(), new_password)
+            return True
 
                 
     def push_user(self, usermodel):

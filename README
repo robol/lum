@@ -1,9 +1,20 @@
-== Cos'è ==
 
-lum è una semplice interfaccia grafica per gestire
-degli utenti su un server LDAP. 
+LDAP USER MANAGER
+Developed by Leonardo Robol <robol@poisson.phc.unipi.it>
 
-Mira a NON essere uno strumento generale per gestire
-dati su LDAP, ma semplicemente gli utenti, in modo
-da poter essere semplice come la schermata
-Utenti/Gruppi di GNOME.
+1. What is LUM?
+
+LUM, or Ldap User Manager aims to be a simple graphic interface
+to manage Ldap Accounts in the GNOME desktop. 
+It hasn't many feature at the moment being, but is quite
+simple to setup and should bring you everything you need
+if you just add/remove/change users and groups in an LDAP
+directory.
+
+There are not so many tools to achieve this, and many of them
+are web frontend (that I don't like much) or are generic LDAP
+tool. These one are in fact more powerful than LUM as they
+can manage any type of data, but are less simple because you
+have to struggle with LDAP syntax. 
+
+LUM aims to be simple and with an hassle-free setup. 

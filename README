@@ -18,3 +18,29 @@ can manage any type of data, but are less simple because you
 have to struggle with LDAP syntax. 
 
 LUM aims to be simple and with an hassle-free setup. 
+
+2. Hot do I install it?
+
+You can easily run it from its own directory launching
+
+ ./lum.py
+
+It is the only supported method right now, but I will
+include a setup.py as soon as I got it quite stable
+to release a 0.1 tarball.
+
+You will need the following python modules:
+
+ gtk (>= 2.16) , ldap, crypt, gnomekeyring
+
+and If you use Ubuntu or Debian you can get them
+with:
+
+ sudo apt-get install python-gtk2 python-ldap python-crypto python-gnomekeyring
+
+3. Bug reporting
+
+There is not a bug tracker right now, but if you manage
+to find one you can write to me at this address:
+
+ Leonardo Robol <robol@poisson.phc.unipi.it>

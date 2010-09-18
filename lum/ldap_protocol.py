@@ -12,15 +12,21 @@ class UserModel():
 
     def __init__(self, ldap_output = None):
 
+        # Create an internatl dictionary that represent
+        # ldap data
         self.__ldif = dict ()
         self.__dn = None
-        
+    
+        # If ldap_output is passed to UserModel we can assume
+        # to build an object representing a real LdapObject
         if ldap_output is not None:
             self.__dn = ldap_output[0]
             self.__ldif = dict(ldap_output[1])
             if not ldap_output[1].has_key("givenName"):
                 self.set_given_name("")
-                
+            
+        # If that is not the case we shall give the object
+        # a Class that usually represent users in Ldap databases
         else:
             self.__ldif['objectClass'] = ["inetOrgPerson",
                                           "posixAccount",
@@ -28,52 +34,76 @@ class UserModel():
                                           "shadowAccount",
                                           "organizationalPerson",
                                           "top"]
-                                          
-    
-
-
+                                                  
     def __getitem__(self, item):
+        """Deprecated method to get item from the
+        internal dictionary"""
         return self.__ldif[item]
         
     def __setitem__(self, item, value):
+        """Deprecated method to set item in the
+        internal dictionary"""
         self.__ldif[item] = value
     
     def get_dn(self):
+        """Return the distinguished name of the object.
+        Need some work to do the right thing."""
         return self.__dn
         
     def set_dn(self, dn):
+        """Set Distinguished name of the Ldap object"""
         self.__dn = dn
     
     def get_uid(self):
+        """Return the uid number of the user, or 0
+        if it is not set"""
         if self.__ldif.has_key("uidNumber"):
             return self.__ldif['uidNumber'][0]
         else:
             return str(0)
         
     def set_uid(self, uid):
+        """Set uid of the user. Setting it to zero
+        means to autodetermine the first free uid when
+        necessary"""
         self.__ldif['uidNumber'] = [str(uid)]
         
     def get_username(self):
+        """Return username of the user"""
         return self.__ldif['uid'][0]
     
     def set_username(self, username):
+        """Set username of the user"""
         self.__ldif['uid'] = [str(username)]
         
     def get_gid(self):
+        """Return gid number. You shall use the
+        method ldap_protocol.group_from_gid to
+        get the group_name"""
         return self.__ldif['gidNumber'][0]
         
     def set_gid(self, gid):
+        """Set the gid of the user"""
         self.__ldif['gidNumber'] = [str(gid)]
     
     def get_given_name(self):
+        """Get the given name (i.e. the name)
+        of the user"""
         return self.__ldif['givenName'][0]
         
     def get_gecos(self):
+        """Return a complete name of the user, such
+        as Tim Smith"""
         return self.__ldif['gecos'][0]
         
     def set_given_name(self, given_name):
+        """Set the given name (i.e. the name) of the
+        user"""
         self.__ldif['givenName'] = [str(given_name)]
         self.__ldif['cn'] = [str(given_name)]
+
+        # Gecos shall be in the form name + " " + surname, but
+        # if surname is not set, set only the name
         if self.__ldif.has_key("sn"):
             self.__ldif['gecos'] = [str(self.__ldif['givenName'][0] + " " + 
                                     self.__ldif['sn'][0]).strip()]
@@ -81,10 +111,14 @@ class UserModel():
             self.__ldif['gecos'] = [str(given_name)]
     
     def get_surname(self):
+        """Return surname of the user"""
         return self.__ldif['sn'][0]
         
     def set_surname(self, sn):
+        """Set surname of the user"""
         self.__ldif['sn'] = [str(sn)]
+
+        # Set gecos, including name if it is available
         if self.__ldif.has_key("givenName"):
             self.__ldif['gecos'] = [str(self.__ldif['givenName'][0] + " " + 
                                     self.__ldif['sn'][0]).strip()]
@@ -92,15 +126,19 @@ class UserModel():
             self.__ldif['gecos'] = [str(sn)]
         
     def get_home(self):
+        """Returns home directory of the user"""
         return self.__ldif['homeDirectory'][0]
         
     def set_home(self, home):
+        """Set home directory of the user"""
         self.__ldif['homeDirectory'] = [str(home)]
         
     def get_shell(self):
+        """Return the shell of the user"""
         return self.__ldif['loginShell'][0]
     
     def set_shell(self, shell):
+        """Set the shell of the user"""
         self.__ldif['loginShell'] = [str(shell)]
         
     def __str__(self):
@@ -108,6 +146,8 @@ class UserModel():
                                     self.get_given_name(), 
                                     self.get_surname())
     def to_ldif(self):
+        """Return a dictionary to be passed to ldap
+        methods"""
         return dict(self.__ldif)
 
 
@@ -163,7 +203,7 @@ class Connection():
         self.__ldap.add_s(dn, ldap.modlist.addModlist(user.to_ldif()))
             
     def modify_user(self, old_user, new_user):
-        
+        """Modify existing user (i.e. replace it)"""
         users_ou = self.__users_ou
         if not self.is_present(users_ou):
             raise LumError("users organizational unit not present!")
@@ -175,7 +215,7 @@ class Connection():
         self.__ldap.modify_s(old_dn, ldap.modlist.modifyModlist(old_user.to_ldif(), new_user.to_ldif()))
     
     def add_group(self, group_name):
-        """Add a new group"""
+        """Add a new group, autodetermining gid."""
         groups_ou = self.__groups_ou
         
         dn = "cn=%s,%s" % (group_name, groups_ou)
@@ -288,6 +328,9 @@ class Connection():
         return ret
         
 class UserIterator():
+    """UserIterator permits to extract ldap query
+    result while the ldap_module is still searching, 
+    reducing search time"""
 
     def __init__(self, ldap_connection, msgid):
         self.__ldap = ldap_connection

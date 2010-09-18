@@ -12,9 +12,9 @@ connection = ldap.Connection(password)
 print "done"
 
 if connection.is_user_present("test"):
-	print "> Deleting test user...",
-	connection.delete_user("test")
-	print "done"
+    print "> Deleting test user...",
+    connection.delete_user("test")
+    print "done"
 
 print "> Adding a test user...",
 user = ldap.UserModel(username = "test", given_name = "Leonardo", sn="Robol",
@@ -27,7 +27,7 @@ user_list = connection.get_users()
 print "done."
 print "Printing user list:"
 for user in user_list:
-	print "  " + str(user)
+    print "  " + str(user)
 
 print "> Adding user test2...",
 user = ldap.UserModel(username = "test2", given_name = "Pirlotti", sn="Robol", uid=1002, gid=1001)
@@ -39,7 +39,7 @@ user_list = connection.get_users()
 print "done."
 print "Printing new user list:"
 for user in user_list:
-	print "  " + str(user)
+    print "  " + str(user)
 
 print "> Removing user test2...",
 connection.delete_user("test2")

@@ -44,6 +44,7 @@
                     <property name="model">server_store</property>
                     <property name="headers_clickable">False</property>
                     <property name="search_column">1</property>
+                    <signal name="row_activated" handler="on_treeview_row_activated"/>
                     <child>
                       <object class="GtkTreeViewColumn" id="treeviewcolumn1">
                         <property name="resizable">True</property>

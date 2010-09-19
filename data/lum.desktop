@@ -1,0 +1,12 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Encoding=UTF-8
+Name=Lum
+Comment[it]=Gestire gli account su LDAP
+Comment[en]=Manage LDAP account with an easy interface
+Exec=lum.py
+Terminal=false
+Type=Application
+StartupNotify=false
+Categories=GNOME;Utility
+Icon=lum

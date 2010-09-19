@@ -19,7 +19,7 @@ class lumUserPasswordDialog():
             password_2 = self.__builder.get_object("password_entry_2").get_text()
             
             if password_1 != password_2:
-                show_error_dialog(_("Not matching passwords, retry.")
+                show_error_dialog(_("Not matching passwords, retry."))
                 return self.run()
             else:
                 self.__dialog.destroy()

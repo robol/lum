@@ -8,7 +8,10 @@ import gtk, gettext, locale, os
 # Internationalization support
 gettext.bindtextdomain("lum", "locale")
 gettext.textdomain("lum")
-locale.setlocale(locale.LC_ALL, locale.getdefaultlocale())
+try:
+    locale.setlocale(locale.LC_ALL, locale.getdefaultlocale())
+except locale.Error:
+    print "Unable to load localized strings"
 _ = gettext.gettext
 
 package_dir = os.path.realpath(os.path.join(__file__,
@@ -45,7 +48,10 @@ def create_builder(interface_file):
     right interface file"""
     
     builder = gtk.Builder()
-    builder.set_translation_domain("lum")
+    try:
+        builder.set_translation_domain("lum")
+    except locale.Error:
+        print "Unable to load localized interface"
 
     builder.add_from_file(os.path.join(package_dir,
                                        os.path.join("ui", interface_file)))

@@ -160,7 +160,7 @@
                 <property name="visible">True</property>
                 <property name="xalign">1</property>
                 <property name="xpad">5</property>
-                <property name="label" translatable="yes">Cerca utente:</property>
+                <property name="label" translatable="yes">Find user:</property>
               </object>
               <packing>
                 <property name="expand">False</property>

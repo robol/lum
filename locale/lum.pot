@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-19 16:39+0200\n"
+"POT-Creation-Date: 2010-09-19 16:52+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -64,51 +64,51 @@ msgstr ""
 msgid "Error while connecting to LDAP server, aborting operation."
 msgstr ""
 
-#: lum/interface/change_user_password_dialog.py:28
+#: lum/interface/change_user_password_dialog.py:26
 msgid "Maximum number of tries reached, aborting."
 msgstr ""
 
-#: lum/interface/change_user_password_dialog.py:39
+#: lum/interface/change_user_password_dialog.py:37
 msgid "Passwords do not match"
 msgstr ""
 
-#: lum/interface/connect_dialog.py:50
+#: lum/interface/connect_dialog.py:48
 msgid "Insert bind dn"
 msgstr ""
 
-#: lum/interface/connect_dialog.py:56
+#: lum/interface/connect_dialog.py:54
 msgid "Insert base dn"
 msgstr ""
 
-#: lum/interface/connect_dialog.py:60 lum/interface/connect_dialog.py:111
+#: lum/interface/connect_dialog.py:58 lum/interface/connect_dialog.py:109
 msgid "Insert users organizational unit"
 msgstr ""
 
-#: lum/interface/connect_dialog.py:64
+#: lum/interface/connect_dialog.py:62
 msgid "Insert groups organizational unit"
 msgstr ""
 
-#: lum/interface/connect_dialog.py:69
+#: lum/interface/connect_dialog.py:67
 msgid "Connection to LDAP server"
 msgstr ""
 
-#: lum/interface/connect_dialog.py:109
+#: lum/interface/connect_dialog.py:107
 msgid "Insert server name"
 msgstr ""
 
-#: lum/interface/connect_dialog.py:110
+#: lum/interface/connect_dialog.py:108
 msgid "Insert bind DN"
 msgstr ""
 
-#: lum/interface/connect_dialog.py:110
+#: lum/interface/connect_dialog.py:108
 msgid "Insert base DN"
 msgstr ""
 
-#: lum/interface/connect_dialog.py:112
+#: lum/interface/connect_dialog.py:110
 msgid "Insert group organizational unit"
 msgstr ""
 
-#: lum/interface/edit_user_dialog.py:46
+#: lum/interface/edit_user_dialog.py:44
 #, python-format
 msgid "Editing user %s"
 msgstr ""
@@ -125,22 +125,22 @@ msgstr ""
 msgid "Change password"
 msgstr ""
 
-#: lum/interface/new_user_dialog.py:64
+#: lum/interface/new_user_dialog.py:63
 #, python-format
 msgid "User %s is present, not overwriting it!"
 msgstr ""
 
-#: lum/interface/new_user_dialog.py:70
+#: lum/interface/new_user_dialog.py:69
 #, python-format
 msgid "The group %s doesn't exists, create it now?"
 msgstr ""
 
-#: lum/interface/user_password_dialog.py:16
+#: lum/interface/user_password_dialog.py:14
 #, python-format
 msgid "Set password for user %s"
 msgstr ""
 
-#: lum/interface/user_password_dialog.py:24
+#: lum/interface/user_password_dialog.py:22
 msgid "Not matching passwords, retry."
 msgstr ""
 
@@ -157,7 +157,7 @@ msgid "Official website"
 msgstr ""
 
 #: tmp/LumApp.ui.h:1
-msgid "Cerca utente:"
+msgid "Find user:"
 msgstr ""
 
 #: tmp/LumApp.ui.h:2

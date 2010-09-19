@@ -1,131 +1,133 @@
-#: lum/interface/app.py:158
+#: src/lum/interface/app.py:158
 #, python-format
 msgid "Connecting to %s."
 msgstr "Connessione a %s"
 
-#: lum/interface/app.py:181
-msgid "Error while connecting to the server, check your credentials and your "
+#: src/lum/interface/app.py:181
+msgid ""
+"Error while connecting to the server, check your credentials and your "
 "connectivity"
-msgstr "Errore durante la connessione al server, controllarele proprie credenziali e "
+msgstr ""
+"Errore durante la connessione al server, controllarele proprie credenziali e "
 "la connessione alla rete"
 
-#: lum/interface/app.py:185
+#: src/lum/interface/app.py:185
 msgid "Connection failed."
 msgstr "Connessione fallita."
 
-#: lum/interface/app.py:189
+#: src/lum/interface/app.py:189
 #, python-format
 msgid "Connection to %s initialized"
 msgstr "Connessiona a %s inizializzata"
 
-#: lum/interface/app.py:220
+#: src/lum/interface/app.py:220
 msgid "Internal application error! Try reloading user list"
-msgstr "Errore interno nell'applicazione! Provare a "
-"ricaricare la lista degli utenti"
+msgstr ""
+"Errore interno nell'applicazione! Provare a ricaricare la lista degli utenti"
 
-#: lum/interface/app.py:287
+#: src/lum/interface/app.py:287
 #, python-format
 msgid "User %s deleted."
 msgstr "Utente %s cancellato."
 
-#: lum/interface/app.py:330
+#: src/lum/interface/app.py:330
 #, python-format
 msgid "User %s successfully modified"
 msgstr "Modifica dell'utente %s terminata con successo"
 
-#: lum/interface/app.py:377
+#: src/lum/interface/app.py:377
 #, python-format
 msgid "User %s created correctly."
 msgstr "Creazione dell'utente %s terminata con successo."
 
-#: lum/interface/app.py:382
+#: src/lum/interface/app.py:382
 msgid "Not connected to any LDAP server, connect now?"
-msgstr "Non  stata effettuata la connessione ad alcun server LDAP, "
-"connettersi ora?"
+msgstr ""
+"Non è stata effettuata la connessione ad alcun server LDAP, connettersi ora?"
 
-#: lum/interface/app.py:389
+#: src/lum/interface/app.py:389
 msgid "Error while connecting to LDAP server, aborting operation."
-msgstr "Errore durante la connessione al server LDAP, annullamento "
-"dell'operazione."
+msgstr ""
+"Errore durante la connessione al server LDAP, annullamento dell'operazione."
 
-#: lum/interface/change_user_password_dialog.py:26
+#: src/lum/interface/change_user_password_dialog.py:26
 msgid "Maximum number of tries reached, aborting."
 msgstr " stato raggiungo il numero massimo di tentativi."
 
-#: lum/interface/change_user_password_dialog.py:37
+#: src/lum/interface/change_user_password_dialog.py:37
 msgid "Passwords do not match"
 msgstr "Le password non coincidono"
 
-#: lum/interface/connect_dialog.py:48
+#: src/lum/interface/connect_dialog.py:48
 msgid "Insert bind dn"
 msgstr "Inserire bind_dn"
 
-#: lum/interface/connect_dialog.py:54
+#: src/lum/interface/connect_dialog.py:54
 msgid "Insert base dn"
 msgstr "Inserire base_dn"
 
-#: lum/interface/connect_dialog.py:58 lum/interface/connect_dialog.py:109
+#: src/lum/interface/connect_dialog.py:58
+#: src/lum/interface/connect_dialog.py:109
 msgid "Insert users organizational unit"
 msgstr "Inserire l'organizational unit degli utenti"
 
-#: lum/interface/connect_dialog.py:62
-#, fuzzy
+#: src/lum/interface/connect_dialog.py:62
 msgid "Insert groups organizational unit"
 msgstr "Inserire l'organizational unit dei gruppi"
 
-#: lum/interface/connect_dialog.py:67
+#: src/lum/interface/connect_dialog.py:67
 msgid "Connection to LDAP server"
 msgstr "Connessione al server LDAP"
 
-#: lum/interface/connect_dialog.py:107
+#: src/lum/interface/connect_dialog.py:107
 msgid "Insert server name"
 msgstr "Inserire il nome del server"
 
-#: lum/interface/connect_dialog.py:108
+#: src/lum/interface/connect_dialog.py:108
 msgid "Insert bind DN"
 msgstr "Inserire il bind DN"
 
-#: lum/interface/connect_dialog.py:108
+#: src/lum/interface/connect_dialog.py:108
 msgid "Insert base DN"
 msgstr "Inserire il base DN"
 
-#: lum/interface/connect_dialog.py:110
+#: src/lum/interface/connect_dialog.py:110
 msgid "Insert group organizational unit"
 msgstr "Inserire l'organizational unit dei gruppi"
 
-#: lum/interface/edit_user_dialog.py:44
+#: src/lum/interface/edit_user_dialog.py:44
 #, python-format
 msgid "Editing user %s"
 msgstr "Modifica dell'utente %s"
 
-#: lum/interface/menu_item.py:14
+#: src/lum/interface/menu_item.py:14
 msgid "Edit"
 msgstr "Modifica"
 
-#: lum/interface/menu_item.py:15
+#: src/lum/interface/menu_item.py:15
 msgid "Delete"
 msgstr "Elimina"
 
-#: lum/interface/menu_item.py:16 tmp/LumChangeUserPasswordDialog.ui.h:3
+#: src/lum/interface/menu_item.py:16 tmp/LumChangeUserPasswordDialog.ui.h:3
 msgid "Change password"
 msgstr "Cambia password"
 
-#: lum/interface/new_user_dialog.py:63
+#: src/lum/interface/new_user_dialog.py:63
 #, python-format
 msgid "User %s is present, not overwriting it!"
 msgstr "L'utente %s  gi presente e quindi non verr sovrascritto!"
 
-#: lum/interface/new_user_dialog.py:69
+#: src/lum/interface/new_user_dialog.py:69
 #, python-format
 msgid "The group %s doesn't exists, create it now?"
 msgstr "Il gruppo %s non esiste, crearlo ora?"
 
-#: lum/interface/user_password_dialog.py:14
+#: src/lum/interface/user_password_dialog.py:14
 #, python-format
 msgid "Set password for user %s"
 msgstr "Imposta la password per l'utente %s"
 
-#: lum/interface/user_password_dialog.py:22
+#: src/lum/interface/user_password_dialog.py:22
 msgid "Not matching passwords, retry."
 msgstr "Le password non coincidono, riprovare."
 

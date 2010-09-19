@@ -57,6 +57,7 @@ setup(name='Lum',
       package_dir = { 'lum': 'src/lum', 'lum.interface': 'src/lum/interface' },
       scripts = ['lum'],
       package_data = {'lum.interface': ['ui/*.ui', 'ui/*.png']},
-      data_files = [('share/applications', ['data/lum.desktop'])],
+      data_files = [('share/applications', ['data/lum.desktop']),
+                    ('share/pixmaps', ['data/lum.svg'])],
       cmdclass={'install_data': InstallData},
      )

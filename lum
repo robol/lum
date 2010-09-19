@@ -6,9 +6,26 @@
 # Author: Leonardo Robol <robol@poisson.phc.unipi.it>
 # Date: 5 Sep 2010
 #
+#
+
+
+# Try to find modules
+import sys
+
+# This is valid if we are in the local directory, so 
+# if a module can be found there, that should be used
+sys.path.insert(0, "src")
+
+# We should try to append site-packages for Ubuntu users
+# that installed via setup.py install
+additional_paths = []
+for p in sys.path:
+    if "dist-packages" in p:
+        additional_paths.append(p.replace("dist-packages", "site-packages"))
+sys.path.extend(additional_paths)
 
 from lum.interface.app import lumApp
-import sys, os, gtk, signal
+import os, gtk, signal
 from lum.interface.utilities import _
 
 if __name__ == "__main__":

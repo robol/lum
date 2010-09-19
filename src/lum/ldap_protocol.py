@@ -106,7 +106,10 @@ class UserModel():
         
     def get_username(self):
         """Return username of the user"""
-        return self.__ldif['uid'][0]
+        try:
+            return self.__ldif['uid'][0]
+        except KeyError:
+            return ""
     
     def set_username(self, username):
         """Set username of the user"""
@@ -116,7 +119,10 @@ class UserModel():
         """Return gid number. You shall use the
         method ldap_protocol.group_from_gid to
         get the group_name"""
-        return self.__ldif['gidNumber'][0]
+        try:
+            return self.__ldif['gidNumber'][0]
+        except KeyError:
+            return ""
         
     def set_gid(self, gid):
         """Set the gid of the user"""
@@ -125,12 +131,18 @@ class UserModel():
     def get_given_name(self):
         """Get the given name (i.e. the name)
         of the user"""
-        return self.__ldif['givenName'][0]
+        try:
+            return self.__ldif['givenName'][0]
+        except KeyError:
+            return ""
         
     def get_gecos(self):
         """Return a complete name of the user, such
         as Tim Smith"""
-        return self.__ldif['gecos'][0]
+        try:
+            return self.__ldif['gecos'][0]
+        except KeyError:
+            return ""
         
     def set_given_name(self, given_name):
         """Set the given name (i.e. the name) of the
@@ -148,7 +160,10 @@ class UserModel():
     
     def get_surname(self):
         """Return surname of the user"""
-        return self.__ldif['sn'][0]
+        try:
+            return self.__ldif['sn'][0]
+        except KeyError:
+            return ""
         
     def set_surname(self, sn):
         """Set surname of the user"""
@@ -163,7 +178,10 @@ class UserModel():
         
     def get_home(self):
         """Returns home directory of the user"""
-        return self.__ldif['homeDirectory'][0]
+        try:
+            return self.__ldif['homeDirectory'][0]
+        except KeyError:
+            return ""
         
     def set_home(self, home):
         """Set home directory of the user"""
@@ -171,11 +189,24 @@ class UserModel():
         
     def get_shell(self):
         """Return the shell of the user"""
-        return self.__ldif['loginShell'][0]
+        try:
+            return self.__ldif['loginShell'][0]
+        except KeyError:
+            return ""
     
     def set_shell(self, shell):
         """Set the shell of the user"""
         self.__ldif['loginShell'] = [str(shell)]
+
+    def get_email(self):
+        """Return user email"""
+        try:
+            return self.__ldif['mail'][0]
+        except KeyError:
+            return ""
+
+    def set_email(self, email):
+        self.__ldif['mail'] = [str(email)]
 
     def set_password(self, password, crypt_strategy = "CRYPT"):
         """Set userPassword field of the user. Only CRYPT

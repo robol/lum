@@ -50,6 +50,7 @@ class lumNewUserDialog():
             sn = self.__builder.get_object("sn_entry").get_text()
             home = self.__builder.get_object("home_entry").get_text()
             shell = self.__builder.get_object("shell_entry").get_text()
+            email = self.__builder.get_object("email_entry").get_text()
             
             # Set uid to 0 so ldap_protocol will autodetermine the first free uid
             # when creating the user
@@ -80,6 +81,7 @@ class lumNewUserDialog():
             self.usermodel.set_given_name(givenName)
             self.usermodel.set_home(home)
             self.usermodel.set_shell(shell)
+            self.usermodel.set_email(email)
             
         self.__window.destroy()
         

@@ -38,6 +38,8 @@ class lumEditUserDialog():
         self.__shell_entry.set_text(usermodel.get_shell())
         self.__home_entry = self.__builder.get_object("home_entry")
         self.__home_entry.set_text(usermodel.get_home())
+        self.__email_entry = self.__builder.get_object("email_entry")
+        self.__email_entry.set_text(usermodel.get_email())
         
         self.__usermodel = usermodel
 
@@ -57,6 +59,7 @@ class lumEditUserDialog():
             self.__usermodel.set_surname(self.__sn_entry.get_text())
             self.__usermodel.set_home(self.__home_entry.get_text())
             self.__usermodel.set_shell(self.__shell_entry.get_text())
+            self.__usermodel.set_email(self.__email_entry.get_text())
             
             # Get group id
             it = self.__group_combobox.get_active_iter()

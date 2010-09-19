@@ -3,7 +3,7 @@
 #
 
 import gtk, os
-from utilities import show_error_dialog
+from utilities import show_error_dialog, _
 
 # Maximum number of tries for the password
 max_tries = 3
@@ -25,7 +25,7 @@ class lumChangeUserPasswordDialog():
     def run(self):
 
         if self.__count > max_tries:
-            show_error_dialog("Maximum number of tries reached, aborting.")
+            show_error_dialog(_("Maximum number of tries reached, aborting."))
             return None
 
         # References to password entries
@@ -36,7 +36,7 @@ class lumChangeUserPasswordDialog():
             pw1 = pe1.get_text()
             pw2 = pe2.get_text()
             if (pw1 != pw2):
-                show_error_dialog("Passwords do not match")
+                show_error_dialog(_("Passwords do not match"))
                 self.__dialog.destroy()
                 dialog = lumChangeUserPasswordDialog(self.__datapath, self.__username, self.__count)
                 return dialog.run()

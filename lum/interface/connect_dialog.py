@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import gtk, os
+from utilities import _
 
 class lumConnectDialog():
 
@@ -38,7 +39,7 @@ class lumConnectDialog():
         self.__builder.connect_signals(signals)
         
         image = gtk.Image()
-        image.set_from_file(os.path.join("ui/server.png"))
+        image.set_from_file(os.path.join(datapath, "ui/server.png"))
         self.__pixbuf = image.get_pixbuf()
         
         self.__credentials = (None, None, None, None, None)
@@ -46,26 +47,26 @@ class lumConnectDialog():
         
         for uri in self.__configuration.sections():
             if not self.__configuration.has_option(uri, "bind_dn"):
-                bind_dn = "Insert bind dn"
+                bind_dn = _("Insert bind dn")
             else:
                 bind_dn = self.__configuration.get(uri, "bind_dn")
             if self.__configuration.has_option(uri, "base_dn"):
                 base_dn = self.__configuration.get(uri, "base_dn")
             else:
-                base_dn = "Insert base dn"
+                base_dn = _("Insert base dn")
             if self.__configuration.has_option(uri, "users_ou"):
                 users_ou = self.__configuration.get(uri, "users_ou")
             else:
-                users_ou = "Insert users organizational unit"
+                users_ou = _("Insert users organizational unit")
             if self.__configuration.has_option(uri, "groups_ou"):
                 groups_ou = self.__configuration.get(uri, "groups_ou")
             else:
-                groups_ou = "Inserto groups organizational unit"
+                groups_ou = _("Inserto groups organizational unit")
             
             self.__builder.get_object("server_store").append((self.__pixbuf, uri, bind_dn,
                                             base_dn, users_ou, groups_ou))
 
-        self.__dialog.set_title("Connessione al server LDAP")
+        self.__dialog.set_title(_("Connection to LDAP server"))
         
         
     def run(self):
@@ -105,8 +106,10 @@ class lumConnectDialog():
     def on_add_button_cb(self, button):
         """Add a new entry"""
         t_model = self.__builder.get_object("server_store")
-        t_model.append((self.__pixbuf, "Insert server name", "Insert bind DN", "Insert base DN",
-                "Insert users organizational unit", "Insert group organizational unit"))
+        t_model.append((self.__pixbuf, _("Insert server name"), 
+                        _("Insert bind DN"), _("Insert base DN"),
+                        _("Insert users organizational unit"), 
+                        _("Insert group organizational unit")))
         
         
     def on_uri_edited(self, renderer, path, new_text):

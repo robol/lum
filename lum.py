@@ -11,20 +11,11 @@ from lum.interface.app import lumApp
 import sys, os, gtk, signal
 
 if __name__ == "__main__":
+
+    # Create main application
+    app = lumApp()
     
-    # Determine if we are running a local version of the script
-    # or if we are installed system-wide
-    datapath = os.path.dirname(sys.argv[0])
-    if os.path.exists(os.path.join(datapath, "ui/LumApp.ui")):
-        pass
-    elif os.path.exists("/usr/share/lum/ui/lumApp.ui"):
-        datapath = "/usr/share/lum/"
-    else:
-        sys.stderr.write ("Interface files not found, aborting\n")
-        sys.exit(1)
-    
-    app = lumApp(datapath)
-    
+    # and start it
     app.start ()
 
     # Connect signals

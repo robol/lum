@@ -364,7 +364,6 @@ class Connection():
         ldif = dict()
         ldif['objectClass'] = ['organizationalUnit',
                                'top']
-        print ou
         ldif['ou'] = [re.findall(r"ou=(\w+),", ou)[0]]
         self.__ldap.add_s(ou, ldap.modlist.addModlist(ldif))
         

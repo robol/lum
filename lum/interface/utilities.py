@@ -2,7 +2,14 @@
 # -*- coding: utf-8 -*-
 #
 
-import gtk
+import gtk, gettext, locale
+
+
+# Internationalization support
+gettext.bindtextdomain("lum", "locale")
+gettext.textdomain("lum")
+locale.setlocale(locale.LC_ALL, locale.getdefaultlocale())
+_ = gettext.gettext
 
 def show_error_dialog(message):
     """Show an error dialog with message"""

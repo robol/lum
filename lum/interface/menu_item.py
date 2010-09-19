@@ -3,6 +3,7 @@
 #
 
 import gtk
+from utilities import _
 
 class lumTreeViewMenu(gtk.Menu):
 
@@ -10,9 +11,9 @@ class lumTreeViewMenu(gtk.Menu):
         gtk.Menu.__init__(self)
         
         self.__parent = parent
-        self.__edit_button = gtk.MenuItem("Modifica")
-        self.__del_button  = gtk.MenuItem("Elimina")
-        self.__pwd_button  = gtk.MenuItem("Cambia password")
+        self.__edit_button = gtk.MenuItem(_("Edit"))
+        self.__del_button  = gtk.MenuItem(_("Delete"))
+        self.__pwd_button  = gtk.MenuItem(_("Change password"))
 
         self.append (self.__edit_button)
         self.append (self.__del_button)

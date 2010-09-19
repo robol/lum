@@ -3,6 +3,7 @@
 
 import gtk, os
 from lum.ldap_protocol import UserModel
+from utilities import _, show_error_dialog, ask_question
 
 class lumNewUserDialog():
     
@@ -60,31 +61,19 @@ class lumNewUserDialog():
             
             # Check if this is an existent user
             if self.__connection.is_present("uid=%s" % username):
-                
-                m = gtk.MessageDialog(type = gtk.MESSAGE_ERROR, buttons = gtk.BUTTONS_OK)
-                m.set_markup("L'utente è già esistente!\nSpecificare un diverso username")
-                m.set_title("Utente già esistente")
-                m.run()
-                m.destroy ()
+                show_error_dialog(_("User %s is present, not overwriting it!") % username)
                 self.__window.destroy()
                 return None
             
             # Ask the user if he intended to create the group
             if gid is None:
-                messageDialog = gtk.MessageDialog(type = gtk.MESSAGE_QUESTION, buttons = gtk.BUTTONS_YES_NO)
-                messageDialog.set_markup("Il gruppo <b>%s</b> non esiste, crearlo ora?" % group)
-                messageDialog.set_title("Gruppo inesistente")
-                
-                if messageDialog.run() == gtk.RESPONSE_YES:
+                if ask_question(_("The group %s doesn't exists, create it now?") % group):
                     self.__connection.add_group(group)
                     gid = self.__connection.gid_from_group(group)
                 else:
                     self.__window.destroy()
                     return None
                 
-                messageDialog.destroy()
-                
-            
             self.usermodel = UserModel()
             self.usermodel.set_username(username)
             self.usermodel.set_gid(gid)

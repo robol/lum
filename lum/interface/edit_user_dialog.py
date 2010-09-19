@@ -3,6 +3,7 @@
 #
 
 import gtk, os, gobject
+from utilities import _
 
 class lumEditUserDialog():
 
@@ -42,7 +43,7 @@ class lumEditUserDialog():
         
         self.__usermodel = usermodel
 
-        self.__dialog.set_title("Modifica di %s" % usermodel.get_username())
+        self.__dialog.set_title(_("Editing user %s") % usermodel.get_username())
         
         
     def run(self):

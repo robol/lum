@@ -30,13 +30,16 @@ from password_entry import lumPasswordEntry
 from edit_user_dialog import lumEditUserDialog
 from menu_item import lumTreeViewMenu
 from change_user_password_dialog import lumChangeUserPasswordDialog
-from utilities import show_error_dialog, ask_question
+from utilities import _, show_error_dialog, ask_question
 
 lum_application = None
 
 class lumApp(gobject.GObject):
 
-    def __init__(self, datapath):
+    def __init__(self):
+
+        # Quite a hack, but working
+        self.__datapath = os.path.realpath(os.path.join(__file__, os.path.pardir))
 
         global lum_application
         if lum_application is not None:
@@ -46,7 +49,7 @@ class lumApp(gobject.GObject):
     
         # Images
         self.__user_image = gtk.Image()
-        self.__user_image.set_from_file(os.path.join(datapath, "ui/user.png"))
+        self.__user_image.set_from_file(os.path.join(self.__datapath, "ui/user.png"))
         self.__user_image = self.__user_image.get_pixbuf()
         
         # Internal space for usermodels
@@ -57,13 +60,9 @@ class lumApp(gobject.GObject):
         # Gobject constructor
         gobject.GObject.__init__ (self)
         
-        # Save datapath that we will need to call all
-        # other Dialogs
-        self.__datapath = datapath
-        
         # Load interface file
         self.__builder = gtk.Builder()
-        self.__builder.add_from_file(os.path.join(datapath, "ui/LumApp.ui"))
+        self.__builder.add_from_file(os.path.join(self.__datapath, "ui/LumApp.ui"))
         
         # Load main window
         self.__window = self.__builder.get_object("window")
@@ -157,7 +156,7 @@ class lumApp(gobject.GObject):
         password = self.ask_password()
         
         # Notify user of connection
-        self.statusbar_update("Connecting to %s." % uri)
+        self.statusbar_update(_("Connecting to %s.") % uri)
         
         # Try to connect to the specified server
         try:
@@ -179,21 +178,16 @@ class lumApp(gobject.GObject):
             except:
             
                 # You had two opportunities, and both are gone. 
-                error_box = gtk.MessageDialog(parent = self.__window, type = gtk.MESSAGE_ERROR,
-                                    buttons = gtk.BUTTONS_OK)
-            
-                error_box.set_title("Errore di connessione")
-                error_box.set_markup("Errore durante la connessione al server, controllare le proprie credenziali!")
-                error_box.run()
-                error_box.destroy()
+                show_error_dialog(
+                    _("Error while connecting to the server, check your credentials and your connectivity"))
                 
                 self.__connection = None
                 
-                self.statusbar_update("Connection failed.")
+                self.statusbar_update(_("Connection failed."))
         
         # If you managed to open the connection, show it in the status bar
         if self.__connection is not None:
-            self.statusbar_update("Connection to %s initialized" % uri)
+            self.statusbar_update(_("Connection to %s initialized") % uri)
             self.reload_user_list()
             
     def filter_users(self, model, treeiter, user_data = None):
@@ -224,7 +218,7 @@ class lumApp(gobject.GObject):
             usermodel = self.__user_model_store[username]
             return (usermodel, t_iter)
         except KeyError:
-            show_error_dialog("Internal application error! Try reloading user list")
+            show_error_dialog(_("Internal application error! Try reloading user list"))
             return (None, None)
         
 
@@ -291,7 +285,7 @@ class lumApp(gobject.GObject):
         user_store = self.__builder.get_object("user_store")
         user_store.remove(user_model.convert_iter_to_child_iter(t_iter))
         self.__connection.delete_user(usermodel.get_dn())
-        self.statusbar_update("User %s deleted." % username)
+        self.statusbar_update(_("User %s deleted.") % username)
             
     def forget_password(self, menu_item = None):
         if not gnomekeyring.is_available():
@@ -334,7 +328,7 @@ class lumApp(gobject.GObject):
         if (new_usermodel is not None):
             self.__connection.modify_user(old_user, new_usermodel)
 
-        self.statusbar_update("User %s successfully modified" % new_usermode.get_username())
+        self.statusbar_update(_("User %s successfully modified") % new_usermode.get_username())
             
         # TODO: Reload only selected user
         self.reload_user_list()
@@ -381,19 +375,19 @@ class lumApp(gobject.GObject):
         if new_user_dialog.usermodel is not None:
             if self.__check_connection():
                 self.__connection.add_user(new_user_dialog.usermodel)
-                self.statusbar_update("User %s created correctly." % new_user_dialog.usermodel.get_username())
+                self.statusbar_update(_("User %s created correctly.") % new_user_dialog.usermodel.get_username())
         self.reload_user_list()
             
     def __check_connection(self):
         if self.__connection is None:
-            if ask_question("Not connected to any LDAP server, connect now?"):
+            if ask_question(_("Not connected to any LDAP server, connect now?")):
                 self.connect ()
             else:
                 return False
         if self.__connection is not None:
             return True
         else:
-            show_error_dialog("Error while connecting to LDAP server, aborting operation.")
+            show_error_dialog(_("Error while connecting to LDAP server, aborting operation."))
             return False
         
         

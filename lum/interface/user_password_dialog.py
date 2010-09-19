@@ -3,6 +3,7 @@
 #
 
 import gtk, os
+from utilies import _, show_error_dialog
 
 class lumUserPasswordDialog():
 
@@ -12,7 +13,7 @@ class lumUserPasswordDialog():
         self.__builder.add_from_file(os.path.join(datapath,
                         "ui/LumUserPasswordDialog.ui"))
         self.__dialog = self.__builder.get_object("dialog")
-        self.__dialog.set_title("Imposta password per %s" % username)
+        self.__dialog.set_title(_("Set password for user %s") % username)
     def run(self):
         
         if self.__dialog.run():
@@ -20,10 +21,7 @@ class lumUserPasswordDialog():
             password_2 = self.__builder.get_object("password_entry_2").get_text()
             
             if password_1 != password_2:
-                mb = gtk.MessageDialog(buttons = gtk.BUTTONS_OK, type = gtk.MESSAGE_ERROR)
-                mb.set_markup("Le password inserite non coincidono. Ritentare.")
-                mb.run ()
-                mb.destroy()
+                show_error_dialog(_("Not matching passwords, retry.")
                 return self.run()
             else:
                 self.__dialog.destroy()

@@ -327,7 +327,7 @@ class lumApp(gobject.GObject):
         if (new_usermodel is not None):
             self.__connection.modify_user(old_user, new_usermodel)
 
-            self.statusbar_update(_("User %s successfully modified") % new_usermode.get_username())
+            self.statusbar_update(_("User %s successfully modified") % new_usermodel.get_username())
             
             # TODO: Reload only selected user
             self.reload_user_list()

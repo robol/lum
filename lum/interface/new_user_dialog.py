@@ -3,7 +3,7 @@
 
 import gtk, os
 from lum.ldap_protocol import UserModel
-from utilities import _, show_error_dialog, ask_question
+from utilities import _, show_error_dialog, ask_question, create_builder
 
 class lumNewUserDialog():
     
@@ -13,8 +13,7 @@ class lumNewUserDialog():
             'on_username_entry_focus_out_event':     self.guess_params,
         }
         
-        self.__builder = gtk.Builder()
-        self.__builder.add_from_file(os.path.join(datapath, "ui/LumNewUserDialog.ui"))
+        self.__builder = create_builder("LumNewUserDialog.ui")
         
         self.__window = self.__builder.get_object("new_user_dialog")
         self.__connection = connection

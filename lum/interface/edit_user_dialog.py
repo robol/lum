@@ -3,15 +3,13 @@
 #
 
 import gtk, os, gobject
-from utilities import _
+from utilities import _, create_builder
 
 class lumEditUserDialog():
 
     def __init__(self, datapath, usermodel, group_dict):
         
-        self.__builder = gtk.Builder()
-        self.__builder.add_from_file(os.path.join(datapath,
-                                                  "ui/LumEditUserDialog.ui"))
+        self.__builder = create_builder("LumEditUserDialog.ui")
         self.__dialog = self.__builder.get_object("dialog")
         
         self.__givenname_entry = self.__builder.get_object("givenname_entry")

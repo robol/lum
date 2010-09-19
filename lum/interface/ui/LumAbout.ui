@@ -11,11 +11,12 @@
     <property name="version">0.1-alpha</property>
     <property name="copyright" translatable="yes">Copyright (C) 2010 Leonardo Robol</property>
     <property name="website">http://poisson.phc.unipi.it/~robol/wordpress/programmi/lum/</property>
-    <property name="website_label" translatable="yes">Sito web ufficiale</property>
+    <property name="website_label" translatable="yes">Official website</property>
     <property name="license" translatable="yes">Lum is freesoftware; </property>
     <property name="authors">Leonardo Robol</property>
     <property name="documenters">Leonardo Robol</property>
-    <property name="artists">Icone: http://www.famfamfam.com/lab/icons/silk/</property>
+    <property name="artists">Icons from http://www.famfamfam.com/lab/icons/silk/</property>
+    <property name="logo">lum_logo.png</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">
         <property name="visible">True</property>

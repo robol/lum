@@ -9,6 +9,7 @@
 
 from lum.interface.app import lumApp
 import sys, os, gtk, signal
+from lum.interface.utilities import _
 
 if __name__ == "__main__":
 

@@ -20,6 +20,7 @@
   </object>
   <object class="GtkDialog" id="connect_dialog">
     <property name="border_width">5</property>
+    <property name="title" translatable="yes">Connect to LDAP server</property>
     <property name="default_width">600</property>
     <property name="default_height">400</property>
     <property name="type_hint">normal</property>

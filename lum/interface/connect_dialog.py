@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import gtk, os
-from utilities import _
+from utilities import _, create_builder
 
 class lumConnectDialog():
 
@@ -11,9 +11,7 @@ class lumConnectDialog():
     
         self.__configuration = configuration
         
-        self.__builder = gtk.Builder()
-        self.__builder.add_from_file(os.path.join(datapath, "ui/LumConnectDialog.ui"))
-        
+        self.__builder = create_builder("LumConnectDialog.ui")
         self.__dialog = self.__builder.get_object("connect_dialog")
         
         for renderer in ('uri_cellrenderer', 'bind_dn_cellrenderer', 'base_dn_cellrenderer',
@@ -61,7 +59,7 @@ class lumConnectDialog():
             if self.__configuration.has_option(uri, "groups_ou"):
                 groups_ou = self.__configuration.get(uri, "groups_ou")
             else:
-                groups_ou = _("Inserto groups organizational unit")
+                groups_ou = _("Insert groups organizational unit")
             
             self.__builder.get_object("server_store").append((self.__pixbuf, uri, bind_dn,
                                             base_dn, users_ou, groups_ou))

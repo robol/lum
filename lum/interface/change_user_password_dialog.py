@@ -3,7 +3,7 @@
 #
 
 import gtk, os
-from utilities import show_error_dialog, _
+from utilities import show_error_dialog, _, create_builder
 
 # Maximum number of tries for the password
 max_tries = 3
@@ -13,9 +13,7 @@ class lumChangeUserPasswordDialog():
     def __init__(self, datapath, username, count = 0):
 
         # Create the gtk Builder and load interface files
-        self.__builder = gtk.Builder()
-        self.__builder.add_from_file(os.path.join(datapath, 
-                                                  "ui/LumChangeUserPasswordDialog.ui"))
+        self.__builder = create_builder("LumChangeUserPasswordDialog.ui")
 
         self.__dialog = self.__builder.get_object("dialog")
         self.__datapath = datapath

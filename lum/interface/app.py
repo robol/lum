@@ -30,7 +30,7 @@ from password_entry import lumPasswordEntry
 from edit_user_dialog import lumEditUserDialog
 from menu_item import lumTreeViewMenu
 from change_user_password_dialog import lumChangeUserPasswordDialog
-from utilities import _, show_error_dialog, ask_question
+from utilities import _, show_error_dialog, ask_question, create_builder
 
 lum_application = None
 
@@ -61,8 +61,7 @@ class lumApp(gobject.GObject):
         gobject.GObject.__init__ (self)
         
         # Load interface file
-        self.__builder = gtk.Builder()
-        self.__builder.add_from_file(os.path.join(self.__datapath, "ui/LumApp.ui"))
+        self.__builder = create_builder("LumApp.ui")
         
         # Load main window
         self.__window = self.__builder.get_object("window")
@@ -328,10 +327,10 @@ class lumApp(gobject.GObject):
         if (new_usermodel is not None):
             self.__connection.modify_user(old_user, new_usermodel)
 
-        self.statusbar_update(_("User %s successfully modified") % new_usermode.get_username())
+            self.statusbar_update(_("User %s successfully modified") % new_usermode.get_username())
             
-        # TODO: Reload only selected user
-        self.reload_user_list()
+            # TODO: Reload only selected user
+            self.reload_user_list()
 
     def change_password(self):
         """Change password of selected user"""

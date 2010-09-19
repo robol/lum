@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import gtk, os
+from utilities import create_builder
 
 class lumAbout():
     
     def __init__(self, datapath):
     
-        self.__builder = gtk.Builder()
-        self.__builder.add_from_file(os.path.join(datapath, "ui/LumAbout.ui"))
+        self.__builder = create_builder("LumAbout.ui")
         
         dialog = self.__builder.get_object("about_dialog")
         

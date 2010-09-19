@@ -4,7 +4,7 @@
   <!-- interface-naming-policy project-wide -->
   <object class="GtkDialog" id="new_user_dialog">
     <property name="border_width">5</property>
-    <property name="title" translatable="yes">Creazione nuovo utente</property>
+    <property name="title" translatable="yes">Create new user</property>
     <property name="type_hint">normal</property>
     <property name="has_separator">False</property>
     <child internal-child="vbox">
@@ -14,6 +14,34 @@
         <child>
           <object class="GtkVBox" id="vbox1">
             <property name="visible">True</property>
+            <child>
+              <object class="GtkHBox" id="hbox1">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkImage" id="image1">
+                    <property name="visible">True</property>
+                    <property name="stock">gtk-new</property>
+                    <property name="icon-size">5</property>
+                  </object>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label8">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Insert new user data and press Save when done</property>
+                    <property name="wrap">True</property>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
             <child>
               <object class="GtkFrame" id="frame1">
                 <property name="visible">True</property>
@@ -34,7 +62,7 @@
                             <property name="visible">True</property>
                             <property name="xalign">0</property>
                             <property name="xpad">5</property>
-                            <property name="label" translatable="yes">Nome</property>
+                            <property name="label" translatable="yes">Name</property>
                           </object>
                           <packing>
                             <property name="top_attach">1</property>
@@ -60,7 +88,7 @@
                             <property name="visible">True</property>
                             <property name="xalign">0</property>
                             <property name="xpad">5</property>
-                            <property name="label" translatable="yes">Cognome</property>
+                            <property name="label" translatable="yes">Surname</property>
                           </object>
                           <packing>
                             <property name="top_attach">2</property>
@@ -86,7 +114,7 @@
                             <property name="visible">True</property>
                             <property name="xalign">0</property>
                             <property name="xpad">5</property>
-                            <property name="label" translatable="yes">Nome utente</property>
+                            <property name="label" translatable="yes">Username</property>
                           </object>
                         </child>
                         <child>
@@ -108,14 +136,14 @@
                 <child type="label">
                   <object class="GtkLabel" id="label1">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">&lt;b&gt;Dati personali&lt;/b&gt;</property>
+                    <property name="label" translatable="yes">&lt;b&gt;Personal data&lt;/b&gt;</property>
                     <property name="use_markup">True</property>
                   </object>
                 </child>
               </object>
               <packing>
                 <property name="padding">5</property>
-                <property name="position">0</property>
+                <property name="position">1</property>
               </packing>
             </child>
             <child>
@@ -187,7 +215,7 @@
                             <property name="visible">True</property>
                             <property name="xalign">0</property>
                             <property name="xpad">5</property>
-                            <property name="label" translatable="yes">Gruppo</property>
+                            <property name="label" translatable="yes">Group</property>
                           </object>
                           <packing>
                             <property name="top_attach">2</property>
@@ -214,14 +242,14 @@
                 <child type="label">
                   <object class="GtkLabel" id="label2">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">&lt;b&gt;Impostazioni di sistema&lt;/b&gt;</property>
+                    <property name="label" translatable="yes">&lt;b&gt;System settings&lt;/b&gt;</property>
                     <property name="use_markup">True</property>
                   </object>
                 </child>
               </object>
               <packing>
                 <property name="padding">6</property>
-                <property name="position">1</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>

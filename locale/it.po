@@ -1,0 +1,276 @@
+#: lum/interface/app.py:158
+#, python-format
+msgid "Connecting to %s."
+msgstr "Connessione a %s"
+
+#: lum/interface/app.py:181
+msgid ""
+"Error while connecting to the server, check your credentials and your "
+"connectivity"
+msgstr ""
+"Errore durante la connessione al server, controllarele proprie credenziali e "
+"la connessione alla rete"
+
+#: lum/interface/app.py:185
+msgid "Connection failed."
+msgstr "Connessione fallita."
+
+#: lum/interface/app.py:189
+#, python-format
+msgid "Connection to %s initialized"
+msgstr "Connessiona a %s inizializzata"
+
+#: lum/interface/app.py:220
+msgid "Internal application error! Try reloading user list"
+msgstr ""
+"Errore interno nell'applicazione! Provare a ricare la listadegli utenti"
+
+#: lum/interface/app.py:287
+#, python-format
+msgid "User %s deleted."
+msgstr "Utente %s cancellato."
+
+#: lum/interface/app.py:330
+#, python-format
+msgid "User %s successfully modified"
+msgstr "Modifica dell'utente %s terminata con successo"
+
+#: lum/interface/app.py:377
+#, python-format
+msgid "User %s created correctly."
+msgstr "Creazione dell'utente %s terminata con successo."
+
+#: lum/interface/app.py:382
+msgid "Not connected to any LDAP server, connect now?"
+msgstr ""
+"Non  stata effettuata la connessione ad alcun server LDAP,connettersi ora?"
+
+#: lum/interface/app.py:389
+msgid "Error while connecting to LDAP server, aborting operation."
+msgstr ""
+"Errore durante la connessione al server LDAP, annullamentodell'operazione."
+
+#: lum/interface/change_user_password_dialog.py:28
+msgid "Maximum number of tries reached, aborting."
+msgstr " stato raggiungo il numero massimo di tentativi."
+
+#: lum/interface/change_user_password_dialog.py:39
+msgid "Passwords do not match"
+msgstr "Le password non coincidono"
+
+#: lum/interface/connect_dialog.py:50
+msgid "Insert bind dn"
+msgstr "Inserire bind_dn"
+
+#: lum/interface/connect_dialog.py:56
+msgid "Insert base dn"
+msgstr "Inserire base_dn"
+
+#: lum/interface/connect_dialog.py:60 lum/interface/connect_dialog.py:111
+msgid "Insert users organizational unit"
+msgstr "Inserire l'organizational unit degli utenti"
+
+#: lum/interface/connect_dialog.py:64
+#, fuzzy
+msgid "Insert groups organizational unit"
+msgstr "Inserire l'organizational unit dei gruppi"
+
+#: lum/interface/connect_dialog.py:69
+msgid "Connection to LDAP server"
+msgstr "Connessione al server LDAP"
+
+#: lum/interface/connect_dialog.py:109
+msgid "Insert server name"
+msgstr "Inserire il nome del server"
+
+#: lum/interface/connect_dialog.py:110
+msgid "Insert bind DN"
+msgstr "Inserire il bind DN"
+
+#: lum/interface/connect_dialog.py:110
+msgid "Insert base DN"
+msgstr "Inserire il base DN"
+
+#: lum/interface/connect_dialog.py:112
+msgid "Insert group organizational unit"
+msgstr "Inserire l'organizational unit dei gruppi"
+
+#: lum/interface/edit_user_dialog.py:46
+#, python-format
+msgid "Editing user %s"
+msgstr "Modifica dell'utente %s"
+
+#: lum/interface/menu_item.py:14
+msgid "Edit"
+msgstr "Modifica"
+
+#: lum/interface/menu_item.py:15
+msgid "Delete"
+msgstr "Elimina"
+
+#: lum/interface/menu_item.py:16 tmp/LumChangeUserPasswordDialog.ui.h:3
+msgid "Change password"
+msgstr "Cambia password"
+
+#: lum/interface/new_user_dialog.py:64
+#, python-format
+msgid "User %s is present, not overwriting it!"
+msgstr "L'utente %s  gi presente e quindi non verr sovrascritto!"
+
+#: lum/interface/new_user_dialog.py:70
+#, python-format
+msgid "The group %s doesn't exists, create it now?"
+msgstr "Il gruppo %s non esiste, crearlo ora?"
+
+#: lum/interface/user_password_dialog.py:16
+#, python-format
+msgid "Set password for user %s"
+msgstr "Imposta la password per l'utente %s"
+
+#: lum/interface/user_password_dialog.py:24
+msgid "Not matching passwords, retry."
+msgstr "Le password non coincidono, riprovare."
+
+#: tmp/LumAbout.ui.h:1
+msgid "Copyright (C) 2010 Leonardo Robol"
+msgstr "Copyright (C) 2010 Leonardo Robol"
+
+#: tmp/LumAbout.ui.h:2
+msgid "Lum is freesoftware; "
+msgstr "Lum  software libero; "
+
+#: tmp/LumAbout.ui.h:3
+msgid "Official website"
+msgstr "Sito ufficiale"
+
+#: tmp/LumApp.ui.h:1
+msgid "Cerca utente:"
+msgstr "Cerca utente:"
+
+#: tmp/LumApp.ui.h:2
+msgid "Forget password"
+msgstr "Dimentica password"
+
+#: tmp/LumApp.ui.h:3
+msgid "Ldap User Manager"
+msgstr "Ldap User Manager"
+
+#: tmp/LumApp.ui.h:4
+msgid "Reload user list"
+msgstr "Aggiorna lista utenti"
+
+#: tmp/LumApp.ui.h:5
+msgid "_File"
+msgstr "_File"
+
+#: tmp/LumApp.ui.h:6
+msgid "_Help"
+msgstr "_Help"
+
+#: tmp/LumApp.ui.h:7
+msgid "_User"
+msgstr "_Utente"
+
+#: tmp/LumChangeUserPasswordDialog.ui.h:1
+msgid "CRYPT"
+msgstr "CRYPT"
+
+#: tmp/LumChangeUserPasswordDialog.ui.h:2
+msgid "Change or set user password"
+msgstr "Cambia o imposta la password dell'utente"
+
+#: tmp/LumChangeUserPasswordDialog.ui.h:4
+msgid "Encryption strategy"
+msgstr "Metodo di crittazione"
+
+#: tmp/LumChangeUserPasswordDialog.ui.h:5
+msgid "Password"
+msgstr "Password"
+
+#: tmp/LumChangeUserPasswordDialog.ui.h:6
+msgid "Repeat Password"
+msgstr "Ripetere password"
+
+#: tmp/LumConnectDialog.ui.h:1
+msgid "Connect to LDAP server"
+msgstr "Connetti al server LDAP"
+
+#: tmp/LumEditUserDialog.ui.h:1
+msgid "Edit user"
+msgstr "Modifica utente"
+
+#: tmp/LumEditUserDialog.ui.h:2
+msgid "Edit user data and confirm to save in the LDAP tree"
+msgstr "Modifica i dati dell'utente e conferma per salvare neldatabase di LDAP"
+
+#: tmp/LumEditUserDialog.ui.h:3
+msgid "Group:"
+msgstr "Gruppo:"
+
+#: tmp/LumEditUserDialog.ui.h:4
+msgid "Home:"
+msgstr "Home:"
+
+#: tmp/LumEditUserDialog.ui.h:5
+msgid "Name:"
+msgstr "Nome:"
+
+#: tmp/LumEditUserDialog.ui.h:6
+msgid "Shell:"
+msgstr "Shell:"
+
+#: tmp/LumEditUserDialog.ui.h:7
+msgid "Surname:"
+msgstr "Cognome:"
+
+#: tmp/LumNewUserDialog.ui.h:1
+msgid "/bin/bash"
+msgstr "/bin/bash"
+
+#: tmp/LumNewUserDialog.ui.h:2
+msgid "<b>Personal data</b>"
+msgstr "<b>Dati personali</b>"
+
+#: tmp/LumNewUserDialog.ui.h:3
+msgid "<b>System settings</b>"
+msgstr "<b>Configurazione di sistema</b>"
+
+#: tmp/LumNewUserDialog.ui.h:4
+msgid "Create new user"
+msgstr "Crea nuovo utente"
+
+#: tmp/LumNewUserDialog.ui.h:5
+msgid "Group"
+msgstr "Gruppo"
+
+#: tmp/LumNewUserDialog.ui.h:6
+msgid "Home directory"
+msgstr "Home directory"
+
+#: tmp/LumNewUserDialog.ui.h:7
+msgid "Insert new user data and press Save when done"
+msgstr "Inserire i dati del nuovo utente e premere Salva per confermare"
+
+#: tmp/LumNewUserDialog.ui.h:8
+msgid "Name"
+msgstr "Nome"
+
+#: tmp/LumNewUserDialog.ui.h:9
+msgid "Shell"
+msgstr "Shell"
+
+#: tmp/LumNewUserDialog.ui.h:10
+msgid "Surname"
+msgstr "Cognome"
+
+#: tmp/LumNewUserDialog.ui.h:11
+msgid "Username"
+msgstr "Nome utente"
+
+#: tmp/LumPasswordEntry.ui.h:1
+msgid "Insert password to authenticate on LDAP server:"
+msgstr "Inserire la password per autenticarsi sul server LDAP:"
+
+#: tmp/LumPasswordEntry.ui.h:2
+msgid "Password requested"
+msgstr "Password richiesta"

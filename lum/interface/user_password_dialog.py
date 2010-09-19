@@ -3,15 +3,13 @@
 #
 
 import gtk, os
-from utilies import _, show_error_dialog
+from utilies import _, show_error_dialog, create_builder
 
 class lumUserPasswordDialog():
 
     def __init__(self, datapath, username):
         
-        self.__builder = gtk.Builder()
-        self.__builder.add_from_file(os.path.join(datapath,
-                        "ui/LumUserPasswordDialog.ui"))
+        self.__builder = create_builder("ui/LumUserPasswordDialog.ui")
         self.__dialog = self.__builder.get_object("dialog")
         self.__dialog.set_title(_("Set password for user %s") % username)
     def run(self):

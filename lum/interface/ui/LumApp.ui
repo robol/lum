@@ -46,7 +46,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="reload_user_list_menu_item">
-                        <property name="label" translatable="yes">Aggiorna lista utenti</property>
+                        <property name="label" translatable="yes">Reload user list</property>
                         <property name="visible">True</property>
                         <property name="image">image1</property>
                         <property name="use_stock">False</property>
@@ -55,19 +55,11 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="forget_password_menu_item">
-                        <property name="label" translatable="yes">Dimentica password</property>
+                        <property name="label" translatable="yes">Forget password</property>
                         <property name="visible">True</property>
                         <property name="image">image2</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_forget_password_menu_item_activate"/>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkImageMenuItem" id="preferences_menu_item">
-                        <property name="label">gtk-preferences</property>
-                        <property name="visible">True</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
                       </object>
                     </child>
                     <child>
@@ -91,7 +83,7 @@
             <child>
               <object class="GtkMenuItem" id="menuitem2">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">_Utente</property>
+                <property name="label" translatable="yes">_User</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu" id="menu2">
@@ -100,6 +92,7 @@
                       <object class="GtkImageMenuItem" id="new_user_menu_item">
                         <property name="label">gtk-new</property>
                         <property name="visible">True</property>
+                        <property name="use_action_appearance">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="on_new_user_menu_item_activate"/>
@@ -135,7 +128,7 @@
             <child>
               <object class="GtkMenuItem" id="menuitem4">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">A_iuto</property>
+                <property name="label" translatable="yes">_Help</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu" id="menu3">

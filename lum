@@ -26,9 +26,12 @@ sys.path.extend(additional_paths)
 
 from lum.interface.app import lumApp
 import os, gtk, signal
-from lum.interface.utilities import _
+import lum.interface.utilities
 
 if __name__ == "__main__":
+
+    # Init translation support
+    lum.interface.utilities.gettext_init()
 
     # Create main application
     app = lumApp()

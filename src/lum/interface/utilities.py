@@ -3,19 +3,20 @@
 #
 
 import gtk, gettext, locale, os
-
-
-# Internationalization support
-gettext.bindtextdomain("lum", "locale")
-gettext.textdomain("lum")
-try:
-    locale.setlocale(locale.LC_ALL, locale.getdefaultlocale())
-except locale.Error:
-    print "Unable to load localized strings"
+    
 _ = gettext.gettext
-
 package_dir = os.path.realpath(os.path.join(__file__,
                                            os.path.pardir))
+
+
+def gettext_init():
+    gettext.bindtextdomain("lum", "locale")
+    gettext.textdomain("lum")
+    try:
+        locale.setlocale(locale.LC_ALL, locale.getdefaultlocale())
+    except locale.Error:
+        print "Unable to load localized strings"
+
 
 def show_error_dialog(message):
     """Show an error dialog with message"""

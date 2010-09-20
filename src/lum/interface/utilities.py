@@ -16,9 +16,9 @@ def gettext_init():
                                                  os.path.pardir,
                                                  os.path.pardir,
                                                  "locale"))
-        print gettext.bindtextdomain("lum", lum_base)
+        gettext.bindtextdomain("lum", lum_base)
     else:
-        print gettext.bindtextdomain("lum")
+        gettext.bindtextdomain("lum")
 
     gettext.textdomain("lum")
     try:

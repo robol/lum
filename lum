@@ -31,7 +31,7 @@ import lum.interface.utilities
 if __name__ == "__main__":
 
     # Init translation support
-    print lum.interface.utilities.gettext_init()
+    lum.interface.utilities.gettext_init()
 
     # Create main application
     app = lumApp()

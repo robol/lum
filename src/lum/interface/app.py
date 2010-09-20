@@ -209,13 +209,20 @@ class lumApp(gobject.GObject):
         """Obtain usermodel and a treeview iter
         of the selected user in the treeview"""
         treeview = self.__builder.get_object("user_treeview")
+
+        # t_model is the GtkTreeFilterModel, and t_iter refers to it
         t_model, t_iter = treeview.get_selection().get_selected()
+
         if t_iter is None:
+            # Then nothing is selected and we can return None
             return (None, None)
         username = t_model.get_value(t_iter, 0)
         try:
             usermodel = self.__user_model_store[username]
-            return (usermodel, t_iter)
+            
+            # t_model is the GtkTreeFilterModel - or something similar
+            # so we need to return the user_store iter that is his child.
+            return (usermodel, t_model.convert_iter_to_child_iter(t_iter))
         except KeyError:
             show_error_dialog(_("Internal application error! Try reloading user list"))
             return (None, None)
@@ -278,13 +285,13 @@ class lumApp(gobject.GObject):
         usermodel, t_iter = self.__get_selected_user()
 
         # Delete user from internal dictionary
-        self.__user_model_store.remove(usermodel)
+        self.__user_model_store.pop(usermodel.get_username())
 
         # Delete user from ldap and from the user_store
         user_store = self.__builder.get_object("user_store")
-        user_store.remove(user_model.convert_iter_to_child_iter(t_iter))
+        user_store.remove(t_iter)
         self.__connection.delete_user(usermodel.get_dn())
-        self.statusbar_update(_("User %s deleted.") % username)
+        self.statusbar_update(_("User %s deleted.") % usermodel.get_username())
             
     def forget_password(self, menu_item = None):
         if not gnomekeyring.is_available():

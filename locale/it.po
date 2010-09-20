@@ -1,3 +1,15 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-09-20 10:26+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Leonardo Robol <robol@poisson.phc.unipi.it>\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
 #: src/lum/interface/app.py:158
 #, python-format
 msgid "Connecting to %s."
@@ -8,22 +20,23 @@ msgid ""
 "Error while connecting to the server, check your credentials and your "
 "connectivity"
 msgstr ""
-"Errore durante la connessione al server, controllarele proprie credenziali e "
+"Errore durante la connessione al server, controllare "
+"le proprie credenziali e "
 "la connessione alla rete"
 
 #: src/lum/interface/app.py:185
 msgid "Connection failed."
-msgstr "Connessione fallita."
+msgstr "Connessione a %s fallita."
 
 #: src/lum/interface/app.py:189
 #, python-format
 msgid "Connection to %s initialized"
-msgstr "Connessiona a %s inizializzata"
+msgstr "Connessione a %s inizializzata"
 
 #: src/lum/interface/app.py:220
 msgid "Internal application error! Try reloading user list"
-msgstr ""
-"Errore interno nell'applicazione! Provare a ricaricare la lista degli utenti"
+msgstr "Errore interno nell'applicazione! "
+"Provare a ricaricare la lista degli utenti"
 
 #: src/lum/interface/app.py:287
 #, python-format
@@ -42,17 +55,17 @@ msgstr "Creazione dell'utente %s terminata con successo."
 
 #: src/lum/interface/app.py:382
 msgid "Not connected to any LDAP server, connect now?"
-msgstr ""
-"Non è stata effettuata la connessione ad alcun server LDAP, connettersi ora?"
+msgstr "Non è stata effettuata la connessione ad alcun "
+"server LDAP, connettersi ora?"
 
 #: src/lum/interface/app.py:389
 msgid "Error while connecting to LDAP server, aborting operation."
-msgstr ""
-"Errore durante la connessione al server LDAP, annullamento dell'operazione."
+msgstr "Errore durante la connessione al server LDAP, "
+"annullamento dell'operazione."
 
 #: src/lum/interface/change_user_password_dialog.py:26
 msgid "Maximum number of tries reached, aborting."
-msgstr " stato raggiungo il numero massimo di tentativi."
+msgstr "È stato raggiungo il numero massimo di tentativi."
 
 #: src/lum/interface/change_user_password_dialog.py:37
 msgid "Passwords do not match"
@@ -95,7 +108,7 @@ msgstr "Inserire il base DN"
 msgid "Insert group organizational unit"
 msgstr "Inserire l'organizational unit dei gruppi"
 
-#: src/lum/interface/edit_user_dialog.py:44
+#: src/lum/interface/edit_user_dialog.py:46
 #, python-format
 msgid "Editing user %s"
 msgstr "Modifica dell'utente %s"
@@ -112,12 +125,12 @@ msgstr "Elimina"
 msgid "Change password"
 msgstr "Cambia password"
 
-#: src/lum/interface/new_user_dialog.py:63
+#: src/lum/interface/new_user_dialog.py:64
 #, python-format
 msgid "User %s is present, not overwriting it!"
-msgstr "L'utente %s  gi presente e quindi non verr sovrascritto!"
+msgstr "L'utente %s è già presente e quindi non verrà sovrascritto!"
 
-#: src/lum/interface/new_user_dialog.py:69
+#: src/lum/interface/new_user_dialog.py:70
 #, python-format
 msgid "The group %s doesn't exists, create it now?"
 msgstr "Il gruppo %s non esiste, crearlo ora?"
@@ -137,7 +150,7 @@ msgstr "Copyright (C) 2010 Leonardo Robol"
 
 #: tmp/LumAbout.ui.h:2
 msgid "Lum is freesoftware; "
-msgstr "Lum  software libero; "
+msgstr "Lum è software libero; "
 
 #: tmp/LumAbout.ui.h:3
 msgid "Official website"
@@ -204,22 +217,26 @@ msgid "Edit user data and confirm to save in the LDAP tree"
 msgstr "Modifica i dati dell'utente e conferma per salvare neldatabase di LDAP"
 
 #: tmp/LumEditUserDialog.ui.h:3
+msgid "Email:"
+msgstr ""
+
+#: tmp/LumEditUserDialog.ui.h:4
 msgid "Group:"
 msgstr "Gruppo:"
 
-#: tmp/LumEditUserDialog.ui.h:4
+#: tmp/LumEditUserDialog.ui.h:5
 msgid "Home:"
 msgstr "Home:"
 
-#: tmp/LumEditUserDialog.ui.h:5
+#: tmp/LumEditUserDialog.ui.h:6
 msgid "Name:"
 msgstr "Nome:"
 
-#: tmp/LumEditUserDialog.ui.h:6
+#: tmp/LumEditUserDialog.ui.h:7
 msgid "Shell:"
 msgstr "Shell:"
 
-#: tmp/LumEditUserDialog.ui.h:7
+#: tmp/LumEditUserDialog.ui.h:8
 msgid "Surname:"
 msgstr "Cognome:"
 
@@ -240,30 +257,34 @@ msgid "Create new user"
 msgstr "Crea nuovo utente"
 
 #: tmp/LumNewUserDialog.ui.h:5
+msgid "Email"
+msgstr ""
+
+#: tmp/LumNewUserDialog.ui.h:6
 msgid "Group"
 msgstr "Gruppo"
 
-#: tmp/LumNewUserDialog.ui.h:6
+#: tmp/LumNewUserDialog.ui.h:7
 msgid "Home directory"
 msgstr "Home directory"
 
-#: tmp/LumNewUserDialog.ui.h:7
+#: tmp/LumNewUserDialog.ui.h:8
 msgid "Insert new user data and press Save when done"
 msgstr "Inserire i dati del nuovo utente e premere Salva per confermare"
 
-#: tmp/LumNewUserDialog.ui.h:8
+#: tmp/LumNewUserDialog.ui.h:9
 msgid "Name"
 msgstr "Nome"
 
-#: tmp/LumNewUserDialog.ui.h:9
+#: tmp/LumNewUserDialog.ui.h:10
 msgid "Shell"
 msgstr "Shell"
 
-#: tmp/LumNewUserDialog.ui.h:10
+#: tmp/LumNewUserDialog.ui.h:11
 msgid "Surname"
 msgstr "Cognome"
 
-#: tmp/LumNewUserDialog.ui.h:11
+#: tmp/LumNewUserDialog.ui.h:12
 msgid "Username"
 msgstr "Nome utente"
 

@@ -8,13 +8,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-19 18:50+0200\n"
+"POT-Creation-Date: 2010-09-20 10:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: src/lum/interface/app.py:158
@@ -109,7 +109,7 @@ msgstr ""
 msgid "Insert group organizational unit"
 msgstr ""
 
-#: src/lum/interface/edit_user_dialog.py:44
+#: src/lum/interface/edit_user_dialog.py:46
 #, python-format
 msgid "Editing user %s"
 msgstr ""
@@ -126,12 +126,12 @@ msgstr ""
 msgid "Change password"
 msgstr ""
 
-#: src/lum/interface/new_user_dialog.py:63
+#: src/lum/interface/new_user_dialog.py:64
 #, python-format
 msgid "User %s is present, not overwriting it!"
 msgstr ""
 
-#: src/lum/interface/new_user_dialog.py:69
+#: src/lum/interface/new_user_dialog.py:70
 #, python-format
 msgid "The group %s doesn't exists, create it now?"
 msgstr ""
@@ -218,22 +218,26 @@ msgid "Edit user data and confirm to save in the LDAP tree"
 msgstr ""
 
 #: tmp/LumEditUserDialog.ui.h:3
-msgid "Group:"
+msgid "Email:"
 msgstr ""
 
 #: tmp/LumEditUserDialog.ui.h:4
-msgid "Home:"
+msgid "Group:"
 msgstr ""
 
 #: tmp/LumEditUserDialog.ui.h:5
-msgid "Name:"
+msgid "Home:"
 msgstr ""
 
 #: tmp/LumEditUserDialog.ui.h:6
-msgid "Shell:"
+msgid "Name:"
 msgstr ""
 
 #: tmp/LumEditUserDialog.ui.h:7
+msgid "Shell:"
+msgstr ""
+
+#: tmp/LumEditUserDialog.ui.h:8
 msgid "Surname:"
 msgstr ""
 
@@ -254,30 +258,34 @@ msgid "Create new user"
 msgstr ""
 
 #: tmp/LumNewUserDialog.ui.h:5
-msgid "Group"
+msgid "Email"
 msgstr ""
 
 #: tmp/LumNewUserDialog.ui.h:6
-msgid "Home directory"
+msgid "Group"
 msgstr ""
 
 #: tmp/LumNewUserDialog.ui.h:7
-msgid "Insert new user data and press Save when done"
+msgid "Home directory"
 msgstr ""
 
 #: tmp/LumNewUserDialog.ui.h:8
-msgid "Name"
+msgid "Insert new user data and press Save when done"
 msgstr ""
 
 #: tmp/LumNewUserDialog.ui.h:9
-msgid "Shell"
+msgid "Name"
 msgstr ""
 
 #: tmp/LumNewUserDialog.ui.h:10
-msgid "Surname"
+msgid "Shell"
 msgstr ""
 
 #: tmp/LumNewUserDialog.ui.h:11
+msgid "Surname"
+msgstr ""
+
+#: tmp/LumNewUserDialog.ui.h:12
 msgid "Username"
 msgstr ""
 

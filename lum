@@ -10,11 +10,11 @@
 
 
 # Try to find modules
-import sys
+import sys, os
 
 # This is valid if we are in the local directory, so 
 # if a module can be found there, that should be used
-sys.path.insert(0, "src")
+sys.path.insert(0, os.path.join(sys.argv[0][:-3], "src"))
 
 # We should try to append site-packages for Ubuntu users
 # that installed via setup.py install
@@ -25,13 +25,13 @@ for p in sys.path:
 sys.path.extend(additional_paths)
 
 from lum.interface.app import lumApp
-import os, gtk, signal
+import gtk, signal
 import lum.interface.utilities
 
 if __name__ == "__main__":
 
     # Init translation support
-    lum.interface.utilities.gettext_init()
+    print lum.interface.utilities.gettext_init()
 
     # Create main application
     app = lumApp()

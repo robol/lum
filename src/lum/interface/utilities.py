@@ -8,12 +8,18 @@ _ = gettext.gettext
 package_dir = os.path.realpath(os.path.join(__file__,
                                            os.path.pardir))
 
-
 def gettext_init():
-    if os.path.exists("locale"):
-        gettext.bindtextdomain("lum", "locale")
+    # Load local translations
+    if os.path.join("src", "lum", "interface") in package_dir:
+        lum_base = os.path.realpath(os.path.join(package_dir,
+                                                 os.path.pardir,
+                                                 os.path.pardir,
+                                                 os.path.pardir,
+                                                 "locale"))
+        print gettext.bindtextdomain("lum", lum_base)
     else:
-        gettext.bindtextdomain("lum")
+        print gettext.bindtextdomain("lum")
+
     gettext.textdomain("lum")
     try:
         locale.setlocale(locale.LC_ALL, locale.getdefaultlocale())

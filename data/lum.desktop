@@ -1,12 +1,16 @@
 #!/usr/bin/env xdg-open
 [Desktop Entry]
+Version=0.1
 Encoding=UTF-8
-Name=Lum
+Name=Ldap User Manager
+GenericName=Ldap User Manager
+X-GNOME_FullName=Ldap User Manager
 Comment[it]=Gestire gli account su LDAP
 Comment[en]=Manage LDAP account with an easy interface
+TryExec=lum
 Exec=lum
 Terminal=false
 Type=Application
 StartupNotify=false
-Categories=GNOME;Utility
+Categories=GNOME;GTK;System;Utility
 Icon=lum

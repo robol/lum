@@ -10,7 +10,10 @@ package_dir = os.path.realpath(os.path.join(__file__,
 
 
 def gettext_init():
-    gettext.bindtextdomain("lum", "locale")
+    if os.path.exists("locale"):
+        gettext.bindtextdomain("lum", "locale")
+    else:
+        gettext.bindtextdomain("lum")
     gettext.textdomain("lum")
     try:
         locale.setlocale(locale.LC_ALL, locale.getdefaultlocale())

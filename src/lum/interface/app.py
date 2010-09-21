@@ -357,10 +357,19 @@ class lumApp(gobject.GObject):
     def push_user(self, usermodel):
         """Add a user on the treeview in the main window"""
         user_store = self.__builder.get_object("user_store")
+
+        # Try to load group name from group_dict. If it's not
+        # present try reloading group_dict from ldap and
+        # if it's not present event after that say "unknown"
         if self.__group_dict.has_key(usermodel.get_gid()):
             group = self.__group_dict[usermodel.get_gid()]
         else:
-            group = "unknown"
+            self.__group_dict = self.__connection.get_groups()
+            if self.__group_dict.has_key(usermodel.get_gid()):
+                group = self.__group_dict[usermodel.get_gid()]
+            else:
+                group = _("unknown")
+
         user_store.append((usermodel.get_username(), usermodel.get_gecos(),
                             group, self.__user_image))
         self.__user_model_store[usermodel.get_username()] = usermodel
@@ -380,9 +389,11 @@ class lumApp(gobject.GObject):
         
         if new_user_dialog.usermodel is not None:
             if self.__check_connection():
+                new_user_dialog.usermodel.set_dn("uid=%s,%s" % (new_user_dialog.usermodel.get_username(),
+                                                              self.__users_ou))
                 self.__connection.add_user(new_user_dialog.usermodel)
                 self.statusbar_update(_("User %s created correctly.") % new_user_dialog.usermodel.get_username())
-                self.reload_user_list()
+                self.push_user(new_user_dialog.usermodel)
             
     def __check_connection(self):
         if self.__connection is None:

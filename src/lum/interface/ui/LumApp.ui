@@ -108,6 +108,15 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkImageMenuItem" id="change_password_menu_item">
+                        <property name="label" translatable="yes">Change password</property>
+                        <property name="visible">True</property>
+                        <property name="image">image3</property>
+                        <property name="use_stock">False</property>
+                        <signal name="activate" handler="on_change_password_menu_item_activate"/>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkSeparatorMenuItem" id="separatormenuitem2">
                         <property name="visible">True</property>
                       </object>
@@ -278,5 +287,9 @@
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
     <property name="stock">gtk-undo</property>
+  </object>
+  <object class="GtkImage" id="image3">
+    <property name="visible">True</property>
+    <property name="stock">gtk-dialog-authentication</property>
   </object>
 </interface>

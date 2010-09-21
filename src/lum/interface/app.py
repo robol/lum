@@ -83,6 +83,7 @@ class lumApp(gobject.GObject):
             'on_filter_entry_changed':                    self.refilter,
             'on_forget_password_menu_item_activate':    self.forget_password,
             'on_edit_user_menu_item_activate':            self.edit_user,
+            'on_change_password_menu_item_activate': self.change_password,
             
             # Popup menus
             'on_user_treeview_button_press_event':         self.on_user_treeview_button_press_event,
@@ -339,7 +340,7 @@ class lumApp(gobject.GObject):
             # TODO: Reload only selected user
             self.reload_user_list()
 
-    def change_password(self):
+    def change_password(self, menu_item = None):
         """Change password of selected user"""
         usermodel, t_iter = self.__get_selected_user()
         if t_iter is None:

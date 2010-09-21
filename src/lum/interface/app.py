@@ -382,7 +382,7 @@ class lumApp(gobject.GObject):
             if self.__check_connection():
                 self.__connection.add_user(new_user_dialog.usermodel)
                 self.statusbar_update(_("User %s created correctly.") % new_user_dialog.usermodel.get_username())
-        self.reload_user_list()
+                self.reload_user_list()
             
     def __check_connection(self):
         if self.__connection is None:

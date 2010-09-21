@@ -8,13 +8,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-20 10:26+0200\n"
+"POT-Creation-Date: 2010-09-21 17:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: src/lum/interface/app.py:158
@@ -37,30 +37,34 @@ msgstr ""
 msgid "Connection to %s initialized"
 msgstr ""
 
-#: src/lum/interface/app.py:220
+#: src/lum/interface/app.py:227
 msgid "Internal application error! Try reloading user list"
 msgstr ""
 
-#: src/lum/interface/app.py:287
+#: src/lum/interface/app.py:294
 #, python-format
 msgid "User %s deleted."
 msgstr ""
 
-#: src/lum/interface/app.py:330
+#: src/lum/interface/app.py:337
 #, python-format
 msgid "User %s successfully modified"
 msgstr ""
 
-#: src/lum/interface/app.py:377
+#: src/lum/interface/app.py:371
+msgid "unknown"
+msgstr ""
+
+#: src/lum/interface/app.py:395
 #, python-format
 msgid "User %s created correctly."
 msgstr ""
 
-#: src/lum/interface/app.py:382
+#: src/lum/interface/app.py:400
 msgid "Not connected to any LDAP server, connect now?"
 msgstr ""
 
-#: src/lum/interface/app.py:389
+#: src/lum/interface/app.py:407
 msgid "Error while connecting to LDAP server, aborting operation."
 msgstr ""
 

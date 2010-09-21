@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-20 10:26+0200\n"
+"POT-Creation-Date: 2010-09-21 17:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Leonardo Robol <robol@poisson.phc.unipi.it>\n"
 "Language: it\n"
@@ -20,9 +20,8 @@ msgid ""
 "Error while connecting to the server, check your credentials and your "
 "connectivity"
 msgstr ""
-"Errore durante la connessione al server, controllare "
-"le proprie credenziali e "
-"la connessione alla rete"
+"Errore durante la connessione al server, controllare le proprie credenziali "
+"e la connessione alla rete"
 
 #: src/lum/interface/app.py:185
 msgid "Connection failed."
@@ -33,35 +32,39 @@ msgstr "Connessione a %s fallita."
 msgid "Connection to %s initialized"
 msgstr "Connessione a %s inizializzata"
 
-#: src/lum/interface/app.py:220
+#: src/lum/interface/app.py:227
 msgid "Internal application error! Try reloading user list"
-msgstr "Errore interno nell'applicazione! "
-"Provare a ricaricare la lista degli utenti"
+msgstr ""
+"Errore interno nell'applicazione! Provare a ricaricare la lista degli utenti"
 
-#: src/lum/interface/app.py:287
+#: src/lum/interface/app.py:294
 #, python-format
 msgid "User %s deleted."
 msgstr "Utente %s cancellato."
 
-#: src/lum/interface/app.py:330
+#: src/lum/interface/app.py:337
 #, python-format
 msgid "User %s successfully modified"
 msgstr "Modifica dell'utente %s terminata con successo"
 
-#: src/lum/interface/app.py:377
+#: src/lum/interface/app.py:371
+msgid "unknown"
+msgstr "Sconosciuto"
+
+#: src/lum/interface/app.py:395
 #, python-format
 msgid "User %s created correctly."
 msgstr "Creazione dell'utente %s terminata con successo."
 
-#: src/lum/interface/app.py:382
+#: src/lum/interface/app.py:400
 msgid "Not connected to any LDAP server, connect now?"
-msgstr "Non è stata effettuata la connessione ad alcun "
-"server LDAP, connettersi ora?"
+msgstr ""
+"Non è stata effettuata la connessione ad alcun server LDAP, connettersi ora?"
 
-#: src/lum/interface/app.py:389
+#: src/lum/interface/app.py:407
 msgid "Error while connecting to LDAP server, aborting operation."
-msgstr "Errore durante la connessione al server LDAP, "
-"annullamento dell'operazione."
+msgstr ""
+"Errore durante la connessione al server LDAP, annullamento dell'operazione."
 
 #: src/lum/interface/change_user_password_dialog.py:26
 msgid "Maximum number of tries reached, aborting."
@@ -218,7 +221,7 @@ msgstr "Modifica i dati dell'utente e conferma per salvare neldatabase di LDAP"
 
 #: tmp/LumEditUserDialog.ui.h:3
 msgid "Email:"
-msgstr ""
+msgstr "Email:"
 
 #: tmp/LumEditUserDialog.ui.h:4
 msgid "Group:"
@@ -258,7 +261,7 @@ msgstr "Crea nuovo utente"
 
 #: tmp/LumNewUserDialog.ui.h:5
 msgid "Email"
-msgstr ""
+msgstr "Email"
 
 #: tmp/LumNewUserDialog.ui.h:6
 msgid "Group"

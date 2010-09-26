@@ -121,14 +121,19 @@ class lumConnectDialog():
         if self.__old_uri == new_text:
             return
         
-        if self.__configuration.has_section(self.__old_uri):
-            for option in self.__configuration.options():
-                o = self.__configuration.get(self.__old_uri, option)
-                self.__configuration.set(new_text, option)
-            self.__configuration.remove_section(self.__old_uri)
+        # If the selected section exists, then we need to add
+        # it and then copy all the data
         if not self.__configuration.has_section(new_text):
             self.__configuration.add_section(new_text)
-            
+
+        # Copy data from the old section and then
+        # delete it
+        if self.__configuration.has_section(self.__old_uri):
+            for option in self.__configuration.options(self.__old_uri):
+                o = self.__configuration.get(self.__old_uri, option)
+                self.__configuration.set(new_text, option, o)
+            self.__configuration.remove_section(self.__old_uri)            
+
     def on_uri_start_editing(self, renderer, editable, path):
         """Save old uri for comparison"""
         treeview = self.__builder.get_object("treeview")

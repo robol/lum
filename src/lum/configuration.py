@@ -88,8 +88,8 @@ class Configuration():
             finally:
                 self.unlock()
                 
-    def options(self):
-        return self.__conf.options()
+    def options(self, section):
+        return self.__conf.options(section)
         
     def sections(self):
         return self.__conf.sections()

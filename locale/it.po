@@ -25,7 +25,7 @@ msgstr ""
 
 #: src/lum/interface/app.py:186
 msgid "Connection failed."
-msgstr "Connessione a %s fallita."
+msgstr "Connessione fallita."
 
 #: src/lum/interface/app.py:190
 #, python-format

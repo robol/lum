@@ -29,6 +29,7 @@ from connect_dialog import lumConnectDialog
 from password_entry import lumPasswordEntry
 from edit_user_dialog import lumEditUserDialog
 from menu_item import lumTreeViewMenu
+from new_group_dialog import lumNewGroupDialog
 from change_user_password_dialog import lumChangeUserPasswordDialog
 from utilities import _, show_error_dialog, ask_question, create_builder, show_info_dialog
 
@@ -47,7 +48,7 @@ class lumApp(gobject.GObject):
         else:
             lum_application = self
     
-        # Images
+        # Images loaded here to be used in the code
         self.__user_image = gtk.Image()
         self.__user_image.set_from_file(os.path.join(self.__datapath, "ui", "user.png"))
         self.__user_image = self.__user_image.get_pixbuf()
@@ -466,7 +467,13 @@ class lumApp(gobject.GObject):
         if not self.__check_connection():
             return None
 
-        print "Group creation requested"
+        new_group_dialog = lumNewGroupDialog(self.__datapath,
+                                             self.__connection)
+        group_name, gid = new_group_dialog.run()
+
+        if group_name is not None:
+            self.__connection.add_group(group_name, gid)
+            self.reload_user_list()
 
     def delete_group(self, menu_item = None):
         """Delete the group selected in the group_treeview"""

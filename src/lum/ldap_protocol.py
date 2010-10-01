@@ -291,15 +291,20 @@ class Connection():
         
         self.__ldap.modify_s(old_dn, ldap.modlist.modifyModlist(old_user.to_ldif(), new_user.to_ldif()))
     
-    def add_group(self, group_name):
+    def add_group(self, group_name, gid = None):
         """Add a new group, autodetermining gid."""
         groups_ou = self.__groups_ou
         
         dn = "cn=%s,%s" % (group_name, groups_ou)
+
+        if gid is None:
+            gid = str(self.next_free_gid())
+        else:
+            gid = str(gid)
         
         group_ldif = {
             'cn': [str(group_name)],
-            'gidNumber': [str(self.next_free_gid())],
+            'gidNumber': [gid],
             'objectClass': ['posixGroup', 'top'],
         }
         

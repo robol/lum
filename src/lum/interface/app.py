@@ -30,7 +30,7 @@ from password_entry import lumPasswordEntry
 from edit_user_dialog import lumEditUserDialog
 from menu_item import lumTreeViewMenu
 from change_user_password_dialog import lumChangeUserPasswordDialog
-from utilities import _, show_error_dialog, ask_question, create_builder
+from utilities import _, show_error_dialog, ask_question, create_builder, show_info_dialog
 
 lum_application = None
 
@@ -49,8 +49,12 @@ class lumApp(gobject.GObject):
     
         # Images
         self.__user_image = gtk.Image()
-        self.__user_image.set_from_file(os.path.join(self.__datapath, "ui/user.png"))
+        self.__user_image.set_from_file(os.path.join(self.__datapath, "ui", "user.png"))
         self.__user_image = self.__user_image.get_pixbuf()
+
+        self.__group_image = gtk.Image()
+        self.__group_image.set_from_file(os.path.join(self.__datapath, "ui", "group.png"))
+        self.__group_image = self.__group_image.get_pixbuf()
         
         # Internal space for usermodels
         # Usermodel will be saved in a dictionary using uids as keys,
@@ -95,17 +99,27 @@ class lumApp(gobject.GObject):
         # Create initial configuration
         self.__configuration = Configuration()
         
-        # Activate filter
-        self.__treefilter = self.__builder.get_object("user_store").filter_new()
-        self.__treefilter.set_visible_func(self.filter_users)
+        # Activate filter on users...
+        self.__users_treefilter = self.__builder.get_object("user_store").filter_new()
+        self.__users_treefilter.set_visible_func(self.filter_users)
+
+        # ...and groups
+        self.__group_treefilter = self.__builder.get_object("group_store").filter_new()
+        self.__group_treefilter.set_visible_func(self.filter_groups)
         
         # Change the model of the treeview
-        self.__builder.get_object("user_treeview").set_model(self.__treefilter)
+        self.__builder.get_object("user_treeview").set_model(self.__users_treefilter)
+        self.__builder.get_object("group_treeview").set_model(self.__group_treefilter)
         
-        # Make the list sorted
+        # Make the list sorted, for users...
         user_store = self.__builder.get_object("user_store")
-        user_store.set_sort_func(1, self.sort)
+        user_store.set_sort_func(1, self.sort_users)
         user_store.set_sort_column_id(1, gtk.SORT_ASCENDING)
+
+        # ...and groups
+        group_store = self.__builder.get_object("group_store")
+        group_store.set_sort_func(1, self.sort_groups)
+        group_store.set_sort_column_id(1, gtk.SORT_ASCENDING)
         
         # Some initial values
         self.__uri, self.__bind_dn = None, None
@@ -115,10 +129,17 @@ class lumApp(gobject.GObject):
 
     def __del__(self):
         lum_application = None
-        
     
-    def sort(self, model, iter1, iter2):
+    def sort_users(self, model, iter1, iter2):
         return (model.get_value(iter1, 0).lower() > model.get_value(iter2, 0).lower())
+    
+    def sort_groups(self, model, iter1, iter2):
+        """Sort groups, None is less then everything"""
+        if iter1 is None:
+            return False
+        elif iter2 is None:
+            return True
+        return (model.get_value(iter1, 1).lower() > model.get_value(iter2, 1).lower())
         
     def start(self):
         """Start lumApp"""
@@ -192,7 +213,7 @@ class lumApp(gobject.GObject):
             
     def filter_users(self, model, treeiter, user_data = None):
         """Filter users based on what is placed in filter_entry"""
-        key = self.__builder.get_object("filter_entry").get_text()
+        key = self.__builder.get_object("filter_user_entry").get_text()
         
         if key == "":
             return True
@@ -205,6 +226,15 @@ class lumApp(gobject.GObject):
             return True
             
         return False
+
+    def filter_groups(self, model, treeiter, user_data = None):
+        """Filter group based on user insertion in the filter entry"""
+        key = self.__builder.get_object("filter_group_entry").get_text()
+        if key == "":
+            return True
+        print treeiter
+        if key in model.get_value(treeiter, 1).lower():
+            return True
 
     def __get_selected_user(self):
         """Obtain usermodel and a treeview iter
@@ -258,7 +288,7 @@ class lumApp(gobject.GObject):
         
     def refilter(self, entry):
         """Callback to refilter treeview"""
-        self.__treefilter.refilter()
+        self.__users_treefilter.refilter()
         
         
     def show_about_dialog(self, menu_item):
@@ -284,6 +314,10 @@ class lumApp(gobject.GObject):
     def delete_user(self, menu_item = None):
         """Delete the selected user"""
         usermodel, t_iter = self.__get_selected_user()
+
+        if t_iter is None:
+            show_info_dialog(_("Select a user to delete!"))
+            return
 
         # Delete user from internal dictionary
         self.__user_model_store.pop(usermodel.get_username())
@@ -314,15 +348,30 @@ class lumApp(gobject.GObject):
         if self.__check_connection():
             self.clear_user_list()
             users = self.__connection.get_users()
-            self.__group_dict = self.__connection.get_groups()
+            self.update_group_list()
             for user in users:
                 self.push_user(user)
+
+    def clear_group_list(self):
+        """Clear group list"""
+        self.__builder.get_object("group_store").clear()
+
+    def update_group_list(self, menu_item = None):
+        """Update group list and internal group dictionary"""
+        if self.__check_connection():
+            self.clear_group_list()
+            self.__group_dict = self.__connection.get_groups()
+            model = self.__builder.get_object("group_store")
+            for gid, group in self.__group_dict.items():
+                model.append((self.__group_image,
+                             group, int(gid)))
             
                 
     def edit_user(self, menu_item = None):
         """Edit selected user"""
         usermodel, t_iter = self.__get_selected_user()
         if t_iter is None: 
+            show_info_dialog(_("Select a user to modify"))
             return
 
         # Create the dialog
@@ -344,6 +393,7 @@ class lumApp(gobject.GObject):
         """Change password of selected user"""
         usermodel, t_iter = self.__get_selected_user()
         if t_iter is None:
+            show_info_dialog(_("You need to select a user to change its password"))
             return
 
         password_dialog = lumChangeUserPasswordDialog(self.__datapath, usermodel.get_username())

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-21 21:43+0200\n"
+"POT-Creation-Date: 2010-10-01 09:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,54 +17,54 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/lum/interface/app.py:159
+#: src/lum/interface/app.py:180
 #, python-format
 msgid "Connecting to %s."
 msgstr ""
 
-#: src/lum/interface/app.py:182
+#: src/lum/interface/app.py:203
 msgid ""
 "Error while connecting to the server, check your credentials and your "
 "connectivity"
 msgstr ""
 
-#: src/lum/interface/app.py:186
+#: src/lum/interface/app.py:207
 msgid "Connection failed."
 msgstr ""
 
-#: src/lum/interface/app.py:190
+#: src/lum/interface/app.py:211
 #, python-format
 msgid "Connection to %s initialized"
 msgstr ""
 
-#: src/lum/interface/app.py:228
+#: src/lum/interface/app.py:258
 msgid "Internal application error! Try reloading user list"
 msgstr ""
 
-#: src/lum/interface/app.py:295
+#: src/lum/interface/app.py:325
 #, python-format
 msgid "User %s deleted."
 msgstr ""
 
-#: src/lum/interface/app.py:338
+#: src/lum/interface/app.py:382
 #, python-format
 msgid "User %s successfully modified"
 msgstr ""
 
-#: src/lum/interface/app.py:372
+#: src/lum/interface/app.py:416
 msgid "unknown"
 msgstr ""
 
-#: src/lum/interface/app.py:396
+#: src/lum/interface/app.py:440
 #, python-format
 msgid "User %s created correctly."
 msgstr ""
 
-#: src/lum/interface/app.py:401
+#: src/lum/interface/app.py:445
 msgid "Not connected to any LDAP server, connect now?"
 msgstr ""
 
-#: src/lum/interface/app.py:408
+#: src/lum/interface/app.py:452
 msgid "Error while connecting to LDAP server, aborting operation."
 msgstr ""
 
@@ -163,30 +163,42 @@ msgid "Official website"
 msgstr ""
 
 #: tmp/LumApp.ui.h:2
-msgid "Find user:"
+msgid "Find group:"
 msgstr ""
 
 #: tmp/LumApp.ui.h:3
-msgid "Forget password"
+msgid "Find user:"
 msgstr ""
 
 #: tmp/LumApp.ui.h:4
-msgid "Ldap User Manager"
+msgid "Forget password"
 msgstr ""
 
 #: tmp/LumApp.ui.h:5
-msgid "Reload user list"
+msgid "Groups management"
 msgstr ""
 
 #: tmp/LumApp.ui.h:6
-msgid "_File"
+msgid "Ldap User Manager"
 msgstr ""
 
 #: tmp/LumApp.ui.h:7
-msgid "_Help"
+msgid "Reload user list"
 msgstr ""
 
 #: tmp/LumApp.ui.h:8
+msgid "Users management"
+msgstr ""
+
+#: tmp/LumApp.ui.h:9
+msgid "_File"
+msgstr ""
+
+#: tmp/LumApp.ui.h:10
+msgid "_Help"
+msgstr ""
+
+#: tmp/LumApp.ui.h:11
 msgid "_User"
 msgstr ""
 

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-21 21:43+0200\n"
+"POT-Creation-Date: 2010-10-01 09:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Leonardo Robol <robol@poisson.phc.unipi.it>\n"
 "Language: it\n"
@@ -10,12 +10,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/lum/interface/app.py:159
+#: src/lum/interface/app.py:180
 #, python-format
 msgid "Connecting to %s."
 msgstr "Connessione a %s"
 
-#: src/lum/interface/app.py:182
+#: src/lum/interface/app.py:203
 msgid ""
 "Error while connecting to the server, check your credentials and your "
 "connectivity"
@@ -23,45 +23,45 @@ msgstr ""
 "Errore durante la connessione al server, controllare le proprie credenziali "
 "e la connessione alla rete"
 
-#: src/lum/interface/app.py:186
+#: src/lum/interface/app.py:207
 msgid "Connection failed."
 msgstr "Connessione fallita."
 
-#: src/lum/interface/app.py:190
+#: src/lum/interface/app.py:211
 #, python-format
 msgid "Connection to %s initialized"
 msgstr "Connessione a %s inizializzata"
 
-#: src/lum/interface/app.py:228
+#: src/lum/interface/app.py:258
 msgid "Internal application error! Try reloading user list"
 msgstr ""
 "Errore interno nell'applicazione! Provare a ricaricare la lista degli utenti"
 
-#: src/lum/interface/app.py:295
+#: src/lum/interface/app.py:325
 #, python-format
 msgid "User %s deleted."
 msgstr "Utente %s cancellato."
 
-#: src/lum/interface/app.py:338
+#: src/lum/interface/app.py:382
 #, python-format
 msgid "User %s successfully modified"
 msgstr "Modifica dell'utente %s terminata con successo"
 
-#: src/lum/interface/app.py:372
+#: src/lum/interface/app.py:416
 msgid "unknown"
 msgstr "Sconosciuto"
 
-#: src/lum/interface/app.py:396
+#: src/lum/interface/app.py:440
 #, python-format
 msgid "User %s created correctly."
 msgstr "Creazione dell'utente %s terminata con successo."
 
-#: src/lum/interface/app.py:401
+#: src/lum/interface/app.py:445
 msgid "Not connected to any LDAP server, connect now?"
 msgstr ""
 "Non è stata effettuata la connessione ad alcun server LDAP, connettersi ora?"
 
-#: src/lum/interface/app.py:408
+#: src/lum/interface/app.py:452
 msgid "Error while connecting to LDAP server, aborting operation."
 msgstr ""
 "Errore durante la connessione al server LDAP, annullamento dell'operazione."
@@ -161,30 +161,42 @@ msgid "Official website"
 msgstr "Sito ufficiale"
 
 #: tmp/LumApp.ui.h:2
+msgid "Find group:"
+msgstr "Cerca gruppo:"
+
+#: tmp/LumApp.ui.h:3
 msgid "Find user:"
 msgstr "Cerca utente:"
 
-#: tmp/LumApp.ui.h:3
+#: tmp/LumApp.ui.h:4
 msgid "Forget password"
 msgstr "Dimentica password"
 
-#: tmp/LumApp.ui.h:4
+#: tmp/LumApp.ui.h:5
+msgid "Groups management"
+msgstr "Gestione gruppi"
+
+#: tmp/LumApp.ui.h:6
 msgid "Ldap User Manager"
 msgstr "Ldap User Manager"
 
-#: tmp/LumApp.ui.h:5
+#: tmp/LumApp.ui.h:7
 msgid "Reload user list"
 msgstr "Aggiorna lista utenti"
 
-#: tmp/LumApp.ui.h:6
+#: tmp/LumApp.ui.h:8
+msgid "Users management"
+msgstr "Gestione utenti"
+
+#: tmp/LumApp.ui.h:9
 msgid "_File"
 msgstr "_File"
 
-#: tmp/LumApp.ui.h:7
+#: tmp/LumApp.ui.h:10
 msgid "_Help"
 msgstr "_Help"
 
-#: tmp/LumApp.ui.h:8
+#: tmp/LumApp.ui.h:11
 msgid "_User"
 msgstr "_Utente"
 

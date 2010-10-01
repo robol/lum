@@ -141,15 +141,17 @@ class lumApp(gobject.GObject):
         return (model.get_value(iter1, 0).lower() > model.get_value(iter2, 0).lower())
     
     def sort_groups(self, model, iter1, iter2):
-        """Sort groups, None is less then everything"""
+        """Sort groups, None is greater then everything"""
         group_1 = model.get_value(iter1, 1)
         group_2 = model.get_value(iter2, 1)
 
+        # None is greater than everything because this make things
+        # work, but I can't get why yet.
         if group_1 is None:
-            return False
-        if group_2 is None:
             return True
-        return group_1.lower() > group_2.lower()
+        if group_2 is None:
+            return False
+        return (group_1.lower() > group_2.lower())
         
     def start(self):
         """Start lumApp"""
@@ -380,7 +382,8 @@ class lumApp(gobject.GObject):
             model = self.__builder.get_object("group_store")
             for gid, group in self.__group_dict.items():
                 model.append((self.__group_image,
-                             group, int(gid)))
+                              group, int(gid)))
+
             
                 
     def edit_user(self, menu_item = None):

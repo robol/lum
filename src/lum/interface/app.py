@@ -85,9 +85,15 @@ class lumApp(gobject.GObject):
             'on_reload_user_list_menu_item_activate':     self.reload_user_list,
             'on_delete_user_menu_item_activate':        self.delete_user,
             'on_filter_entry_changed':                    self.refilter,
+            'on_filter_group_entry_changed':              self.group_refilter,
             'on_forget_password_menu_item_activate':    self.forget_password,
             'on_edit_user_menu_item_activate':            self.edit_user,
             'on_change_password_menu_item_activate': self.change_password,
+
+            # Group menu callbacks
+            'on_new_group_menuitem_activate':    self.new_group,
+            'on_delete_group_menuitem_activate': self.delete_group,
+            'on_properties_group_menuitem_activate': self.group_properties,
             
             # Popup menus
             'on_user_treeview_button_press_event':         self.on_user_treeview_button_press_event,
@@ -135,11 +141,14 @@ class lumApp(gobject.GObject):
     
     def sort_groups(self, model, iter1, iter2):
         """Sort groups, None is less then everything"""
-        if iter1 is None:
+        group_1 = model.get_value(iter1, 1)
+        group_2 = model.get_value(iter2, 1)
+
+        if group_1 is None:
             return False
-        elif iter2 is None:
+        if group_2 is None:
             return True
-        return (model.get_value(iter1, 1).lower() > model.get_value(iter2, 1).lower())
+        return group_1.lower() > group_2.lower()
         
     def start(self):
         """Start lumApp"""
@@ -232,9 +241,11 @@ class lumApp(gobject.GObject):
         key = self.__builder.get_object("filter_group_entry").get_text()
         if key == "":
             return True
-        print treeiter
+
         if key in model.get_value(treeiter, 1).lower():
             return True
+
+        return False
 
     def __get_selected_user(self):
         """Obtain usermodel and a treeview iter
@@ -289,6 +300,10 @@ class lumApp(gobject.GObject):
     def refilter(self, entry):
         """Callback to refilter treeview"""
         self.__users_treefilter.refilter()
+
+    def group_refilter(self, entry):
+        """Callback to refilter groups"""
+        self.__group_treefilter.refilter()
         
         
     def show_about_dialog(self, menu_item):
@@ -445,6 +460,29 @@ class lumApp(gobject.GObject):
                 self.__connection.add_user(new_user_dialog.usermodel)
                 self.statusbar_update(_("User %s created correctly.") % new_user_dialog.usermodel.get_username())
                 self.push_user(new_user_dialog.usermodel)
+
+    def new_group(self, menu_item = None):
+        """Create a new group catching the callback from menu"""
+        if not self.__check_connection():
+            return None
+
+        print "Group creation requested"
+
+    def delete_group(self, menu_item = None):
+        """Delete the group selected in the group_treeview"""
+        if not self.__check_connection():
+            return None
+
+        print "Group deletion requested"
+
+    def group_properties(self, menu_item = None):
+        """View selected group properties, such as members and
+        gidNumber"""
+
+        if not self.__check_connection():
+            return None
+
+        print "Group Properties called"
             
     def __check_connection(self):
         if self.__connection is None:

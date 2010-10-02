@@ -14,13 +14,13 @@
         <child>
           <object class="GtkVBox" id="vbox1">
             <property name="visible">True</property>
+            <property name="spacing">10</property>
             <child>
               <object class="GtkHBox" id="hbox1">
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkImage" id="image1">
                     <property name="visible">True</property>
-                    <property name="yalign">0</property>
                     <property name="xpad">5</property>
                     <property name="ypad">10</property>
                     <property name="pixbuf">user.png</property>
@@ -36,7 +36,9 @@
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                     <property name="xpad">5</property>
-                    <property name="label" translatable="yes">Insert new user data and press "save" when done.</property>
+                    <property name="label" translatable="yes">Insert new user data and press "save" when done.
+User ID is not shown because it will be generated
+when you confirm. </property>
                     <property name="wrap">True</property>
                   </object>
                   <packing>

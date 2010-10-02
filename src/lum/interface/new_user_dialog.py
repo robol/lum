@@ -65,15 +65,21 @@ class lumNewUserDialog():
                 self.__window.destroy()
                 return None
             
-            # Ask the user if he intended to create the group
+            # Ask the user if he intended to create the group and destroy window
+            # before the call to the ldap module, that could raise an exception
+            # catched by our parent (i.e. lumApp)
             if gid is None:
                 if ask_question(_("The group %s doesn't exists, create it now?") % group):
+                    self._window.destroy()
                     self.__connection.add_group(group)
                     gid = self.__connection.gid_from_group(group)
                 else:
                     self.__window.destroy()
                     return None
-                
+            else:
+                self.__window.destroy()
+            
+            # Fill UserModel
             self.usermodel = UserModel()
             self.usermodel.set_username(username)
             self.usermodel.set_gid(gid)
@@ -83,6 +89,6 @@ class lumNewUserDialog():
             self.usermodel.set_shell(shell)
             self.usermodel.set_email(email)
             
-        self.__window.destroy()
+            
         
 

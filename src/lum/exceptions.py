@@ -17,3 +17,9 @@ class LumUserNotFoundError(Exception):
 
 class LumUnsupportedError(Exception):
     pass
+
+class LumInsufficientPermissionsError(Exception):
+    pass
+
+class LumAlreadyExistsError(Exception):
+    pass

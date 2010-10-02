@@ -20,7 +20,7 @@ pygtk.require("2.0")
 # Import modules from lum
 from lum.ldap_protocol import UserModel, Connection
 from lum.configuration import Configuration
-from lum.exceptions import LumError
+from lum.exceptions import *
 
 # Import interface
 from about import lumAbout
@@ -362,13 +362,20 @@ class lumApp(gobject.GObject):
         if not ask_question(_("Really delete user <b>%s</b>?") % usermodel.get_username()):
             return
 
+        # Delete user from ldap first
+        try:
+            self.__connection.delete_user(usermodel.get_dn())
+        except LumInsufficientPermissionsError:
+            show_error_dialog(_("Insufficient permissions to delete user"))
+            return None
+
         # Delete user from internal dictionary
         self.__user_model_store.pop(usermodel.get_username())
 
         # Delete user from ldap and from the user_store
         user_store = self.__builder.get_object("user_store")
         user_store.remove(t_iter)
-        self.__connection.delete_user(usermodel.get_dn())
+
         self.statusbar_update(_("User %s deleted.") % usermodel.get_username())
             
     def forget_password(self, menu_item = None):
@@ -426,7 +433,12 @@ class lumApp(gobject.GObject):
         
         new_usermodel = dialog.run()
         if (new_usermodel is not None):
-            self.__connection.modify_user(old_user, new_usermodel)
+
+            try:
+                self.__connection.modify_user(old_user, new_usermodel)
+            except LumInsufficientPermissionsError:
+                show_error_dialog(_("Insufficient permissions to edit user"))
+                return None
 
             self.statusbar_update(_("User %s successfully modified") % new_usermodel.get_username())
             
@@ -445,7 +457,11 @@ class lumApp(gobject.GObject):
         if new_password is None:
             return False
         else:
-            self.__connection.change_password(usermodel.get_username(), new_password)
+            try:
+                self.__connection.change_password(usermodel.get_username(), new_password)
+            except LumInsufficientPermissionsError:
+                show_error_dialog(_("Insufficient permissions to change user password"))
+                return False
             return True
 
                 
@@ -480,13 +496,27 @@ class lumApp(gobject.GObject):
             return None
 
         new_user_dialog = lumNewUserDialog(self.__datapath, self.__connection)
-        new_user_dialog.run()
+       
+        try:
+            new_user_dialog.run()
+        except LumInsufficientPermissionsError:
+            show_error_dialog(_("Insufficient permissions to accomplish operation"))
+            return None
         
         if new_user_dialog.usermodel is not None:
             if self.__check_connection():
                 new_user_dialog.usermodel.set_dn("uid=%s,%s" % (new_user_dialog.usermodel.get_username(),
                                                               self.__users_ou))
-                self.__connection.add_user(new_user_dialog.usermodel)
+
+                try:
+                    self.__connection.add_user(new_user_dialog.usermodel)
+                except LumAlreadyExistsError:
+                    show_error_dialog(_("User <b>%s</b> already exists in the ldap tree, " + 
+                                        "cannot create one more") % new_user_dialog.usermodel.get_username())
+                    return None
+                except LumInsufficientPermissionsError:
+                    show_error_dialog(_("Insufficient permissions to create the user"))
+                    return None
                 self.statusbar_update(_("User %s created correctly.") % new_user_dialog.usermodel.get_username())
                 self.push_user(new_user_dialog.usermodel)
 
@@ -501,7 +531,16 @@ class lumApp(gobject.GObject):
         group_name, gid = new_group_dialog.run()
 
         if group_name is not None:
-            self.__connection.add_group(group_name, gid)
+            try:
+                self.__connection.add_group(group_name, gid)
+            except LumInsufficientPermissionsError:
+                show_error_dialog(_("Insufficient permissions to create group"))
+                return None
+            except LumAlreadyExistsError:
+                show_error_dialog(_("Group <b>%s</b> already exists in the database," + 
+                                    " cannot add one more.") % group_name)
+                return None
+
             self.reload_user_list()
             self.statusbar_update(_("Group %s successfully created.") % group_name)
 
@@ -524,7 +563,11 @@ class lumApp(gobject.GObject):
             return
 
         # Finally we delete the group
-        self.__connection.delete_group(group)
+        try:
+            self.__connection.delete_group(group)
+        except LumInsufficientPermissionsError:
+            show_error_dialog(_("Insufficient permissions to delete group"))
+            return None
 
         # and delete the group from the treeview
         self.__builder.get_object("group_store").remove(t_iter)

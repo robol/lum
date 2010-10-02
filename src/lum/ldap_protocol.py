@@ -277,7 +277,12 @@ class Connection():
         # Distinguished name
         dn = "uid=%s,%s" % (user['uid'][0], users_ou)
 
-        self.__ldap.add_s(dn, ldap.modlist.addModlist(user.to_ldif()))
+        try:
+            self.__ldap.add_s(dn, ldap.modlist.addModlist(user.to_ldif()))
+        except ldap.ALREADY_EXISTS:
+            raise LumAlreadyExistsError("User %s already exists" % dn)
+        except ldap.INSUFFICIENT_ACCESS:
+            raise LumInsufficientPermissionsError("Insufficient permission to create %s" % dn)
             
     def modify_user(self, old_user, new_user):
         """Modify existing user (i.e. replace it)"""
@@ -288,8 +293,11 @@ class Connection():
         # Distinguished name
         new_dn = "uid=%s,%s" % (new_user.get_username(), users_ou)
         old_dn = "uid=%s,%s" % (old_user.get_username(), users_ou)
-        
-        self.__ldap.modify_s(old_dn, ldap.modlist.modifyModlist(old_user.to_ldif(), new_user.to_ldif()))
+
+        try:
+            self.__ldap.modify_s(old_dn, ldap.modlist.modifyModlist(old_user.to_ldif(), new_user.to_ldif()))
+        except ldap.INSUFFICIENT_ACCESS:
+            raise LumInsufficientAccessError("Insufficient accesso to modify user")
     
     def add_group(self, group_name, gid = None):
         """Add a new group, autodetermining gid."""
@@ -308,7 +316,12 @@ class Connection():
             'objectClass': ['posixGroup', 'top'],
         }
         
-        self.__ldap.add_s(dn, ldap.modlist.addModlist(group_ldif))
+        try:
+            self.__ldap.add_s(dn, ldap.modlist.addModlist(group_ldif))
+        except ldap.ALREADY_EXISTS:
+            raise LumAlreadyExistsError("Group %s already exists in the ldap tree" % group_name)
+        except ldap.INSUFFICIENT_ACCESS:
+            raise LumInsufficientPermissionsError("Insufficient permissions to create the group")
         
     def next_free_uid(self):
         """Determine next free uid"""
@@ -342,14 +355,22 @@ class Connection():
         elif not self.__users_ou in user:
             user = "uid=%s,%s" % (user,
                                   self.__users_ou)
-        self.__ldap.delete_s(user)
+
+        try:
+            self.__ldap.delete_s(user)
+        except ldap.INSUFFICIENT_ACCESS:
+            raise LumInsufficientPermissionsError("Insufficient permissions to delete user")
+        
 
     def delete_group(self, group_name):
         """
         Delete a group given the name. 
         """
-        self.__ldap.delete_s("cn=%s,%s" % (group_name,
-                                           self.__groups_ou))
+        try:
+            self.__ldap.delete_s("cn=%s,%s" % (group_name,
+                                               self.__groups_ou))
+        except ldap.INSUFFICIENT_ACCESS:
+            raise LumInsufficientPermissionsError("Insufficient permissions to delete group")
 
     def get_members(self, group_name):
         """Obtain all the members of group_name"""

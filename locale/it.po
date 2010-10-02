@@ -1,21 +1,25 @@
+#
+# Leonardo Robol <robol@poisson.phc.unipi.it>, 2010.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-02 10:47+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"POT-Creation-Date: 2010-10-02 18:54+0200\n"
+"PO-Revision-Date: 2010-10-02 19:10+0200\n"
 "Last-Translator: Leonardo Robol <robol@poisson.phc.unipi.it>\n"
+"Language-Team: Leonardo Robol <robol@poisson.phc.unipi.it>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/lum/interface/app.py:192
+#: src/lum/interface/app.py:194
 #, python-format
 msgid "Connecting to %s."
 msgstr "Connessione a %s"
 
-#: src/lum/interface/app.py:215
+#: src/lum/interface/app.py:217
 msgid ""
 "Error while connecting to the server, check your credentials and your "
 "connectivity"
@@ -23,57 +27,141 @@ msgstr ""
 "Errore durante la connessione al server, controllare le proprie credenziali "
 "e la connessione alla rete"
 
-#: src/lum/interface/app.py:219
+#: src/lum/interface/app.py:221
 msgid "Connection failed."
 msgstr "Connessione fallita."
 
-#: src/lum/interface/app.py:223
+#: src/lum/interface/app.py:225
 #, python-format
 msgid "Connection to %s initialized"
 msgstr "Connessione a %s inizializzata"
 
-#: src/lum/interface/app.py:272
+#: src/lum/interface/app.py:274
 msgid "Internal application error! Try reloading user list"
 msgstr ""
 "Errore interno nell'applicazione! Provare a ricaricare la lista degli utenti"
 
-#: src/lum/interface/app.py:337
+#: src/lum/interface/app.py:376
 msgid "Select a user to delete!"
 msgstr "Selezionare un utente da cancellare!"
 
-#: src/lum/interface/app.py:347
+#: src/lum/interface/app.py:381
+#, python-format
+msgid "Really delete user <b>%s</b>?"
+msgstr "Cancellare l'utente <b>%s</b>?"
+
+#: src/lum/interface/app.py:388
+msgid "Insufficient permissions to delete user"
+msgstr "Permessi insufficienti per eliminare l'utente"
+
+#: src/lum/interface/app.py:398
 #, python-format
 msgid "User %s deleted."
 msgstr "Utente %s cancellato."
 
-#: src/lum/interface/app.py:393
+#: src/lum/interface/app.py:444
 msgid "Select a user to modify"
 msgstr "Selezionare un utente da modificare"
 
-#: src/lum/interface/app.py:406
+#: src/lum/interface/app.py:459
+msgid "Insufficient permissions to edit user"
+msgstr "Permessi insufficienti per modificare l'utente"
+
+#: src/lum/interface/app.py:462
 #, python-format
 msgid "User %s successfully modified"
 msgstr "Modifica dell'utente %s terminata con successo"
 
-#: src/lum/interface/app.py:415
+#: src/lum/interface/app.py:471
 msgid "You need to select a user to change its password"
 msgstr "È necessario selezionare un utente per modificarne la password"
 
-#: src/lum/interface/app.py:441
+#: src/lum/interface/app.py:482
+msgid "Insufficient permissions to change user password"
+msgstr "Permessi insufficienti per modificare la password dell'utente"
+
+#: src/lum/interface/app.py:501
 msgid "unknown"
 msgstr "Sconosciuto"
 
-#: src/lum/interface/app.py:465
+#: src/lum/interface/app.py:522
+msgid "Insufficient permissions to accomplish operation"
+msgstr "Permessi insufficienti per completare l'operazione"
+
+#: src/lum/interface/app.py:533
+#, python-format
+msgid "User <b>%s</b> already exists in the ldap tree, "
+msgstr "L'utente <b>%s</b> è già presente nel database di LDAP,"
+
+#: src/lum/interface/app.py:537
+msgid "Insufficient permissions to create the user"
+msgstr "Permessi insufficienti per creare l'utente"
+
+#: src/lum/interface/app.py:539
 #, python-format
 msgid "User %s created correctly."
 msgstr "Creazione dell'utente %s terminata con successo."
 
-#: src/lum/interface/app.py:499
+#: src/lum/interface/app.py:556
+msgid "Insufficient permissions to create group"
+msgstr "Permessi insufficienti per creare il gruppo"
+
+#: src/lum/interface/app.py:559
+#, python-format
+msgid "Group <b>%s</b> already exists in the database,"
+msgstr "Il gruppo <b>%s</b> esiste già nel database,"
+
+#: src/lum/interface/app.py:564
+#, python-format
+msgid "Group %s successfully created."
+msgstr "Gruppo %s creato correttamente."
+
+#: src/lum/interface/app.py:577
+msgid "Select a group before asking for its deletion."
+msgstr "Selezionare un gruppo prima di eliminarlo"
+
+#: src/lum/interface/app.py:582
+#, python-format
+msgid "Really delete group <b>%s</b>?"
+msgstr "Cancellare veramente il gruppo <b>%s</b>?"
+
+#: src/lum/interface/app.py:584
+#, python-format
+msgid "Really delete the non empty group <b>%s</b>?"
+msgstr "Cancellare veramente il gruppo <b>%s</b> che non è vuoto?"
+
+#: src/lum/interface/app.py:593
+msgid "Insufficient permissions to delete group"
+msgstr "Permessi insufficienti per cancellare il gruppo"
+
+#: src/lum/interface/app.py:600
+#, python-format
+msgid "Group %s successfully deleted."
+msgstr "Gruppo %s cancellato correttamente."
+
+#: src/lum/interface/app.py:611
+msgid "Select a group to view its properties"
+msgstr "Selezionare un gruppo per visualizzarne le proprietà"
+
+#: src/lum/interface/app.py:622
+#, python-format
+msgid "<b>Name:</b> %s\n"
+msgstr "<b>Nome:</b> %s\n"
+
+#: src/lum/interface/app.py:625
+msgid "<b>Members</b>: "
+msgstr "<b>Membri</b>:"
+
+#: src/lum/interface/app.py:628
+msgid "This group is empty."
+msgstr "Questo gruppo è vuoto."
+
+#: src/lum/interface/app.py:637
 msgid "Not connected to any LDAP server, connect now?"
 msgstr ""
 "Non è stata effettuata la connessione ad alcun server LDAP, connettersi ora?"
 
-#: src/lum/interface/app.py:506
+#: src/lum/interface/app.py:644
 msgid "Error while connecting to LDAP server, aborting operation."
 msgstr ""
 "Errore durante la connessione al server LDAP, annullamento dell'operazione."
@@ -86,42 +174,25 @@ msgstr "È stato raggiungo il numero massimo di tentativi."
 msgid "Passwords do not match"
 msgstr "Le password non coincidono"
 
-#: src/lum/interface/connect_dialog.py:48
+#: src/lum/interface/connect_dialog.py:49
 msgid "Insert bind dn"
 msgstr "Inserire bind_dn"
 
-#: src/lum/interface/connect_dialog.py:54
+#: src/lum/interface/connect_dialog.py:55
 msgid "Insert base dn"
 msgstr "Inserire base_dn"
 
-#: src/lum/interface/connect_dialog.py:58
-#: src/lum/interface/connect_dialog.py:109
+#: src/lum/interface/connect_dialog.py:59
 msgid "Insert users organizational unit"
 msgstr "Inserire l'organizational unit degli utenti"
 
-#: src/lum/interface/connect_dialog.py:62
+#: src/lum/interface/connect_dialog.py:63
 msgid "Insert groups organizational unit"
 msgstr "Inserire l'organizational unit dei gruppi"
 
-#: src/lum/interface/connect_dialog.py:67
+#: src/lum/interface/connect_dialog.py:68
 msgid "Connection to LDAP server"
 msgstr "Connessione al server LDAP"
-
-#: src/lum/interface/connect_dialog.py:107
-msgid "Insert server name"
-msgstr "Inserire il nome del server"
-
-#: src/lum/interface/connect_dialog.py:108
-msgid "Insert bind DN"
-msgstr "Inserire il bind DN"
-
-#: src/lum/interface/connect_dialog.py:108
-msgid "Insert base DN"
-msgstr "Inserire il base DN"
-
-#: src/lum/interface/connect_dialog.py:110
-msgid "Insert group organizational unit"
-msgstr "Inserire l'organizational unit dei gruppi"
 
 #: src/lum/interface/edit_user_dialog.py:46
 #, python-format
@@ -132,7 +203,7 @@ msgstr "Modifica dell'utente %s"
 msgid "Edit"
 msgstr "Modifica"
 
-#: src/lum/interface/menu_item.py:15
+#: src/lum/interface/menu_item.py:15 src/lum/interface/menu_item.py:49
 msgid "Delete"
 msgstr "Elimina"
 
@@ -140,6 +211,10 @@ msgstr "Elimina"
 #: tmp/LumChangeUserPasswordDialog.ui.h:3
 msgid "Change password"
 msgstr "Cambia password"
+
+#: src/lum/interface/menu_item.py:50
+msgid "Properties"
+msgstr "Proprietà"
 
 #: src/lum/interface/new_group_dialog.py:27
 msgid "Insert a valid gid"
@@ -150,7 +225,7 @@ msgstr "Inserire un gid valido"
 msgid "User %s is present, not overwriting it!"
 msgstr "L'utente %s è già presente e quindi non verrà sovrascritto!"
 
-#: src/lum/interface/new_user_dialog.py:70
+#: src/lum/interface/new_user_dialog.py:72
 #, python-format
 msgid "The group %s doesn't exists, create it now?"
 msgstr "Il gruppo %s non esiste, crearlo ora?"
@@ -294,11 +369,71 @@ msgid ""
 "Notice that group ID has been autogenerated to be\n"
 "the first free ID in the ldap tree. If you change it\n"
 "manually please be sure that it's not present yet."
-msgstr "Inserire i dati del gruppo e premere \"salva\""
-"per confermare.\n"
+msgstr ""
+"Inserire i dati del gruppo e premere \"salva\"per confermare.\n"
 "L'ID del gruppo è stato autogenerato in modo da essere\n"
 "il primo libero nel database LDAP. Cambiarlo solo se\n"
 "necessario, assicurandosi di sceglierne uno libero."
+
+#: tmp/LumNewServerDialog.ui.h:1
+msgid "<b>Advanced settings</b>"
+msgstr "<b>Configurazione avanzata</b>"
+
+#: tmp/LumNewServerDialog.ui.h:2
+msgid "<b>Server settings</b>"
+msgstr "<b>Configurazione del server</b>"
+
+#: tmp/LumNewServerDialog.ui.h:3
+msgid "Base DN:"
+msgstr "Base DN:"
+
+#: tmp/LumNewServerDialog.ui.h:4
+msgid "Bind DN:"
+msgstr "Bind DN:"
+
+#: tmp/LumNewServerDialog.ui.h:5
+msgid "Groups organizational unti:"
+msgstr "Organizational unit dei gruppi:"
+
+#: tmp/LumNewServerDialog.ui.h:6
+msgid "Ldap server configuration"
+msgstr "Configurazione del server LDAP"
+
+#: tmp/LumNewServerDialog.ui.h:7
+msgid ""
+"Please note that bind DN gets automatically appended to bind DN, users "
+"organizational unit and groups organizational unit if omitted."
+msgstr ""
+"La stringa impostata come base DN verrà automaticamente aggiunta\n"
+"a bind DN e organizational unit di utenti e gruppi se omessa."
+
+#: tmp/LumNewServerDialog.ui.h:8
+msgid "URI:"
+msgstr "URI:"
+
+#: tmp/LumNewServerDialog.ui.h:9
+msgid "Users organizational unit:"
+msgstr "Organizational unit degli utenti"
+
+#: tmp/LumNewServerDialog.ui.h:10
+msgid "cn=admin"
+msgstr "cn=admin"
+
+#: tmp/LumNewServerDialog.ui.h:11
+msgid "dc=example,dc=com"
+msgstr "dc=example,dc=com"
+
+#: tmp/LumNewServerDialog.ui.h:12
+msgid "ldap://localhost:389"
+msgstr "ldap://localhost:389"
+
+#: tmp/LumNewServerDialog.ui.h:13
+msgid "ou=Groups"
+msgstr "ou=Groups"
+
+#: tmp/LumNewServerDialog.ui.h:14
+msgid "ou=People"
+msgstr "ou=People"
 
 #: tmp/LumNewUserDialog.ui.h:1
 msgid "/bin/bash"
@@ -333,8 +468,8 @@ msgid ""
 "Insert new user data and press \"save\" when done.\n"
 "User ID is not shown because it will be generated\n"
 "when you confirm. "
-msgstr "Inserire i dati del nuovo utente e premere"
-"\"salva\" per confermare.\n"
+msgstr ""
+"Inserire i dati del nuovo utente e premere\"salva\" per confermare.\n"
 "L'ID dell'utente non è mostrato perché sarà autogenerato\n"
 "al momento della creazione."
 
@@ -362,3 +497,14 @@ msgstr "Inserire la password per autenticarsi sul server LDAP:"
 msgid "Password requested"
 msgstr "Password richiesta"
 
+#~ msgid "Insert server name"
+#~ msgstr "Inserire il nome del server"
+
+#~ msgid "Insert bind DN"
+#~ msgstr "Inserire il bind DN"
+
+#~ msgid "Insert base DN"
+#~ msgstr "Inserire il base DN"
+
+#~ msgid "Insert group organizational unit"
+#~ msgstr "Inserire l'organizational unit dei gruppi"

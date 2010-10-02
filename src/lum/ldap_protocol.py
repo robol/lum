@@ -297,7 +297,7 @@ class Connection():
         try:
             self.__ldap.modify_s(old_dn, ldap.modlist.modifyModlist(old_user.to_ldif(), new_user.to_ldif()))
         except ldap.INSUFFICIENT_ACCESS:
-            raise LumInsufficientAccessError("Insufficient accesso to modify user")
+            raise LumInsufficientPermissionsError("Insufficient accesso to modify user")
     
     def add_group(self, group_name, gid = None):
         """Add a new group, autodetermining gid."""

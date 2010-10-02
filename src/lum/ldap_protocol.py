@@ -262,8 +262,6 @@ class Connection():
 
     def add_user(self, user, modify = False):
         """
-        if result_type == ldap.RES_SEARCH_RESULT:
-            raise StopIteration
         Add a user to the LDAP database
         """
         users_ou = self.__users_ou
@@ -403,15 +401,10 @@ class Connection():
         matching_users = self.__ldap.search_s(self.__users_ou,
                                               ldap.SCOPE_ONELEVEL,
                                               "gidNumber=%s" % gid)
-
-
         for dn, user in matching_users:
             users.append(user['uid'][0])
 
         return users
-
-        
-                                       
 
     def change_password(self, uid, password):
         """Change password of selected user. If called when

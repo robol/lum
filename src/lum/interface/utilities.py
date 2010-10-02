@@ -38,6 +38,18 @@ def show_error_dialog(message):
     dialog.run()
     dialog.destroy()
 
+def show_info_dialog(message):
+    """Show an information dialog"""
+    
+    dialog = gtk.MessageDialog(type = gtk.MESSAGE_INFO,
+                               buttons = gtk.BUTTONS_OK)
+    dialog.set_title("Ldap User Manager")
+    dialog.set_markup(message)
+
+    dialog.run()
+    dialog.destroy()
+    
+
 
 def ask_question(message):
     """Ask a question to the user"""

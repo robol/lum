@@ -20,7 +20,7 @@ pygtk.require("2.0")
 # Import modules from lum
 from lum.ldap_protocol import UserModel, Connection
 from lum.configuration import Configuration
-from lum.exceptions import LumError
+from lum.exceptions import *
 
 # Import interface
 from about import lumAbout
@@ -29,8 +29,9 @@ from connect_dialog import lumConnectDialog
 from password_entry import lumPasswordEntry
 from edit_user_dialog import lumEditUserDialog
 from menu_item import lumTreeViewMenu
+from new_group_dialog import lumNewGroupDialog
 from change_user_password_dialog import lumChangeUserPasswordDialog
-from utilities import _, show_error_dialog, ask_question, create_builder
+from utilities import _, show_error_dialog, ask_question, create_builder, show_info_dialog
 
 lum_application = None
 
@@ -47,10 +48,14 @@ class lumApp(gobject.GObject):
         else:
             lum_application = self
     
-        # Images
+        # Images loaded here to be used in the code
         self.__user_image = gtk.Image()
-        self.__user_image.set_from_file(os.path.join(self.__datapath, "ui/user.png"))
+        self.__user_image.set_from_file(os.path.join(self.__datapath, "ui", "user.png"))
         self.__user_image = self.__user_image.get_pixbuf()
+
+        self.__group_image = gtk.Image()
+        self.__group_image.set_from_file(os.path.join(self.__datapath, "ui", "group.png"))
+        self.__group_image = self.__group_image.get_pixbuf()
         
         # Internal space for usermodels
         # Usermodel will be saved in a dictionary using uids as keys,
@@ -81,9 +86,15 @@ class lumApp(gobject.GObject):
             'on_reload_user_list_menu_item_activate':     self.reload_user_list,
             'on_delete_user_menu_item_activate':        self.delete_user,
             'on_filter_entry_changed':                    self.refilter,
+            'on_filter_group_entry_changed':              self.group_refilter,
             'on_forget_password_menu_item_activate':    self.forget_password,
             'on_edit_user_menu_item_activate':            self.edit_user,
             'on_change_password_menu_item_activate': self.change_password,
+
+            # Group menu callbacks
+            'on_new_group_menuitem_activate':    self.new_group,
+            'on_delete_group_menuitem_activate': self.delete_group,
+            'on_properties_group_menuitem_activate': self.group_properties,
             
             # Popup menus
             'on_user_treeview_button_press_event':         self.on_user_treeview_button_press_event,
@@ -95,17 +106,27 @@ class lumApp(gobject.GObject):
         # Create initial configuration
         self.__configuration = Configuration()
         
-        # Activate filter
-        self.__treefilter = self.__builder.get_object("user_store").filter_new()
-        self.__treefilter.set_visible_func(self.filter_users)
+        # Activate filter on users...
+        self.__users_treefilter = self.__builder.get_object("user_store").filter_new()
+        self.__users_treefilter.set_visible_func(self.filter_users)
+
+        # ...and groups
+        self.__group_treefilter = self.__builder.get_object("group_store").filter_new()
+        self.__group_treefilter.set_visible_func(self.filter_groups)
         
         # Change the model of the treeview
-        self.__builder.get_object("user_treeview").set_model(self.__treefilter)
+        self.__builder.get_object("user_treeview").set_model(self.__users_treefilter)
+        self.__builder.get_object("group_treeview").set_model(self.__group_treefilter)
         
-        # Make the list sorted
+        # Make the list sorted, for users...
         user_store = self.__builder.get_object("user_store")
-        user_store.set_sort_func(1, self.sort)
+        user_store.set_sort_func(1, self.sort_users)
         user_store.set_sort_column_id(1, gtk.SORT_ASCENDING)
+
+        # ...and groups
+        group_store = self.__builder.get_object("group_store")
+        group_store.set_sort_func(1, self.sort_groups)
+        group_store.set_sort_column_id(1, gtk.SORT_ASCENDING)
         
         # Some initial values
         self.__uri, self.__bind_dn = None, None
@@ -115,10 +136,22 @@ class lumApp(gobject.GObject):
 
     def __del__(self):
         lum_application = None
-        
     
-    def sort(self, model, iter1, iter2):
+    def sort_users(self, model, iter1, iter2):
         return (model.get_value(iter1, 0).lower() > model.get_value(iter2, 0).lower())
+    
+    def sort_groups(self, model, iter1, iter2):
+        """Sort groups, None is greater then everything"""
+        group_1 = model.get_value(iter1, 1)
+        group_2 = model.get_value(iter2, 1)
+
+        # None is greater than everything because this make things
+        # work, but I can't get why yet.
+        if group_1 is None:
+            return True
+        if group_2 is None:
+            return False
+        return (group_1.lower() > group_2.lower())
         
     def start(self):
         """Start lumApp"""
@@ -192,7 +225,7 @@ class lumApp(gobject.GObject):
             
     def filter_users(self, model, treeiter, user_data = None):
         """Filter users based on what is placed in filter_entry"""
-        key = self.__builder.get_object("filter_entry").get_text()
+        key = self.__builder.get_object("filter_user_entry").get_text()
         
         if key == "":
             return True
@@ -204,6 +237,17 @@ class lumApp(gobject.GObject):
         if key in model.get_value(treeiter, 2).lower():
             return True
             
+        return False
+
+    def filter_groups(self, model, treeiter, user_data = None):
+        """Filter group based on user insertion in the filter entry"""
+        key = self.__builder.get_object("filter_group_entry").get_text()
+        if key == "":
+            return True
+
+        if key in model.get_value(treeiter, 1).lower():
+            return True
+
         return False
 
     def __get_selected_user(self):
@@ -227,6 +271,26 @@ class lumApp(gobject.GObject):
         except KeyError:
             show_error_dialog(_("Internal application error! Try reloading user list"))
             return (None, None)
+
+    def __get_selected_group(self):
+        """Obtain selected group and a treeview iter
+        of it or None, None if there is no group selected"""
+
+        treeview = self.__builder.get_object("group_treeview")
+        
+        # t_model is the GtkTreeFilterModel and t_iter refers
+        # to the entry in it
+        t_model, t_iter = treeview.get_selection().get_selected()
+
+        if t_iter is None:
+            # Then there is nothing selected
+            return (None, None)
+
+        group = t_model.get_value(t_iter, 1)
+
+        # Return group_name and iter to the group_store and not
+        # to the GtkTreeFilterModel
+        return (group, t_model.convert_iter_to_child_iter(t_iter))
         
 
     def ask_password(self):
@@ -258,7 +322,11 @@ class lumApp(gobject.GObject):
         
     def refilter(self, entry):
         """Callback to refilter treeview"""
-        self.__treefilter.refilter()
+        self.__users_treefilter.refilter()
+
+    def group_refilter(self, entry):
+        """Callback to refilter groups"""
+        self.__group_treefilter.refilter()
         
         
     def show_about_dialog(self, menu_item):
@@ -285,13 +353,29 @@ class lumApp(gobject.GObject):
         """Delete the selected user"""
         usermodel, t_iter = self.__get_selected_user()
 
+        if t_iter is None:
+            show_info_dialog(_("Select a user to delete!"))
+            return
+
+        # Users tend to delete many things they do not want
+        # to delete
+        if not ask_question(_("Really delete user <b>%s</b>?") % usermodel.get_username()):
+            return
+
+        # Delete user from ldap first
+        try:
+            self.__connection.delete_user(usermodel.get_dn())
+        except LumInsufficientPermissionsError:
+            show_error_dialog(_("Insufficient permissions to delete user"))
+            return None
+
         # Delete user from internal dictionary
         self.__user_model_store.pop(usermodel.get_username())
 
         # Delete user from ldap and from the user_store
         user_store = self.__builder.get_object("user_store")
         user_store.remove(t_iter)
-        self.__connection.delete_user(usermodel.get_dn())
+
         self.statusbar_update(_("User %s deleted.") % usermodel.get_username())
             
     def forget_password(self, menu_item = None):
@@ -314,15 +398,31 @@ class lumApp(gobject.GObject):
         if self.__check_connection():
             self.clear_user_list()
             users = self.__connection.get_users()
-            self.__group_dict = self.__connection.get_groups()
+            self.update_group_list()
             for user in users:
                 self.push_user(user)
+
+    def clear_group_list(self):
+        """Clear group list"""
+        self.__builder.get_object("group_store").clear()
+
+    def update_group_list(self, menu_item = None):
+        """Update group list and internal group dictionary"""
+        if self.__check_connection():
+            self.clear_group_list()
+            self.__group_dict = self.__connection.get_groups()
+            model = self.__builder.get_object("group_store")
+            for gid, group in self.__group_dict.items():
+                model.append((self.__group_image,
+                              group, int(gid)))
+
             
                 
     def edit_user(self, menu_item = None):
         """Edit selected user"""
         usermodel, t_iter = self.__get_selected_user()
         if t_iter is None: 
+            show_info_dialog(_("Select a user to modify"))
             return
 
         # Create the dialog
@@ -333,7 +433,12 @@ class lumApp(gobject.GObject):
         
         new_usermodel = dialog.run()
         if (new_usermodel is not None):
-            self.__connection.modify_user(old_user, new_usermodel)
+
+            try:
+                self.__connection.modify_user(old_user, new_usermodel)
+            except LumInsufficientPermissionsError:
+                show_error_dialog(_("Insufficient permissions to edit user"))
+                return None
 
             self.statusbar_update(_("User %s successfully modified") % new_usermodel.get_username())
             
@@ -344,6 +449,7 @@ class lumApp(gobject.GObject):
         """Change password of selected user"""
         usermodel, t_iter = self.__get_selected_user()
         if t_iter is None:
+            show_info_dialog(_("You need to select a user to change its password"))
             return
 
         password_dialog = lumChangeUserPasswordDialog(self.__datapath, usermodel.get_username())
@@ -351,7 +457,11 @@ class lumApp(gobject.GObject):
         if new_password is None:
             return False
         else:
-            self.__connection.change_password(usermodel.get_username(), new_password)
+            try:
+                self.__connection.change_password(usermodel.get_username(), new_password)
+            except LumInsufficientPermissionsError:
+                show_error_dialog(_("Insufficient permissions to change user password"))
+                return False
             return True
 
                 
@@ -386,15 +496,117 @@ class lumApp(gobject.GObject):
             return None
 
         new_user_dialog = lumNewUserDialog(self.__datapath, self.__connection)
-        new_user_dialog.run()
+       
+        try:
+            new_user_dialog.run()
+        except LumInsufficientPermissionsError:
+            show_error_dialog(_("Insufficient permissions to accomplish operation"))
+            return None
         
         if new_user_dialog.usermodel is not None:
             if self.__check_connection():
                 new_user_dialog.usermodel.set_dn("uid=%s,%s" % (new_user_dialog.usermodel.get_username(),
                                                               self.__users_ou))
-                self.__connection.add_user(new_user_dialog.usermodel)
+
+                try:
+                    self.__connection.add_user(new_user_dialog.usermodel)
+                except LumAlreadyExistsError:
+                    show_error_dialog(_("User <b>%s</b> already exists in the ldap tree, " + 
+                                        "cannot create one more") % new_user_dialog.usermodel.get_username())
+                    return None
+                except LumInsufficientPermissionsError:
+                    show_error_dialog(_("Insufficient permissions to create the user"))
+                    return None
                 self.statusbar_update(_("User %s created correctly.") % new_user_dialog.usermodel.get_username())
                 self.push_user(new_user_dialog.usermodel)
+
+
+    def new_group(self, menu_item = None):
+        """Create a new group catching the callback from menu"""
+        if not self.__check_connection():
+            return None
+
+        new_group_dialog = lumNewGroupDialog(self.__datapath,
+                                             self.__connection)
+        group_name, gid = new_group_dialog.run()
+
+        if group_name is not None:
+            try:
+                self.__connection.add_group(group_name, gid)
+            except LumInsufficientPermissionsError:
+                show_error_dialog(_("Insufficient permissions to create group"))
+                return None
+            except LumAlreadyExistsError:
+                show_error_dialog(_("Group <b>%s</b> already exists in the database," + 
+                                    " cannot add one more.") % group_name)
+                return None
+
+            self.reload_user_list()
+            self.statusbar_update(_("Group %s successfully created.") % group_name)
+
+    def delete_group(self, menu_item = None):
+        """Delete the group selected in the group_treeview"""
+        if not self.__check_connection():
+            return None
+
+        group, t_iter = self.__get_selected_group()
+
+        # If nothing is selected we can return and do nothing.
+        # We should only notify the user that what he would like
+        # to do can not be done now.
+        if t_iter is None:
+            show_info_dialog(_("Select a group before asking for its deletion."))
+            return
+
+        # Users tend to delete many things they do not want to delete
+        if not ask_question(_("Really delete group <b>%s</b>?") % group):
+            return
+
+        # Finally we delete the group
+        try:
+            self.__connection.delete_group(group)
+        except LumInsufficientPermissionsError:
+            show_error_dialog(_("Insufficient permissions to delete group"))
+            return None
+
+        # and delete the group from the treeview
+        self.__builder.get_object("group_store").remove(t_iter)
+
+        # Finally show the successful operation in the statusbar
+        self.statusbar_update(_("Group %s successfully deleted.") % group)
+
+    def group_properties(self, menu_item = None):
+        """View selected group properties, such as members and
+        gidNumber"""
+
+        if not self.__check_connection():
+            return None
+
+        group, t_iter = self.__get_selected_group()
+        if t_iter is None:
+            show_info_dialog(_("Select a group to view its properties"))
+
+        # Get group_members, that are the only interesting property
+        # we can get from ldap
+        group_members = self.__connection.get_members(group)
+
+        # Get gid
+        model = self.__builder.get_object("group_store")
+        gid = model.get_value(t_iter, 2)
+
+        # Show info dialog
+        dialog_text =  _("<b>Name:</b> %s\n") % group
+        dialog_text += "<b>Gid</b>: %s\n" % gid
+        if len(group_members) > 0:
+            dialog_text += _("<b>Members</b>: ")
+            dialog_text += ", ".join(group_members)
+        else:
+            dialog_text += _("This group is empty.")
+
+        # Show info dialog.
+        show_info_dialog(dialog_text)
+
+ 
             
     def __check_connection(self):
         if self.__connection is None:

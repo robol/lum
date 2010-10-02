@@ -350,6 +350,46 @@ class Connection():
         """
         self.__ldap.delete_s("cn=%s,%s" % (group_name,
                                            self.__groups_ou))
+
+    def get_members(self, group_name):
+        """Obtain all the members of group_name"""
+        
+        # There are two types of group members in
+        # an ldap tree:
+        # 1) Users that have a group as primary group, so
+        #    they have a gidNumber field referring to group
+        #    ID.
+        # 2) Users that are listed in the memberUid of the
+        #    group.
+
+        users = []
+
+        group_dn, group_data = self.__ldap.search_s(self.__groups_ou,
+                                                    ldap.SCOPE_ONELEVEL,
+                                                    "cn=%s" % group_name)[0]
+
+        
+        # Get users in memberUid field of the group
+        if group_data.has_key("memberUid"):
+            for user in group_data['memberUid']:
+                users.append(user)
+
+        # Get group gid
+        gid = group_data['gidNumber'][0]
+
+        # and then find users that have gidNumber referring to
+        # the group
+        matching_users = self.__ldap.search_s(self.__users_ou,
+                                              ldap.SCOPE_ONELEVEL,
+                                              "gidNumber=%s" % gid)
+
+
+        for dn, user in matching_users:
+            users.append(user['uid'][0])
+
+        return users
+
+        
                                        
 
     def change_password(self, uid, password):

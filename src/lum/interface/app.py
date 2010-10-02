@@ -539,7 +539,31 @@ class lumApp(gobject.GObject):
         if not self.__check_connection():
             return None
 
-        print "Group Properties called"
+        group, t_iter = self.__get_selected_group()
+        if t_iter is None:
+            show_info_dialog(_("Select a group to view its properties"))
+
+        # Get group_members, that are the only interesting property
+        # we can get from ldap
+        group_members = self.__connection.get_members(group)
+
+        # Get gid
+        model = self.__builder.get_object("group_store")
+        gid = model.get_value(t_iter, 2)
+
+        # Show info dialog
+        dialog_text =  _("<b>Name:</b> %s\n") % group
+        dialog_text += "<b>Gid</b>: %s\n" % gid
+        if len(group_members) > 0:
+            dialog_text += _("<b>Members</b>: ")
+            dialog_text += ", ".join(group_members)
+        else:
+            dialog_text += _("This group is empty.")
+
+        # Show info dialog.
+        show_info_dialog(dialog_text)
+
+ 
             
     def __check_connection(self):
         if self.__connection is None:

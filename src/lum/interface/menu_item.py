@@ -5,7 +5,7 @@
 import gtk
 from utilities import _
 
-class lumTreeViewMenu(gtk.Menu):
+class lumUserTreeViewMenu(gtk.Menu):
 
     def __init__(self, parent):
         gtk.Menu.__init__(self)
@@ -37,3 +37,27 @@ class lumTreeViewMenu(gtk.Menu):
     
     def change_password(self, button):
         self.__parent.change_password()
+
+
+class lumGroupTreeViewMenu(gtk.Menu):
+
+    def __init__(self, parent):
+        gtk.Menu.__init__(self)
+
+        # Save internal data
+        self.__parent = parent
+        self.__delete_button = gtk.MenuItem(_("Delete"))
+        self.__properties_button = gtk.MenuItem(_("Properties"))
+        
+        for it in (self.__delete_button, self.__properties_button):
+            self.append(it)
+            it.show()
+
+        self.__delete_button.connect("activate", self.delete_cb)
+        self.__properties_button.connect("activate", self.properties_cb)
+
+    def delete_cb(self, menu_item):
+        self.__parent.delete_group()
+
+    def properties_cb(self, menu_item):
+        self.__parent.group_properties()

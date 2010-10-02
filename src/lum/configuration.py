@@ -96,6 +96,15 @@ class Configuration():
         
     def remove_section(self, section):
         self.__conf.remove_section(section)
+        if self.__persistent:
+            try:
+                self.lock()
+                with open(self.__conf_file, "w") as conf_file:
+                    self.__conf.write(conf_file)
+            except OSError:
+                self.__persistent = False
+            finally:
+                self.unlock()
         
     def has_section(self, section):
         return self.__conf.has_section(section)

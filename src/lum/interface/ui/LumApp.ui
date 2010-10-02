@@ -389,6 +389,7 @@
                         <property name="model">group_store</property>
                         <property name="headers_clickable">False</property>
                         <property name="search_column">0</property>
+                        <signal name="button_press_event" handler="on_group_treeview_button_press_event"/>
                         <child>
                           <object class="GtkTreeViewColumn" id="treeviewcolumn2">
                             <property name="sizing">autosize</property>

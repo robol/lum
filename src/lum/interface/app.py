@@ -28,7 +28,7 @@ from new_user_dialog import lumNewUserDialog
 from connect_dialog import lumConnectDialog
 from password_entry import lumPasswordEntry
 from edit_user_dialog import lumEditUserDialog
-from menu_item import lumTreeViewMenu
+from menu_item import lumUserTreeViewMenu, lumGroupTreeViewMenu
 from new_group_dialog import lumNewGroupDialog
 from change_user_password_dialog import lumChangeUserPasswordDialog
 from utilities import _, show_error_dialog, ask_question, create_builder, show_info_dialog
@@ -98,6 +98,7 @@ class lumApp(gobject.GObject):
             
             # Popup menus
             'on_user_treeview_button_press_event':         self.on_user_treeview_button_press_event,
+            'on_group_treeview_button_press_event':        self.on_group_treeview_button_press_event,
         }
         
         # Autoconnect signals
@@ -132,7 +133,8 @@ class lumApp(gobject.GObject):
         self.__uri, self.__bind_dn = None, None
         
         # Create popup menu
-        self.__popup_menu = lumTreeViewMenu(self)
+        self.__user_popup_menu = lumUserTreeViewMenu(self)
+        self.__group_popup_menu = lumGroupTreeViewMenu(self)
 
     def __del__(self):
         lum_application = None
@@ -346,8 +348,25 @@ class lumApp(gobject.GObject):
             user_treeview.grab_focus()
             user_treeview.set_cursor(path, col, 0)
             usermodel, t_iter = self.__get_selected_user()
-            self.__popup_menu.username = usermodel.get_username()
-            self.__popup_menu.popup(None, None, None, event.button, event.time)
+            self.__user_popup_menu.username = usermodel.get_username()
+            self.__user_popup_menu.popup(None, None, None, event.button, event.time)
+
+    def on_group_treeview_button_press_event(self, group_treeview, event):
+        """Catch button press on group treeview and show popup
+        menu if the user right-clicked."""
+        if event.button == 3:
+            x = int(event.x)
+            y = int(event.y)
+            pathinfo = group_treeview.get_path_at_pos(x,y)
+            if pathinfo is None:
+                return
+
+            path, col, cellx, celly = pathinfo
+            group_treeview.grab_focus()
+            group_treeview.set_cursor(path, col, 0)
+            group, t_iter = self.__get_selected_group()
+            self.__group_popup_menu.group = group
+            self.__group_popup_menu.popup(None, None, None, event.button, event.time)
         
     def delete_user(self, menu_item = None):
         """Delete the selected user"""
@@ -559,7 +578,12 @@ class lumApp(gobject.GObject):
             return
 
         # Users tend to delete many things they do not want to delete
-        if not ask_question(_("Really delete group <b>%s</b>?") % group):
+        if len(self.__connection.get_members(group)) == 0:
+            question = _("Really delete group <b>%s</b>?") % group
+        else:
+            question = _("Really delete the non empty group <b>%s</b>?" +
+                         " This will lead to integrity problems.") % group
+        if not ask_question(question):
             return
 
         # Finally we delete the group

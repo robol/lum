@@ -333,9 +333,24 @@ class Connection():
     
     def delete_user(self, user):
         """
-        Delete an user given the uid or the UserModel
+        Delete an user given the dn, the UserModel
+        or even the uid
         """
+        if isinstance(user, UserModel):
+            user = "uid=%s,%s" % (user.get_username(), 
+                                  self.__users_ou)
+        elif not self.__users_ou in user:
+            user = "uid=%s,%s" % (user,
+                                  self.__users_ou)
         self.__ldap.delete_s(user)
+
+    def delete_group(self, group_name):
+        """
+        Delete a group given the name. 
+        """
+        self.__ldap.delete_s("cn=%s,%s" % (group_name,
+                                           self.__groups_ou))
+                                       
 
     def change_password(self, uid, password):
         """Change password of selected user. If called when

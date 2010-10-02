@@ -271,6 +271,26 @@ class lumApp(gobject.GObject):
         except KeyError:
             show_error_dialog(_("Internal application error! Try reloading user list"))
             return (None, None)
+
+    def __get_selected_group(self):
+        """Obtain selected group and a treeview iter
+        of it or None, None if there is no group selected"""
+
+        treeview = self.__builder.get_object("group_treeview")
+        
+        # t_model is the GtkTreeFilterModel and t_iter refers
+        # to the entry in it
+        t_model, t_iter = treeview.get_selection().get_selected()
+
+        if t_iter is None:
+            # Then there is nothing selected
+            return (None, None)
+
+        group = t_model.get_value(t_iter, 1)
+
+        # Return group_name and iter to the group_store and not
+        # to the GtkTreeFilterModel
+        return (group, t_model.convert_iter_to_child_iter(t_iter))
         
 
     def ask_password(self):
@@ -335,6 +355,11 @@ class lumApp(gobject.GObject):
 
         if t_iter is None:
             show_info_dialog(_("Select a user to delete!"))
+            return
+
+        # Users tend to delete many things they do not want
+        # to delete
+        if not ask_question(_("Really delete user <b>%s</b>?") % usermodel.get_username()):
             return
 
         # Delete user from internal dictionary
@@ -465,6 +490,7 @@ class lumApp(gobject.GObject):
                 self.statusbar_update(_("User %s created correctly.") % new_user_dialog.usermodel.get_username())
                 self.push_user(new_user_dialog.usermodel)
 
+
     def new_group(self, menu_item = None):
         """Create a new group catching the callback from menu"""
         if not self.__check_connection():
@@ -477,13 +503,34 @@ class lumApp(gobject.GObject):
         if group_name is not None:
             self.__connection.add_group(group_name, gid)
             self.reload_user_list()
+            self.statusbar_update(_("Group %s successfully created.") % group_name)
 
     def delete_group(self, menu_item = None):
         """Delete the group selected in the group_treeview"""
         if not self.__check_connection():
             return None
 
-        print "Group deletion requested"
+        group, t_iter = self.__get_selected_group()
+
+        # If nothing is selected we can return and do nothing.
+        # We should only notify the user that what he would like
+        # to do can not be done now.
+        if t_iter is None:
+            show_info_dialog(_("Select a group before asking for its deletion."))
+            return
+
+        # Users tend to delete many things they do not want to delete
+        if not ask_question(_("Really delete group <b>%s</b>?") % group):
+            return
+
+        # Finally we delete the group
+        self.__connection.delete_group(group)
+
+        # and delete the group from the treeview
+        self.__builder.get_object("group_store").remove(t_iter)
+
+        # Finally show the successful operation in the statusbar
+        self.statusbar_update(_("Group %s successfully deleted.") % group)
 
     def group_properties(self, menu_item = None):
         """View selected group properties, such as members and

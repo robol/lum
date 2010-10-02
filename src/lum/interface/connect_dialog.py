@@ -3,6 +3,7 @@
 
 import gtk, os
 from utilities import _, create_builder
+from new_server_dialog import lumNewServerDialog
 
 class lumConnectDialog():
 
@@ -103,11 +104,23 @@ class lumConnectDialog():
         
     def on_add_button_cb(self, button):
         """Add a new entry"""
+        # Create new server dialog
+        dialog = lumNewServerDialog()
         t_model = self.__builder.get_object("server_store")
-        t_model.append((self.__pixbuf, _("Insert server name"), 
-                        _("Insert bind DN"), _("Insert base DN"),
-                        _("Insert users organizational unit"), 
-                        _("Insert group organizational unit")))
+        uri, bind_dn, base_dn, users_ou, groups_ou = dialog.run()
+        if uri is None:
+            return None
+        it = t_model.append((self.__pixbuf, uri, bind_dn,
+                             base_dn, users_ou, groups_ou))
+
+        # Call this to update the configuration
+        if not self.__configuration.has_section(uri):
+            self.__configuration.add_section(uri)
+
+        self.__configuration.set(uri, "bind_dn", bind_dn)
+        self.__configuration.set(uri, "base_dn", base_dn)
+        self.__configuration.set(uri, "users_ou", users_ou)
+        self.__configuration.set(uri, "groups_ou", groups_ou)
         
         
     def on_uri_edited(self, renderer, path, new_text):

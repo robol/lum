@@ -537,7 +537,10 @@ class lumApp(gobject.GObject):
                     show_error_dialog(_("Insufficient permissions to create the user"))
                     return None
                 self.statusbar_update(_("User %s created correctly.") % new_user_dialog.usermodel.get_username())
-                self.push_user(new_user_dialog.usermodel)
+
+                # Reload user list because the dialog may have created a new group
+                # and then pushing the user will not update the group list too
+                self.reload_user_list()
 
 
     def new_group(self, menu_item = None):
@@ -560,7 +563,7 @@ class lumApp(gobject.GObject):
                                     " cannot add one more.") % group_name)
                 return None
 
-            self.reload_user_list()
+            self.__builder.get_object("group_store").append((self.__group_image, group_name, gid))
             self.statusbar_update(_("Group %s successfully created.") % group_name)
 
     def delete_group(self, menu_item = None):

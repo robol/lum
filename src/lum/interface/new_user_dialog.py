@@ -70,7 +70,7 @@ class lumNewUserDialog():
             # catched by our parent (i.e. lumApp)
             if gid is None:
                 if ask_question(_("The group %s doesn't exists, create it now?") % group):
-                    self._window.destroy()
+                    self.__window.destroy()
                     self.__connection.add_group(group)
                     gid = self.__connection.gid_from_group(group)
                 else:

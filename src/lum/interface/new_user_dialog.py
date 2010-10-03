@@ -88,6 +88,10 @@ class lumNewUserDialog():
             self.usermodel.set_home(home)
             self.usermodel.set_shell(shell)
             self.usermodel.set_email(email)
+
+        else:
+            
+            self.__window.destroy()
             
             
         

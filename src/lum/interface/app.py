@@ -525,7 +525,7 @@ class lumApp(gobject.GObject):
         if new_user_dialog.usermodel is not None:
             if self.__check_connection():
                 new_user_dialog.usermodel.set_dn("uid=%s,%s" % (new_user_dialog.usermodel.get_username(),
-                                                              self.__users_ou))
+                                                                self.__users_ou))
 
                 try:
                     self.__connection.add_user(new_user_dialog.usermodel)

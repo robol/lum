@@ -248,16 +248,11 @@ class lumApp(gobject.GObject):
         if t_iter is None:
             # Then nothing is selected and we can return None
             return (None, None)
-        username = t_model.get_value(t_iter, 0)
-        try:
-            usermodel = self.__user_model_store[username]
-            
-            # t_model is the GtkTreeFilterModel - or something similar
-            # so we need to return the user_store iter that is his child.
-            return (usermodel, t_model.convert_iter_to_child_iter(t_iter))
-        except KeyError:
-            show_error_dialog(_("Internal application error! Try reloading user list"))
-            return (None, None)
+
+        it = t_model.convert_iter_to_child_iter(t_iter)
+        usermodel = self.__user_store.get_usermodel(it)
+
+        return usermodel, it
 
     def __get_selected_group(self):
         """Obtain selected group and a treeview iter
@@ -429,7 +424,7 @@ class lumApp(gobject.GObject):
         ldap_data = usermodel.to_ldif()
         ldap_dn   = "uid=%s,ou=%s" % (usermodel.get_username(), self.__users_ou)
         old_user = UserModel((ldap_dn, ldap_data))
-        dialog = lumEditUserDialog(self.__datapath, usermodel, self.__group_dict)
+        dialog = lumEditUserDialog(self.__datapath, usermodel, self.__group_store)
         
         new_usermodel = dialog.run()
         if (new_usermodel is not None):

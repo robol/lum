@@ -7,7 +7,7 @@ from utilities import _, create_builder
 
 class lumEditUserDialog():
 
-    def __init__(self, datapath, usermodel, group_dict):
+    def __init__(self, datapath, usermodel, group_store):
         
         self.__builder = create_builder("LumEditUserDialog.ui")
         self.__dialog = self.__builder.get_object("dialog")
@@ -21,14 +21,17 @@ class lumEditUserDialog():
         self.__sn_entry.set_text(usermodel.get_surname())
         
         self.__group_model = self.__builder.get_object("group_model")
-                                           
+                                       
+        # Copy group data in the model
         self.__group_iter = None
-        group_list = group_dict.items()
-        group_list.sort()
-        for gid, group in group_list:
-            it = self.__group_model.append((int(gid), group))
-            if gid == usermodel.get_gid():
+        it = group_store.get_iter_first()
+        while it is not None:
+            gid = group_store.get_gid(it)
+            group = group_store.get_group_name(it)
+            new_it = self.__group_model.append((int(gid), group))
+            if gid == int(usermodel.get_gid()):
                 self.__group_iter = it
+            it = group_store.iter_next(it)
                 
         if (self.__group_iter is not None):
             self.__group_combobox.set_active_iter(self.__group_iter)

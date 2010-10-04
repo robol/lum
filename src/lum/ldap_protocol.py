@@ -5,6 +5,7 @@ import ldap, ldap.modlist, re, ldif, sys, random
 from crypt import crypt
 from exceptions import *
 from configuration import Configuration
+import gobject
 
 # This is just for debug
 ldifwriter = ldif.LDIFWriter(sys.stdout)
@@ -27,9 +28,11 @@ def random_string():
 
     
 
-class UserModel():
+class UserModel(gobject.GObject):
 
     def __init__(self, ldap_output = None):
+
+        gobject.GObject.__init__(self)
 
         # Create an internatl dictionary that represent
         # ldap data

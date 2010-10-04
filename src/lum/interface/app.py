@@ -31,7 +31,7 @@ from edit_user_dialog import lumEditUserDialog
 from menu_item import lumUserTreeViewMenu, lumGroupTreeViewMenu
 from new_group_dialog import lumNewGroupDialog
 from change_user_password_dialog import lumChangeUserPasswordDialog
-from utilities import _, show_error_dialog, ask_question, create_builder, show_info_dialog
+from utilities import _, show_error_dialog, ask_question, create_builder, show_info_dialog, UserStore, GroupStore
 
 lum_application = None
 
@@ -48,19 +48,8 @@ class lumApp(gobject.GObject):
         else:
             lum_application = self
     
-        # Images loaded here to be used in the code
-        self.__user_image = gtk.Image()
-        self.__user_image.set_from_file(os.path.join(self.__datapath, "ui", "user.png"))
-        self.__user_image = self.__user_image.get_pixbuf()
-
-        self.__group_image = gtk.Image()
-        self.__group_image.set_from_file(os.path.join(self.__datapath, "ui", "group.png"))
-        self.__group_image = self.__group_image.get_pixbuf()
-        
-        # Internal space for usermodels
-        # Usermodel will be saved in a dictionary using uids as keys,
-        # so it will be easy to get them even from entry in the treeview
-        self.__user_model_store = {}
+        self.__group_store = GroupStore(self.__datapath)
+        self.__user_store = UserStore(self.__datapath, self.__group_store)
         
         # Gobject constructor
         gobject.GObject.__init__ (self)
@@ -108,11 +97,11 @@ class lumApp(gobject.GObject):
         self.__configuration = Configuration()
         
         # Activate filter on users...
-        self.__users_treefilter = self.__builder.get_object("user_store").filter_new()
+        self.__users_treefilter = self.__user_store.filter_new()
         self.__users_treefilter.set_visible_func(self.filter_users)
 
         # ...and groups
-        self.__group_treefilter = self.__builder.get_object("group_store").filter_new()
+        self.__group_treefilter = self.__group_store.filter_new()
         self.__group_treefilter.set_visible_func(self.filter_groups)
         
         # Change the model of the treeview
@@ -120,14 +109,12 @@ class lumApp(gobject.GObject):
         self.__builder.get_object("group_treeview").set_model(self.__group_treefilter)
         
         # Make the list sorted, for users...
-        user_store = self.__builder.get_object("user_store")
-        user_store.set_sort_func(1, self.sort_users)
-        user_store.set_sort_column_id(1, gtk.SORT_ASCENDING)
+        self.__user_store.set_sort_func(1, self.sort_users)
+        self.__user_store.set_sort_column_id(1, gtk.SORT_ASCENDING)
 
         # ...and groups
-        group_store = self.__builder.get_object("group_store")
-        group_store.set_sort_func(1, self.sort_groups)
-        group_store.set_sort_column_id(1, gtk.SORT_ASCENDING)
+        self.__group_store.set_sort_func(1, self.sort_groups)
+        self.__group_store.set_sort_column_id(1, gtk.SORT_ASCENDING)
         
         # Some initial values
         self.__uri, self.__bind_dn = None, None
@@ -140,7 +127,7 @@ class lumApp(gobject.GObject):
         lum_application = None
     
     def sort_users(self, model, iter1, iter2):
-        return (model.get_value(iter1, 0).lower() > model.get_value(iter2, 0).lower())
+        return (model.get_value(iter1, 1).lower() > model.get_value(iter2, 1).lower())
     
     def sort_groups(self, model, iter1, iter2):
         """Sort groups, None is greater then everything"""
@@ -162,8 +149,6 @@ class lumApp(gobject.GObject):
         self.__window.show_all()
         self.__connection = None
         
-        self.__group_dict = dict()
-
         
     def connect(self, menu_item = None):
         """Connect to server"""
@@ -423,17 +408,13 @@ class lumApp(gobject.GObject):
 
     def clear_group_list(self):
         """Clear group list"""
-        self.__builder.get_object("group_store").clear()
+        self.__group_store.clear()
 
     def update_group_list(self, menu_item = None):
         """Update group list and internal group dictionary"""
         if self.__check_connection():
-            self.clear_group_list()
-            self.__group_dict = self.__connection.get_groups()
-            model = self.__builder.get_object("group_store")
-            for gid, group in self.__group_dict.items():
-                model.append((self.__group_image,
-                              group, int(gid)))
+            for gid, group in self.__connection.get_groups().items():
+                self.__group_store.append(gid, group)
 
             
                 
@@ -486,23 +467,7 @@ class lumApp(gobject.GObject):
                 
     def push_user(self, usermodel):
         """Add a user on the treeview in the main window"""
-        user_store = self.__builder.get_object("user_store")
-
-        # Try to load group name from group_dict. If it's not
-        # present try reloading group_dict from ldap and
-        # if it's not present event after that say "unknown"
-        if self.__group_dict.has_key(usermodel.get_gid()):
-            group = self.__group_dict[usermodel.get_gid()]
-        else:
-            self.__group_dict = self.__connection.get_groups()
-            if self.__group_dict.has_key(usermodel.get_gid()):
-                group = self.__group_dict[usermodel.get_gid()]
-            else:
-                group = _("unknown")
-
-        user_store.append((usermodel.get_username(), usermodel.get_gecos(),
-                            group, self.__user_image))
-        self.__user_model_store[usermodel.get_username()] = usermodel
+        self.__user_store.append(usermodel)
         
     def statusbar_update(self, message):
         """Update statusbar with new message"""
@@ -563,7 +528,7 @@ class lumApp(gobject.GObject):
                                     " cannot add one more.") % group_name)
                 return None
 
-            self.__builder.get_object("group_store").append((self.__group_image, group_name, gid))
+            self.__group_store.append(gid, group_name)
             self.statusbar_update(_("Group %s successfully created.") % group_name)
 
     def delete_group(self, menu_item = None):
@@ -597,7 +562,7 @@ class lumApp(gobject.GObject):
             return None
 
         # and delete the group from the treeview
-        self.__builder.get_object("group_store").remove(t_iter)
+        self.__group_store.remove(t_iter)
 
         # Finally show the successful operation in the statusbar
         self.statusbar_update(_("Group %s successfully deleted.") % group)
@@ -618,8 +583,7 @@ class lumApp(gobject.GObject):
         group_members = self.__connection.get_members(group)
 
         # Get gid
-        model = self.__builder.get_object("group_store")
-        gid = model.get_value(t_iter, 2)
+        gid = self.__group_store.get_gid(t_iter)
 
         # Show info dialog
         dialog_text =  _("<b>Name:</b> %s\n") % group

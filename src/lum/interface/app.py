@@ -347,11 +347,7 @@ class lumApp(gobject.GObject):
             return None
 
         # Delete user from internal dictionary
-        self.__user_model_store.pop(usermodel.get_username())
-
-        # Delete user from ldap and from the user_store
-        user_store = self.__builder.get_object("user_store")
-        user_store.remove(t_iter)
+        self.__user_store.remove(t_iter)
 
         self.statusbar_update(_("User %s deleted.") % usermodel.get_username())
             

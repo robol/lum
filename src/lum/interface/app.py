@@ -189,11 +189,12 @@ class lumApp(gobject.GObject):
             
     def filter_users(self, model, treeiter, user_data = None):
         """Filter users based on what is placed in filter_entry"""
-        key = self.__builder.get_object("filter_user_entry").get_text()
         
+        # Get key and keep only lower() to make search 
+        # case insensitive. 
+        key = self.__builder.get_object("filter_user_entry").get_text()        
         if key == "":
             return True
-
         key = key.lower()
         
         if key in self.__user_store.get_username(treeiter).lower():
@@ -435,6 +436,8 @@ class lumApp(gobject.GObject):
             except LumInsufficientPermissionsError:
                 show_error_dialog(_("Insufficient permissions to change user password"))
                 return False
+            else:
+                self.statusbar_update(_("Password of user %s changed succesfully") % usermodel.get_username())
             return True
 
                 

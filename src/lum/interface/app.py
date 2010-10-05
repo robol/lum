@@ -31,7 +31,8 @@ from edit_user_dialog import lumEditUserDialog
 from menu_item import lumUserTreeViewMenu, lumGroupTreeViewMenu
 from new_group_dialog import lumNewGroupDialog
 from change_user_password_dialog import lumChangeUserPasswordDialog
-from utilities import _, show_error_dialog, ask_question, create_builder, show_info_dialog, UserStore, GroupStore
+from utilities import _, show_error_dialog, ask_question, create_builder, show_info_dialog
+from stores import UserStore, GroupStore
 
 lum_application = None
 
@@ -108,14 +109,6 @@ class lumApp(gobject.GObject):
         self.__builder.get_object("user_treeview").set_model(self.__users_treefilter)
         self.__builder.get_object("group_treeview").set_model(self.__group_treefilter)
         
-        # Make the list sorted, for users...
-        self.__user_store.set_sort_func(1, self.sort_users)
-        self.__user_store.set_sort_column_id(1, gtk.SORT_ASCENDING)
-
-        # ...and groups
-        self.__group_store.set_sort_func(1, self.sort_groups)
-        self.__group_store.set_sort_column_id(1, gtk.SORT_ASCENDING)
-        
         # Some initial values
         self.__uri, self.__bind_dn = None, None
         
@@ -126,22 +119,6 @@ class lumApp(gobject.GObject):
     def __del__(self):
         lum_application = None
     
-    def sort_users(self, model, iter1, iter2):
-        return (model.get_value(iter1, 1).lower() > model.get_value(iter2, 1).lower())
-    
-    def sort_groups(self, model, iter1, iter2):
-        """Sort groups, None is greater then everything"""
-        group_1 = model.get_value(iter1, 1)
-        group_2 = model.get_value(iter2, 1)
-
-        # None is greater than everything because this make things
-        # work, but I can't get why yet.
-        if group_1 is None:
-            return True
-        if group_2 is None:
-            return False
-        return (group_1.lower() > group_2.lower())
-        
     def start(self):
         """Start lumApp"""
         
@@ -388,7 +365,7 @@ class lumApp(gobject.GObject):
                 gnomekeyring.item_delete_sync('login', pw_id)
         
     def clear_user_list(self):
-        self.__builder.get_object("user_store").clear()
+        self.__user_store.clear()
         self.__user_model_store = {}
         
         

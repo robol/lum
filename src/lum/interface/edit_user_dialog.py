@@ -30,7 +30,7 @@ class lumEditUserDialog():
             group = group_store.get_group_name(it)
             new_it = self.__group_model.append((int(gid), group))
             if gid == int(usermodel.get_gid()):
-                self.__group_iter = it
+                self.__group_iter = new_it
             it = group_store.iter_next(it)
                 
         if (self.__group_iter is not None):

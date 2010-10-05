@@ -572,8 +572,6 @@ class lumApp(gobject.GObject):
 
         # Show info dialog.
         show_info_dialog(dialog_text)
-
- 
             
     def __check_connection(self):
         if self.__connection is None:

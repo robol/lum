@@ -140,7 +140,7 @@ class lumApp(gobject.GObject):
         self.__base_dn = base_dn
         self.__users_ou = users_ou
         self.__groups_ou = groups_ou
-        
+
         if uri is None:
             return
         
@@ -265,6 +265,7 @@ class lumApp(gobject.GObject):
         
         # Ask for password...
         password_dialog = lumPasswordEntry(self.__datapath)
+        print "Running password dialog"
         password = password_dialog.run()
         if password is not None:
         

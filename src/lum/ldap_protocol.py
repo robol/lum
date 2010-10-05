@@ -10,6 +10,16 @@ import gobject
 # This is just for debug
 ldifwriter = ldif.LDIFWriter(sys.stdout)
 
+# Default objectClasses
+default_objectClasses = [ "top",
+                          "person",
+                          "organizationalPerson",
+                          "posixAccount",
+                          "shadowAccount",
+                          "inetOrgPerson" ]
+
+bad_objectClasses = [ "account" ]
+
 # Utility functions
 def random_string():
     """Generate a random string to be used as salt
@@ -59,20 +69,11 @@ class UserModel(gobject.GObject):
             self.__dn = ldap_output[0]
             self.__ldif = dict(ldap_output[1])
 
-            # If you didn't set a name we can set it
-            # to an empty string
-            if not ldap_output[1].has_key("givenName"):
-                self.set_given_name("")
             
         # If that is not the case we shall give the object
         # a Class that usually represent users in Ldap databases
         else:
-            self.__ldif['objectClass'] = ["inetOrgPerson",
-                                          "posixAccount",
-                                          "person",
-                                          "shadowAccount",
-                                          "organizationalPerson",
-                                          "top"]
+            self.__ldif['objectClass'] = default_objectClasses
                                                   
     def __getitem__(self, item):
         """Deprecated method to get item from the
@@ -295,8 +296,11 @@ class Connection():
         new_dn = "uid=%s,%s" % (new_user.get_username(), users_ou)
         old_dn = "uid=%s,%s" % (old_user.get_username(), users_ou)
 
+        modlist = ldap.modlist.modifyModlist(old_user.to_ldif(),
+                                             new_user.to_ldif())
+
         try:
-            self.__ldap.modify_s(old_dn, ldap.modlist.modifyModlist(old_user.to_ldif(), new_user.to_ldif()))
+            self.__ldap.modify_s(old_dn, modlist)
         except ldap.INSUFFICIENT_ACCESS:
             raise LumInsufficientPermissionsError("Insufficient accesso to modify user")
     

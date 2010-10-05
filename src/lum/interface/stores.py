@@ -50,13 +50,13 @@ class GroupStore(gtk.ListStore):
     def get_group_name(self, gid):
         """Return group_name from gid. This method accept
         event a GtkTreeiter"""
-        
+
         if isinstance(gid, gtk.TreeIter):
             return self.get_value(gid, 1)
         
         it = self.get_iter_first()
         while it is not None:
-            if self.get_value(it, 2) == gid:
+            if self.get_value(it, 2) == int(gid):
                 return self.get_value(it, 1)
             else:
                 it = self.iter_next(it)
@@ -64,7 +64,7 @@ class GroupStore(gtk.ListStore):
 
     def get_gid(self, group_name):
         """Get the gid from group_name or from an iter"""
-        
+
         if isinstance(group_name, gtk.TreeIter):
             return self.get_value(group_name, 2)
 

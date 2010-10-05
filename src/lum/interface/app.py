@@ -368,10 +368,16 @@ class lumApp(gobject.GObject):
         
     def reload_user_list(self, menu_item = None):
         """Reload user list in the main window"""
+
         if self.__check_connection():
+
+            # Groups have to updated before users
+            # because we need gids <-> group_names
+            # mapping to determine the group of every
+            # user.
+            self.update_group_list()
             self.clear_user_list()
             users = self.__connection.get_users()
-            self.update_group_list()
             for user in users:
                 self.push_user(user)
 

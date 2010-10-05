@@ -428,8 +428,10 @@ class lumApp(gobject.GObject):
             show_info_dialog(_("You need to select a user to change its password"))
             return
 
+
         password_dialog = lumChangeUserPasswordDialog(self.__datapath, usermodel.get_username())
         new_password = password_dialog.run()
+
         if new_password is None:
             return False
         else:

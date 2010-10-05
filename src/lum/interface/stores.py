@@ -143,3 +143,11 @@ class UserStore(gtk.ListStore):
     def get_usermodel(self, it):
         """Return usermodel associated with entry"""
         return self.get_value(it, 4)
+
+    def get_username(self, it):
+        """Return username"""
+        return self.get_value(it, 1)
+
+    def get_given_name(self, it):
+        """Return given name"""
+        return self.get_value(it, 2)

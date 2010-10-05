@@ -193,12 +193,12 @@ class lumApp(gobject.GObject):
         
         if key == "":
             return True
+
+        key = key.lower()
         
-        if key in model.get_value(treeiter, 0).lower():
+        if key in self.__user_store.get_username(treeiter).lower():
             return True
-        if key in model.get_value(treeiter, 1).lower():
-            return True
-        if key in model.get_value(treeiter, 2).lower():
+        if key in self.__user_store.get_given_name(treeiter).lower():
             return True
             
         return False
@@ -209,7 +209,7 @@ class lumApp(gobject.GObject):
         if key == "":
             return True
 
-        if key in model.get_value(treeiter, 1).lower():
+        if key in model.get_group_name(treeiter).lower():
             return True
 
         return False
@@ -385,6 +385,7 @@ class lumApp(gobject.GObject):
     def update_group_list(self, menu_item = None):
         """Update group list and internal group dictionary"""
         if self.__check_connection():
+            self.clear_group_list()
             for gid, group in self.__connection.get_groups().items():
                 self.__group_store.append(gid, group)
 

@@ -18,8 +18,6 @@ default_objectClasses = [ "top",
                           "shadowAccount",
                           "inetOrgPerson" ]
 
-bad_objectClasses = [ "account" ]
-
 # Utility functions
 def random_string():
     """Generate a random string to be used as salt
@@ -49,6 +47,13 @@ class UserModel(gobject.GObject):
         self.__ldif = dict ()
         self.__dn = None
 
+        # Some fields to keep track of user name and
+        # surname over the schema
+        self.__name = ""
+        self.__sn = ""
+        self.__email = ""
+
+
         # If ldap_output is a UserModel object use __init__()
         # as a copy constructor
         if isinstance(ldap_output, UserModel):
@@ -68,6 +73,11 @@ class UserModel(gobject.GObject):
         if ldap_output is not None:
             self.__dn = ldap_output[0]
             self.__ldif = dict(ldap_output[1])
+
+            if self.__ldif.has_key("givenName"):
+                self.__name = self.__ldif['givenName'][0]
+            if self.__ldif.has_key("sn"):
+                self.__sn = self.__ldif['sn'][0]
 
             
         # If that is not the case we shall give the object
@@ -146,19 +156,24 @@ class UserModel(gobject.GObject):
         try:
             return self.__ldif['gecos'][0]
         except KeyError:
-            return ""
+            return " ".join(filter(lambda x : x != "", 
+                                   [self.__name, self.__sn]))
+                
         
     def set_given_name(self, given_name):
         """Set the given name (i.e. the name) of the
         user"""
-        self.__ldif['givenName'] = [str(given_name)]
+        if "inetOrgPerson" in self.__ldif['objectClass']:
+            self.__ldif['givenName'] = [str(given_name)]
+
+        self.__name = given_name
         self.__ldif['cn'] = [str(given_name)]
 
         # Gecos shall be in the form name + " " + surname, but
         # if surname is not set, set only the name
-        if self.__ldif.has_key("sn"):
-            self.__ldif['gecos'] = [str(self.__ldif['givenName'][0] + " " + 
-                                    self.__ldif['sn'][0]).strip()]
+        if self.__sn == "":
+            self.__ldif['gecos'] = [" ".join([self.__name,
+                                              self.__sn])]
         else:
             self.__ldif['gecos'] = [str(given_name)]
     
@@ -167,18 +182,23 @@ class UserModel(gobject.GObject):
         try:
             return self.__ldif['sn'][0]
         except KeyError:
-            return ""
+            return self.__sn
         
     def set_surname(self, sn):
         """Set surname of the user"""
-        self.__ldif['sn'] = [str(sn)]
+
+        if "inetOrgPerson" in self.__ldif['objectClass']:
+            self.__ldif['sn'] = [str(sn)]
+
+        # Set surname
+        self.__sn = sn
 
         # Set gecos, including name if it is available
-        if self.__ldif.has_key("givenName"):
-            self.__ldif['gecos'] = [str(self.__ldif['givenName'][0] + " " + 
-                                    self.__ldif['sn'][0]).strip()]
-        else:
+        if self.__name == "":
             self.__ldif['gecos'] = [str(sn)]
+        else:
+            self.__ldif['gecos'] = [" ".join([self.__name,
+                                             self.__sn])]
         
     def get_home(self):
         """Returns home directory of the user"""
@@ -207,10 +227,13 @@ class UserModel(gobject.GObject):
         try:
             return self.__ldif['mail'][0]
         except KeyError:
-            return ""
+            return self.__email
 
     def set_email(self, email):
-        self.__ldif['mail'] = [str(email)]
+        if "inetOrgPerson" in self.__ldif['objectClass']:
+            self.__ldif['mail'] = [str(email)]
+
+        self.__email = email
 
     def set_password(self, password, crypt_strategy = "CRYPT"):
         """Set userPassword field of the user. Only CRYPT

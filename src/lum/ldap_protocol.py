@@ -95,10 +95,17 @@ class UserModel(gobject.GObject):
         internal dictionary"""
         self.__ldif[item] = value
     
-    def get_dn(self):
+    def get_dn(self, users_ou = None):
         """Return the distinguished name of the object.
         Need some work to do the right thing."""
-        return self.__dn
+        if self.__dn is not None:
+            return self.__dn
+        else:
+            if users_ou is None:
+                raise LumError("No Users ou specified for get_dn() but no dn present in UserModel")
+            else:
+                return "uid=%s,%s" % (self.get_username(), 
+                                      users_ou)
         
     def set_dn(self, dn):
         """Set Distinguished name of the Ldap object"""
@@ -167,7 +174,6 @@ class UserModel(gobject.GObject):
             self.__ldif['givenName'] = [str(given_name)]
 
         self.__name = given_name
-        self.__ldif['cn'] = [str(given_name)]
 
         # Gecos shall be in the form name + " " + surname, but
         # if surname is not set, set only the name
@@ -176,6 +182,8 @@ class UserModel(gobject.GObject):
                                               self.__sn])]
         else:
             self.__ldif['gecos'] = [str(given_name)]
+
+        self.__ldif['cn'] = self.__ldif['gecos']
     
     def get_surname(self):
         """Return surname of the user"""
@@ -199,6 +207,9 @@ class UserModel(gobject.GObject):
         else:
             self.__ldif['gecos'] = [" ".join([self.__name,
                                              self.__sn])]
+
+        # And set similar fields
+        self.__ldif['cn'] = self.__ldif['gecos']
         
     def get_home(self):
         """Returns home directory of the user"""
@@ -287,7 +298,7 @@ class Connection():
             print "Adding missing OrganizationalUnit: %s" % self.__groups_ou
             self.add_ou(self.__groups_ou)
 
-    def add_user(self, user, modify = False):
+    def add_user(self, user):
         """
         Add a user to the LDAP database
         """
@@ -316,8 +327,8 @@ class Connection():
             raise LumError("users organizational unit not present!")
         
         # Distinguished name
-        new_dn = "uid=%s,%s" % (new_user.get_username(), users_ou)
-        old_dn = "uid=%s,%s" % (old_user.get_username(), users_ou)
+        new_dn = new_user.get_dn(self.__users_ou)
+        old_dn = old_user.get_dn(self.__users_ou)
 
         modlist = ldap.modlist.modifyModlist(old_user.to_ldif(),
                                              new_user.to_ldif())

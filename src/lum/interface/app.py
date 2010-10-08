@@ -265,7 +265,6 @@ class lumApp(gobject.GObject):
         
         # Ask for password...
         password_dialog = lumPasswordEntry(self.__datapath)
-        print "Running password dialog"
         password = password_dialog.run()
         if password is not None:
         
@@ -402,10 +401,10 @@ class lumApp(gobject.GObject):
             show_info_dialog(_("Select a user to modify"))
             return
 
-        # Create the dialog
-        ldap_data = usermodel.to_ldif()
-        ldap_dn   = "uid=%s,ou=%s" % (usermodel.get_username(), self.__users_ou)
-        old_user = UserModel((ldap_dn, ldap_data))
+        # Create the dialog making a copy of the old usermodel
+        # so we can check the difference after modification
+        old_user = UserModel(usermodel)
+
         dialog = lumEditUserDialog(self.__datapath, usermodel, self.__group_store)
         
         new_usermodel = dialog.run()

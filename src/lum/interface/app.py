@@ -79,6 +79,7 @@ class lumApp(gobject.GObject):
             'on_forget_password_menu_item_activate':    self.forget_password,
             'on_edit_user_menu_item_activate':            self.edit_user,
             'on_change_password_menu_item_activate': self.change_password,
+            'on_disconnect_menu_item_activate': self.disconnect,
 
             # Group menu callbacks
             'on_new_group_menuitem_activate':    self.new_group,
@@ -131,10 +132,13 @@ class lumApp(gobject.GObject):
             self.disconnect()
             
         
-    def disconnect(self):
+    def disconnect(self, menu_item = None):
         self.clear_user_list()
         self.clear_group_list()
         self.__connection = None
+        if self.__uri is not None:
+            self.statusbar_update(_("Disconnected from %s") % self.__uri)
+            self.__uri = None
         
         
     def connect(self, menu_item = None):

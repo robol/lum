@@ -55,6 +55,15 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkImageMenuItem" id="disconnect_menu_item">
+                        <property name="label">gtk-disconnect</property>
+                        <property name="visible">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_disconnect_menu_item_activate"/>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkImageMenuItem" id="reload_user_list_menu_item">
                         <property name="label" translatable="yes">Reload user list</property>
                         <property name="visible">True</property>

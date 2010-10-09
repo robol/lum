@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-05 15:55+0200\n"
+"POT-Creation-Date: 2010-10-09 22:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,147 +17,147 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/lum/interface/app.py:156
+#: src/lum/interface/app.py:148
 #, python-format
 msgid "Connecting to %s."
 msgstr ""
 
-#: src/lum/interface/app.py:179
+#: src/lum/interface/app.py:171
 msgid ""
 "Error while connecting to the server, check your credentials and your "
 "connectivity"
 msgstr ""
 
-#: src/lum/interface/app.py:183
+#: src/lum/interface/app.py:175
 msgid "Connection failed."
 msgstr ""
 
-#: src/lum/interface/app.py:187
+#: src/lum/interface/app.py:179
 #, python-format
 msgid "Connection to %s initialized"
 msgstr ""
 
-#: src/lum/interface/app.py:334
+#: src/lum/interface/app.py:262
 msgid "Select a user to delete!"
 msgstr ""
 
-#: src/lum/interface/app.py:339
+#: src/lum/interface/app.py:267
 #, python-format
 msgid "Really delete user <b>%s</b>?"
 msgstr ""
 
-#: src/lum/interface/app.py:346
+#: src/lum/interface/app.py:274
 msgid "Insufficient permissions to delete user"
 msgstr ""
 
-#: src/lum/interface/app.py:356
+#: src/lum/interface/app.py:280
 #, python-format
 msgid "User %s deleted."
 msgstr ""
 
-#: src/lum/interface/app.py:399
+#: src/lum/interface/app.py:329
 msgid "Select a user to modify"
 msgstr ""
 
-#: src/lum/interface/app.py:414
+#: src/lum/interface/app.py:344
 msgid "Insufficient permissions to edit user"
 msgstr ""
 
-#: src/lum/interface/app.py:417
+#: src/lum/interface/app.py:347
 #, python-format
 msgid "User %s successfully modified"
 msgstr ""
 
-#: src/lum/interface/app.py:426
+#: src/lum/interface/app.py:356
 msgid "You need to select a user to change its password"
 msgstr ""
 
-#: src/lum/interface/app.py:437
+#: src/lum/interface/app.py:369
 msgid "Insufficient permissions to change user password"
 msgstr ""
 
-#: src/lum/interface/app.py:440
+#: src/lum/interface/app.py:372
 #, python-format
 msgid "Password of user %s changed succesfully"
 msgstr ""
 
-#: src/lum/interface/app.py:463
+#: src/lum/interface/app.py:395
 msgid "Insufficient permissions to accomplish operation"
 msgstr ""
 
-#: src/lum/interface/app.py:474
+#: src/lum/interface/app.py:406
 #, python-format
 msgid "User <b>%s</b> already exists in the ldap tree, "
 msgstr ""
 
-#: src/lum/interface/app.py:478
+#: src/lum/interface/app.py:410
 msgid "Insufficient permissions to create the user"
 msgstr ""
 
-#: src/lum/interface/app.py:480
+#: src/lum/interface/app.py:412
 #, python-format
 msgid "User %s created correctly."
 msgstr ""
 
-#: src/lum/interface/app.py:500
+#: src/lum/interface/app.py:432
 msgid "Insufficient permissions to create group"
 msgstr ""
 
-#: src/lum/interface/app.py:503
+#: src/lum/interface/app.py:435
 #, python-format
 msgid "Group <b>%s</b> already exists in the database,"
 msgstr ""
 
-#: src/lum/interface/app.py:508
+#: src/lum/interface/app.py:440
 #, python-format
 msgid "Group %s successfully created."
 msgstr ""
 
-#: src/lum/interface/app.py:521
+#: src/lum/interface/app.py:453
 msgid "Select a group before asking for its deletion."
 msgstr ""
 
-#: src/lum/interface/app.py:526
+#: src/lum/interface/app.py:458
 #, python-format
 msgid "Really delete group <b>%s</b>?"
 msgstr ""
 
-#: src/lum/interface/app.py:528
+#: src/lum/interface/app.py:460
 #, python-format
 msgid "Really delete the non empty group <b>%s</b>?"
 msgstr ""
 
-#: src/lum/interface/app.py:537
+#: src/lum/interface/app.py:469
 msgid "Insufficient permissions to delete group"
 msgstr ""
 
-#: src/lum/interface/app.py:544
+#: src/lum/interface/app.py:476
 #, python-format
 msgid "Group %s successfully deleted."
 msgstr ""
 
-#: src/lum/interface/app.py:555
+#: src/lum/interface/app.py:487
 msgid "Select a group to view its properties"
 msgstr ""
 
-#: src/lum/interface/app.py:565
+#: src/lum/interface/app.py:497
 #, python-format
 msgid "<b>Name:</b> %s\n"
 msgstr ""
 
-#: src/lum/interface/app.py:568
+#: src/lum/interface/app.py:500
 msgid "<b>Members</b>: "
 msgstr ""
 
-#: src/lum/interface/app.py:571
+#: src/lum/interface/app.py:503
 msgid "This group is empty."
 msgstr ""
 
-#: src/lum/interface/app.py:578
+#: src/lum/interface/app.py:510
 msgid "Not connected to any LDAP server, connect now?"
 msgstr ""
 
-#: src/lum/interface/app.py:585
+#: src/lum/interface/app.py:517
 msgid "Error while connecting to LDAP server, aborting operation."
 msgstr ""
 
@@ -225,8 +225,21 @@ msgstr ""
 msgid "The group %s doesn't exists, create it now?"
 msgstr ""
 
-#: src/lum/interface/stores.py:137
+#: src/lum/interface/stores.py:123
 msgid "Unknown"
+msgstr ""
+
+#: src/lum/interface/treeviews.py:46
+msgid "User"
+msgstr ""
+
+#: src/lum/interface/treeviews.py:53 tmp/LumNewUserDialog.ui.h:11
+msgid "Name"
+msgstr ""
+
+#: src/lum/interface/treeviews.py:62 src/lum/interface/treeviews.py:141
+#: tmp/LumNewUserDialog.ui.h:6
+msgid "Group"
 msgstr ""
 
 #: src/lum/interface/user_password_dialog.py:14
@@ -448,10 +461,6 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: tmp/LumNewUserDialog.ui.h:6
-msgid "Group"
-msgstr ""
-
 #: tmp/LumNewUserDialog.ui.h:7
 msgid "Home directory"
 msgstr ""
@@ -461,10 +470,6 @@ msgid ""
 "Insert new user data and press \"save\" when done.\n"
 "User ID is not shown because it will be generated\n"
 "when you confirm. "
-msgstr ""
-
-#: tmp/LumNewUserDialog.ui.h:11
-msgid "Name"
 msgstr ""
 
 #: tmp/LumNewUserDialog.ui.h:12

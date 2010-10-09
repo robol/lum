@@ -266,12 +266,22 @@ class UserModel(gobject.GObject):
         return dict(self.__ldif)
 
 
-class Connection():
+class Connection(gobject.GObject):
 
+    __gsignals__ = {
+        # Emitted with the list of missing ou
+        'missing-ou': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
+                       (gobject.TYPE_PYOBJECT,)),
+        'connection-completed': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
+                                 ())
+        }
+    
     def __init__(self, uri, bind_dn, password, base_dn, users_ou, groups_ou):
         """
         Create a connection to the specified uri
         """
+
+        gobject.GObject.__init__(self)
         
         # Save data
         self.__uri = uri
@@ -283,20 +293,29 @@ class Connection():
         
         self.__ldap = ldap.initialize(uri)
 
+    def set_password(self, password):
+        self.__password = password
+
+    def start(self):
+
         # Bind to the database with the provided credentials
         try:
-            self.__ldap.simple_bind_s(bind_dn, password)
+            self.__ldap.simple_bind_s(self.__bind_dn, self.__password)
         except Exception, e:
             raise LumError('Error connecting to the server, check your credentials')
         
         # Check if there are missing ou and add them
+        missing_ou = []
         if not self.is_present(self.__users_ou):
-            print "Adding missing OrganizationalUnit: %s" % self.__users_ou
-            self.add_ou(self.__users_ou)
+            missing_ou.append(self.__users_ou)
         
         if not self.is_present(self.__groups_ou):
-            print "Adding missing OrganizationalUnit: %s" % self.__groups_ou
-            self.add_ou(self.__groups_ou)
+            missing_ou.append(self.__users_ou)
+
+        if missing_ou != []:
+            self.emit("missing-ou", missing_ou)
+        else:
+            self.emit("connection-completed")
 
     def add_user(self, user):
         """

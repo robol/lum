@@ -117,6 +117,24 @@ class lumApp(gobject.GObject):
         # Show all
         self.__window.show_all()
         self.__connection = None
+
+    def missing_ou_cb(self, widget, missing_ou):
+        """Callback to ask user if he/she wants to add
+        missing ous before continue"""
+
+        text = "\n".join(map(lambda x : "- <b>" + x + "</b>", missing_ou))
+        if ask_question(_("The following organizational units are missing in the database, add them?\n%s" % text)):
+            for ou in missing_ou:
+                self.__connection.add_ou(ou)
+        else:
+            show_info_dialog(_("You will not be able to perform any operation without these OUs"))
+            self.disconnect()
+            
+        
+    def disconnect(self):
+        self.clear_user_list()
+        self.clear_group_list()
+        self.__connection = None
         
         
     def connect(self, menu_item = None):
@@ -146,12 +164,19 @@ class lumApp(gobject.GObject):
         
         # Notify user of connection
         self.statusbar_update(_("Connecting to %s.") % uri)
+
+        self.__connection =  Connection(uri = self.__uri, bind_dn = self.__bind_dn, 
+                                        password = password, 
+                                        base_dn = self.__base_dn, users_ou = self.__users_ou, 
+                                        groups_ou = self.__groups_ou)
+
+        self.__connection.connect("missing-ou", self.missing_ou_cb)
+        self.__connection.connect("connection-completed", self.connection_completed_cb)
         
         # Try to connect to the specified server
         try:
-            self.__connection = Connection(uri = self.__uri, bind_dn = self.__bind_dn, password = password, 
-                                           base_dn = self.__base_dn, users_ou = self.__users_ou, 
-                                           groups_ou = self.__groups_ou)
+            self.__connection.start()
+
         except LumError:
             
             # If we can't, maybe password is wrong, so ask it again
@@ -161,9 +186,8 @@ class lumApp(gobject.GObject):
             # and retry the connection. But if we fail even this time, then
             # abort
             try:
-                self.__connection = Connection(uri = self.__uri, bind_dn = self.__bind_dn, password = password, 
-                                           base_dn = self.__base_dn, users_ou = self.__users_ou, 
-                                           groups_ou = self.__groups_ou)
+                self.__connection.set_password(password)
+                self.__connection.start()
             except:
             
                 # You had two opportunities, and both are gone. 
@@ -174,10 +198,10 @@ class lumApp(gobject.GObject):
                 
                 self.statusbar_update(_("Connection failed."))
         
-        # If you managed to open the connection, show it in the status bar
-        if self.__connection is not None:
-            self.statusbar_update(_("Connection to %s initialized") % uri)
-            self.reload_user_list()
+    def connection_completed_cb(self, widget):
+        """Called when connection is initialized"""
+        self.statusbar_update(_("Connection to %s initialized") % self.__uri)
+        self.reload_user_list()
             
     def filter_users(self, model, treeiter, user_data = None):
         """Filter users based on what is placed in filter_entry"""

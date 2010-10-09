@@ -33,6 +33,7 @@ from new_group_dialog import lumNewGroupDialog
 from change_user_password_dialog import lumChangeUserPasswordDialog
 from utilities import _, show_error_dialog, ask_question, create_builder, show_info_dialog
 from stores import UserStore, GroupStore
+from treeviews import UserTreeView, GroupTreeView
 
 lum_application = None
 
@@ -75,8 +76,6 @@ class lumApp(gobject.GObject):
             'on_connect_menu_item_activate':     self.connect,
             'on_reload_user_list_menu_item_activate':     self.reload_user_list,
             'on_delete_user_menu_item_activate':        self.delete_user,
-            'on_filter_entry_changed':                    self.refilter,
-            'on_filter_group_entry_changed':              self.group_refilter,
             'on_forget_password_menu_item_activate':    self.forget_password,
             'on_edit_user_menu_item_activate':            self.edit_user,
             'on_change_password_menu_item_activate': self.change_password,
@@ -86,9 +85,6 @@ class lumApp(gobject.GObject):
             'on_delete_group_menuitem_activate': self.delete_group,
             'on_properties_group_menuitem_activate': self.group_properties,
             
-            # Popup menus
-            'on_user_treeview_button_press_event':         self.on_user_treeview_button_press_event,
-            'on_group_treeview_button_press_event':        self.on_group_treeview_button_press_event,
         }
         
         # Autoconnect signals
@@ -97,17 +93,13 @@ class lumApp(gobject.GObject):
         # Create initial configuration
         self.__configuration = Configuration()
         
-        # Activate filter on users...
-        self.__users_treefilter = self.__user_store.filter_new()
-        self.__users_treefilter.set_visible_func(self.filter_users)
-
-        # ...and groups
-        self.__group_treefilter = self.__group_store.filter_new()
-        self.__group_treefilter.set_visible_func(self.filter_groups)
-        
         # Change the model of the treeview
-        self.__builder.get_object("user_treeview").set_model(self.__users_treefilter)
-        self.__builder.get_object("group_treeview").set_model(self.__group_treefilter)
+        self.__user_treeview = UserTreeView(self.__user_store, self)
+        self.__user_treeview.apply_filter(self.__builder.get_object("filter_user_entry"))
+        self.__builder.get_object("user_scrolled_window").add(self.__user_treeview)
+        self.__group_treeview = GroupTreeView(self.__group_store, self)
+        self.__group_treeview.apply_filter(self.__builder.get_object("filter_group_entry"))
+        self.__builder.get_object("group_scrolled_window").add(self.__group_treeview)
         
         # Some initial values
         self.__uri, self.__bind_dn = None, None
@@ -218,17 +210,8 @@ class lumApp(gobject.GObject):
     def __get_selected_user(self):
         """Obtain usermodel and a treeview iter
         of the selected user in the treeview"""
-        treeview = self.__builder.get_object("user_treeview")
-
-        # t_model is the GtkTreeFilterModel, and t_iter refers to it
-        t_model, t_iter = treeview.get_selection().get_selected()
-
-        if t_iter is None:
-            # Then nothing is selected and we can return None
-            return (None, None)
-
-        it = t_model.convert_iter_to_child_iter(t_iter)
-        usermodel = self.__user_store.get_usermodel(it)
+        
+        return self.__user_treeview.get_selected_user()
 
         return usermodel, it
 
@@ -236,21 +219,7 @@ class lumApp(gobject.GObject):
         """Obtain selected group and a treeview iter
         of it or None, None if there is no group selected"""
 
-        treeview = self.__builder.get_object("group_treeview")
-        
-        # t_model is the GtkTreeFilterModel and t_iter refers
-        # to the entry in it
-        t_model, t_iter = treeview.get_selection().get_selected()
-
-        if t_iter is None:
-            # Then there is nothing selected
-            return (None, None)
-
-        group = t_model.get_value(t_iter, 1)
-
-        # Return group_name and iter to the group_store and not
-        # to the GtkTreeFilterModel
-        return (group, t_model.convert_iter_to_child_iter(t_iter))
+        return self.__group_treeview.get_selected_group()
         
 
     def ask_password(self):
@@ -280,52 +249,11 @@ class lumApp(gobject.GObject):
                                           display_name, atts, password, True)
         return password
         
-    def refilter(self, entry):
-        """Callback to refilter treeview"""
-        self.__users_treefilter.refilter()
-
-    def group_refilter(self, entry):
-        """Callback to refilter groups"""
-        self.__group_treefilter.refilter()
-        
-        
     def show_about_dialog(self, menu_item):
         """Show about dialog"""
         lumAbout(self.__datapath)
         
-    def on_user_treeview_button_press_event(self, user_treeview, event):
-        """Catch press button event on treeview and, if the user right
-        clicked on it, open the popup menu"""
-        if event.button == 3:
-            x = int(event.x)
-            y = int(event.y)
-            pathinfo = user_treeview.get_path_at_pos(x,y)
-            if pathinfo is None:
-                return
-            path, col, cellx, celly = pathinfo
-            user_treeview.grab_focus()
-            user_treeview.set_cursor(path, col, 0)
-            usermodel, t_iter = self.__get_selected_user()
-            self.__user_popup_menu.username = usermodel.get_username()
-            self.__user_popup_menu.popup(None, None, None, event.button, event.time)
-
-    def on_group_treeview_button_press_event(self, group_treeview, event):
-        """Catch button press on group treeview and show popup
-        menu if the user right-clicked."""
-        if event.button == 3:
-            x = int(event.x)
-            y = int(event.y)
-            pathinfo = group_treeview.get_path_at_pos(x,y)
-            if pathinfo is None:
-                return
-
-            path, col, cellx, celly = pathinfo
-            group_treeview.grab_focus()
-            group_treeview.set_cursor(path, col, 0)
-            group, t_iter = self.__get_selected_group()
-            self.__group_popup_menu.group = group
-            self.__group_popup_menu.popup(None, None, None, event.button, event.time)
-        
+           
     def delete_user(self, menu_item = None):
         """Delete the selected user"""
         usermodel, t_iter = self.__get_selected_user()

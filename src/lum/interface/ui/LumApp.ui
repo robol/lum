@@ -243,7 +243,6 @@
                         <property name="can_focus">True</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_stock">gtk-find</property>
-                        <signal name="changed" handler="on_filter_entry_changed"/>
                       </object>
                       <packing>
                         <property name="padding">10</property>
@@ -258,70 +257,13 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkScrolledWindow" id="scrolledwindow1">
+                  <object class="GtkScrolledWindow" id="user_scrolled_window">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hscrollbar_policy">automatic</property>
                     <property name="vscrollbar_policy">automatic</property>
                     <child>
-                      <object class="GtkTreeView" id="user_treeview">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="model">user_store</property>
-                        <property name="headers_clickable">False</property>
-                        <property name="search_column">0</property>
-                        <signal name="button_press_event" handler="on_user_treeview_button_press_event"/>
-                        <signal name="popup_menu" handler="on_user_treeview_button_press_event"/>
-                        <child>
-                          <object class="GtkTreeViewColumn" id="treeviewcolumn1">
-                            <property name="sizing">autosize</property>
-                            <child>
-                              <object class="GtkCellRendererPixbuf" id="cellrendererpixbuf1"/>
-                              <attributes>
-                                <attribute name="pixbuf">0</attribute>
-                              </attributes>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkTreeViewColumn" id="username_column">
-                            <property name="resizable">True</property>
-                            <property name="title">Username</property>
-                            <property name="expand">True</property>
-                            <child>
-                              <object class="GtkCellRendererText" id="cellrenderertext1"/>
-                              <attributes>
-                                <attribute name="text">1</attribute>
-                              </attributes>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkTreeViewColumn" id="name_column">
-                            <property name="resizable">True</property>
-                            <property name="title">Name</property>
-                            <property name="expand">True</property>
-                            <child>
-                              <object class="GtkCellRendererText" id="cellrenderertext2"/>
-                              <attributes>
-                                <attribute name="text">2</attribute>
-                              </attributes>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkTreeViewColumn" id="group_column">
-                            <property name="title">Group</property>
-                            <property name="expand">True</property>
-                            <child>
-                              <object class="GtkCellRendererText" id="cellrenderertext3"/>
-                              <attributes>
-                                <attribute name="text">3</attribute>
-                              </attributes>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
+                      <placeholder/>
                     </child>
                   </object>
                   <packing>
@@ -363,7 +305,6 @@
                         <property name="can_focus">True</property>
                         <property name="invisible_char">•</property>
                         <property name="primary_icon_stock">gtk-find</property>
-                        <signal name="changed" handler="on_filter_group_entry_changed"/>
                       </object>
                       <packing>
                         <property name="position">1</property>
@@ -377,55 +318,13 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkScrolledWindow" id="scrolledwindow2">
+                  <object class="GtkScrolledWindow" id="group_scrolled_window">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hscrollbar_policy">automatic</property>
                     <property name="vscrollbar_policy">automatic</property>
                     <child>
-                      <object class="GtkTreeView" id="group_treeview">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="model">group_store</property>
-                        <property name="headers_clickable">False</property>
-                        <property name="search_column">0</property>
-                        <signal name="button_press_event" handler="on_group_treeview_button_press_event"/>
-                        <child>
-                          <object class="GtkTreeViewColumn" id="treeviewcolumn2">
-                            <property name="sizing">autosize</property>
-                            <child>
-                              <object class="GtkCellRendererPixbuf" id="cellrendererpixbuf2"/>
-                              <attributes>
-                                <attribute name="pixbuf">0</attribute>
-                              </attributes>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkTreeViewColumn" id="username_column1">
-                            <property name="resizable">True</property>
-                            <property name="title">Group</property>
-                            <property name="expand">True</property>
-                            <child>
-                              <object class="GtkCellRendererText" id="cellrenderertext4"/>
-                              <attributes>
-                                <attribute name="text">1</attribute>
-                              </attributes>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkTreeViewColumn" id="treeviewcolumn3">
-                            <property name="title">Group ID</property>
-                            <child>
-                              <object class="GtkCellRendererText" id="cellrenderertext5"/>
-                              <attributes>
-                                <attribute name="text">2</attribute>
-                              </attributes>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
+                      <placeholder/>
                     </child>
                   </object>
                   <packing>

@@ -11,25 +11,19 @@ class GroupStore(gtk.ListStore):
     def __init__(self, datapath):
 
         # Create space for the data we have to save
-        gtk.ListStore.__init__(self, gtk.gdk.Pixbuf,
+        gtk.ListStore.__init__(self,
                                gobject.TYPE_STRING,
                                gobject.TYPE_INT)
 
-        # Preload group_image
-        group_image = gtk.Image()
-        group_image.set_from_file(os.path.join(datapath,
-                                               "ui", "group.png"))
-        self.__group_image_pixbuf = group_image.get_pixbuf()
-
         # Make the store sorted
-        self.set_sort_func(1, self.sort)
-        self.set_sort_column_id(1, gtk.SORT_ASCENDING)
+        self.set_sort_func(0, self.sort)
+        self.set_sort_column_id(0, gtk.SORT_ASCENDING)
 
     def sort(self, model, iter1, iter2):
         """Sort groups"""
 
-        group_1 = model.get_value(iter1, 1)
-        group_2 = model.get_value(iter2, 1)
+        group_1 = model.get_value(iter1, 0)
+        group_2 = model.get_value(iter2, 0)
 
         # None is greater than everything because this make things
         # work, but I can't get why yet.
@@ -43,8 +37,7 @@ class GroupStore(gtk.ListStore):
     def append(self, gid, group):
         """Append group and gid to the list"""
 
-        data_to_append = (self.__group_image_pixbuf,
-                          str(group), int(gid))
+        data_to_append = (str(group), int(gid))
         gtk.ListStore.append(self, data_to_append)
 
     def get_group_name(self, gid):
@@ -52,12 +45,12 @@ class GroupStore(gtk.ListStore):
         event a GtkTreeiter"""
 
         if isinstance(gid, gtk.TreeIter):
-            return self.get_value(gid, 1)
+            return self.get_value(gid, 0)
         
         it = self.get_iter_first()
         while it is not None:
-            if self.get_value(it, 2) == int(gid):
-                return self.get_value(it, 1)
+            if self.get_value(it, 1) == int(gid):
+                return self.get_value(it, 0)
             else:
                 it = self.iter_next(it)
         return None
@@ -66,12 +59,12 @@ class GroupStore(gtk.ListStore):
         """Get the gid from group_name or from an iter"""
 
         if isinstance(group_name, gtk.TreeIter):
-            return self.get_value(group_name, 2)
+            return self.get_value(group_name, 1)
 
         it = self.get_iter_first()
         while it is not None:
-            if self.get_value(it, 1) == group_name:
-                return self.get_value(it, 2)
+            if self.get_value(it, 0) == group_name:
+                return self.get_value(it, 1)
             else:
                 it = self.iter_next(it)
         return None
@@ -87,33 +80,26 @@ class UserStore(gtk.ListStore):
         # And group_store 
         self.__group_store = group_store
 
-        # Preload user image pixbuf
-        user_image = gtk.Image()
-        user_image.set_from_file(os.path.join(self.__datapath,
-                                              "ui", "user.png"))
-        self.__user_image_pixbuf = user_image.get_pixbuf()
-        
         # Init a ListStore with required fields, i.e.
-        # - User image
         # - Username
         # - Name
         # - Group
         # - UserModel
-        gtk.ListStore.__init__(self, gtk.gdk.Pixbuf,
+        gtk.ListStore.__init__(self,
                                gobject.TYPE_STRING,
                                gobject.TYPE_STRING,
                                gobject.TYPE_STRING,
                                UserModel)
 
         # Sort users
-        self.set_sort_func(1, self.sort)
-        self.set_sort_column_id(1, gtk.SORT_ASCENDING)
+        self.set_sort_func(0, self.sort)
+        self.set_sort_column_id(0, gtk.SORT_ASCENDING)
 
     def sort(self, model, iter1, iter2):
         """Sort users"""
 
-        user1 = model.get_value(iter1, 1)
-        user2 = model.get_value(iter2, 1)
+        user1 = model.get_value(iter1, 0)
+        user2 = model.get_value(iter2, 0)
 
         if user1 is None:
             return True
@@ -136,18 +122,17 @@ class UserStore(gtk.ListStore):
         if group is None:
             group = _("Unknown")
 
-        data_to_append = (self.__user_image_pixbuf,
-                          username, name, group, usermodel)
+        data_to_append = (username, name, group, usermodel)
         gtk.ListStore.append(self, data_to_append)
 
     def get_usermodel(self, it):
         """Return usermodel associated with entry"""
-        return self.get_value(it, 4)
+        return self.get_value(it, 3)
 
     def get_username(self, it):
         """Return username"""
-        return self.get_value(it, 1)
+        return self.get_value(it, 0)
 
     def get_given_name(self, it):
         """Return given name"""
-        return self.get_value(it, 2)
+        return self.get_value(it, 1)

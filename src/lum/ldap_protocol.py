@@ -155,7 +155,12 @@ class UserModel(gobject.GObject):
         try:
             return self.__ldif['givenName'][0]
         except KeyError:
-            return ""
+            # If givenName is not found we try to guess the name
+            # from the gecos, if present (should be)
+            try:
+                return " ".join(self.__ldif['gecos'][0].split(" ")[:-1])
+            except KeyError:
+                return ""
         
     def get_gecos(self):
         """Return a complete name of the user, such
@@ -190,7 +195,10 @@ class UserModel(gobject.GObject):
         try:
             return self.__ldif['sn'][0]
         except KeyError:
-            return self.__sn
+            try:
+                return self.__ldif['gecos'][0].split(" ")[-1]
+            except:
+                return self.__sn
         
     def set_surname(self, sn):
         """Set surname of the user"""

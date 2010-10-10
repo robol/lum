@@ -7,6 +7,8 @@ from exceptions import *
 from configuration import Configuration
 import gobject
 
+random.seed()
+
 # This is just for debug
 ldifwriter = ldif.LDIFWriter(sys.stdout)
 

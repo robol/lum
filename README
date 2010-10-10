@@ -25,9 +25,21 @@ You can easily run it from its own directory launching
 
  ./lum.py
 
-It is the only supported method right now, but I will
-include a setup.py as soon as I got it quite stable
-to release a 0.1 tarball.
+You can install it system-wide with the following
+command:
+
+ python setup.py install
+
+with root privileges. Ubuntu users can get the packaged
+version via the PPA:
+
+ sudo apt-add-repository ppa:leo.robol/lum
+ sudo apt-get update
+ sudo apt-get install lum
+
+Only the "stable" versions are packaged there, so if you
+want to follow every improvemente you should use the git
+repository on github.com.
 
 You will need the following python modules:
 
@@ -40,7 +52,19 @@ with:
 
 3. Bug reporting
 
-There is not a bug tracker right now, but if you manage
-to find one you can write to me at this address:
+You can signal issues on the github.com bugtracker the you
+can find at http://github.com/robol/lum/issues/ or write me
+an email to this address:
 
  Leonardo Robol <robol@poisson.phc.unipi.it>
+
+4. Patches
+
+Patches are also welcome, but if you want to make one
+please write me first so I can see what you want to work
+on.
+
+5. License
+
+Lum is release with GPL 3 license, you can find details
+in the LICENSE file of this archive.

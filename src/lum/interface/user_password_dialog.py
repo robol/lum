@@ -12,9 +12,13 @@ class lumUserPasswordDialog():
         self.__builder = create_builder("ui/LumUserPasswordDialog.ui")
         self.__dialog = self.__builder.get_object("dialog")
         self.__dialog.set_title(_("Set password for user %s") % username)
+
+        pe = self.__dialog.get_object("password_entry_2")
+        pe.connect("activate", lambda widget : self.__dialog.response(1))
+
     def run(self):
         
-        if self.__dialog.run():
+        if self.__dialog.run() == 1:
             password_1 = self.__builder.get_object("password_entry_1").get_text()
             password_2 = self.__builder.get_object("password_entry_2").get_text()
             

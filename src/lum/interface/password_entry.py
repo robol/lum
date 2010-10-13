@@ -11,6 +11,9 @@ class lumPasswordEntry():
         self.__builder = create_builder("LumPasswordEntry.ui")
         
         self.__dialog = self.__builder.get_object("password_dialog")
+
+        pe = self.__builder.get_object("password_entry")
+        pe.connect("activate", lambda widget : self.__dialog.response(1))
         
     def run(self):
 

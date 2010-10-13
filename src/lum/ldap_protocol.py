@@ -187,7 +187,7 @@ class UserModel(gobject.GObject):
 
         # Gecos shall be in the form name + " " + surname, but
         # if surname is not set, set only the name
-        if self.__sn == "":
+        if self.__sn != "":
             self.__ldif['gecos'] = [" ".join([self.__name,
                                               self.__sn])]
         else:

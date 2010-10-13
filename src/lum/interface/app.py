@@ -31,6 +31,7 @@ from edit_user_dialog import lumEditUserDialog
 from menu_item import lumUserTreeViewMenu, lumGroupTreeViewMenu
 from new_group_dialog import lumNewGroupDialog
 from change_user_password_dialog import lumChangeUserPasswordDialog
+from edit_group_members_dialog import lumEditGroupMembersDialog
 from utilities import _, show_error_dialog, ask_question, create_builder, show_info_dialog
 from stores import UserStore, GroupStore
 from treeviews import UserTreeView, GroupTreeView
@@ -207,34 +208,6 @@ class lumApp(gobject.GObject):
         self.statusbar_update(_("Connection to %s initialized") % self.__uri)
         self.reload_user_list()
             
-    def filter_users(self, model, treeiter, user_data = None):
-        """Filter users based on what is placed in filter_entry"""
-        
-        # Get key and keep only lower() to make search 
-        # case insensitive. 
-        key = self.__builder.get_object("filter_user_entry").get_text()        
-        if key == "":
-            return True
-        key = key.lower()
-        
-        if key in self.__user_store.get_username(treeiter).lower():
-            return True
-        if key in self.__user_store.get_given_name(treeiter).lower():
-            return True
-            
-        return False
-
-    def filter_groups(self, model, treeiter, user_data = None):
-        """Filter group based on user insertion in the filter entry"""
-        key = self.__builder.get_object("filter_group_entry").get_text()
-        if key == "":
-            return True
-
-        if key in model.get_group_name(treeiter).lower():
-            return True
-
-        return False
-
     def __get_selected_user(self):
         """Obtain usermodel and a treeview iter
         of the selected user in the treeview"""
@@ -348,6 +321,28 @@ class lumApp(gobject.GObject):
             for gid, group in self.__connection.get_groups().items():
                 self.__group_store.append(gid, group)
 
+    def edit_group_members(self, menu_item = None):
+        """Edit group members"""
+
+        # Get selected group in the treeview
+        group_name, it = self.__get_selected_group()
+
+        if it is None:
+            return
+
+        # Create dialog
+        dialog = lumEditGroupMembersDialog(self.__connection,
+                                           group_name)
+
+        # Get desidered modifications
+        users_to_add, users_to_del = dialog.run()
+
+        if users_to_add is None:
+            return
+
+        # Really modify users
+        self.__connection.modify_group_members(group_name, users_to_add,
+                                               users_to_del)
             
                 
     def edit_user(self, menu_item = None):

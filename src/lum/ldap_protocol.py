@@ -440,8 +440,13 @@ class Connection(gobject.GObject):
         except ldap.INSUFFICIENT_ACCESS:
             raise LumInsufficientPermissionsError("Insufficient permissions to delete group")
 
-    def get_members(self, group_name):
-        """Obtain all the members of group_name"""
+    def get_members(self, group_name, verbose = False):
+        """Obtain all the members of group_name if verbose
+        is set to False. If it is set to True return a list
+        of tuple containing (uid, is_structural_group) where
+        is_structural_group is True if this is the group
+        associated to the uid and false if the user is listed
+        in memberUid field."""
         
         # There are two types of group members in
         # an ldap tree:
@@ -461,7 +466,10 @@ class Connection(gobject.GObject):
         # Get users in memberUid field of the group
         if group_data.has_key("memberUid"):
             for user in group_data['memberUid']:
-                users.append(user)
+                if not verbose:
+                    users.append(user)
+                else:
+                    users.append ((user, False))
 
         # Get group gid
         gid = group_data['gidNumber'][0]
@@ -472,9 +480,26 @@ class Connection(gobject.GObject):
                                               ldap.SCOPE_ONELEVEL,
                                               "gidNumber=%s" % gid)
         for dn, user in matching_users:
-            users.append(user['uid'][0])
+            if not verbose:
+                users.append(user['uid'][0])
+            else:
+                users.append((user['uid'][0], True))
 
         return users
+
+    def modify_group_members(self, group, uid_to_add = [], uid_to_delete = []):
+        """Add and/or remove members from a group"""
+
+        modlist = []
+        dn = "cn=%s,%s" % (group, self.__groups_ou)
+
+        # Generate change list
+        if uid_to_add != []:
+            modlist.append((ldap.MOD_ADD, "memberUid", uid_to_add ))
+        if uid_to_delete != []:
+            modlist.append((ldap.MOD_DELETE, "memberUid", uid_to_delete))
+        
+        self.__ldap.modify_s(dn, modlist)
 
     def change_password(self, uid, password):
         """Change password of selected user. If called when

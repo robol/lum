@@ -180,6 +180,14 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkImageMenuItem" id="menuitem5">
+                        <property name="label" translatable="yes">Edit members</property>
+                        <property name="visible">True</property>
+                        <property name="image">image4</property>
+                        <property name="use_stock">False</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkSeparatorMenuItem" id="separatormenuitem3">
                         <property name="visible">True</property>
                       </object>
@@ -393,5 +401,9 @@
   <object class="GtkImage" id="image3">
     <property name="visible">True</property>
     <property name="stock">gtk-dialog-authentication</property>
+  </object>
+  <object class="GtkImage" id="image4">
+    <property name="visible">True</property>
+    <property name="stock">gtk-missing-image</property>
   </object>
 </interface>

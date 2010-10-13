@@ -48,13 +48,19 @@ class lumGroupTreeViewMenu(gtk.Menu):
         self.__parent = parent
         self.__delete_button = gtk.MenuItem(_("Delete"))
         self.__properties_button = gtk.MenuItem(_("Properties"))
+        self.__edit_button = gtk.MenuItem(_("Edit members"))
         
-        for it in (self.__delete_button, self.__properties_button):
+        for it in (self.__delete_button, self.__properties_button,
+                   self.__edit_button):
             self.append(it)
             it.show()
 
         self.__delete_button.connect("activate", self.delete_cb)
         self.__properties_button.connect("activate", self.properties_cb)
+        self.__edit_button.connect("activate", self.edit_button_cb)
+
+    def edit_button_cb(self, button):
+        self.__parent.edit_group_members()
 
     def delete_cb(self, menu_item):
         self.__parent.delete_group()

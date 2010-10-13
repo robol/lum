@@ -42,15 +42,18 @@ class UserModel(gobject.GObject):
 
     def __init__(self, ldap_output = None):
 
+        # Instatiate this as GObject so we can easuly integrate
+        # it with GtkListStore that will be used in the gtk
+        # interface
         gobject.GObject.__init__(self)
 
-        # Create an internatl dictionary that represent
+        # Create an internal dictionary that represents
         # ldap data
         self.__ldif = dict ()
         self.__dn = None
 
         # Some fields to keep track of user name and
-        # surname over the schema
+        # surname ignoring the schema
         self.__name = ""
         self.__sn = ""
         self.__email = ""
@@ -556,16 +559,24 @@ class Connection(gobject.GObject):
             return False
         return True
         
-    def add_ou(self, ou):
+    def add_ou(self, ou, final_step = False):
         """
         Add an organizationalUnit to the database.
-        Usage example: add_ou("People")
+        Usage example: add_ou("People").
+        final_step should be set to True if this is
+        the last requirement to fire up the connection.
+        If it is set to True add_ou will emit the 
+        connection-completed event.
         """
         ldif = dict()
         ldif['objectClass'] = ['organizationalUnit',
                                'top']
         ldif['ou'] = [re.findall(r"ou=(\w+),", ou)[0]]
         self.__ldap.add_s(ou, ldap.modlist.addModlist(ldif))
+
+        
+        if final_step:
+            self.emit('connection-completed')
         
     def get_user(self, uid):
         users = self.__ldap.search_s(self.__users_ou, ldap.SCOPE_ONELEVEL, "uid=%s" % uid)

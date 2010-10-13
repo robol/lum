@@ -120,6 +120,9 @@ class lumApp(gobject.GObject):
         self.__window.show_all()
         self.__connection = None
 
+        # Give focus to something that should have it
+        self.__builder.get_object("filter_user_entry").grab_focus()
+
     def missing_ou_cb(self, widget, missing_ou):
         """Callback to ask user if he/she wants to add
         missing ous before continue"""
@@ -127,7 +130,7 @@ class lumApp(gobject.GObject):
         text = "\n".join(map(lambda x : "- <b>" + x + "</b>", missing_ou))
         if ask_question(_("The following organizational units are missing in the database, add them?\n%s" % text)):
             for ou in missing_ou:
-                self.__connection.add_ou(ou)
+                self.__connection.add_ou(ou, True)
         else:
             show_info_dialog(_("You will not be able to perform any operation without these OUs"))
             self.disconnect()
@@ -343,6 +346,8 @@ class lumApp(gobject.GObject):
         # Really modify users
         self.__connection.modify_group_members(group_name, users_to_add,
                                                users_to_del)
+
+        self.statusbar_update(_("Group %s modified successfully") % group_name)
             
                 
     def edit_user(self, menu_item = None):

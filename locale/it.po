@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-13 15:14+0200\n"
+"POT-Creation-Date: 2010-10-13 16:38+0200\n"
 "PO-Revision-Date: 2010-10-13 15:15+0200\n"
 "Last-Translator: Leonardo Robol <robol@poisson.phc.unipi.it>\n"
 "Language-Team: Leonardo Robol <robol@poisson.phc.unipi.it>\n"
@@ -280,7 +280,7 @@ msgstr "Gruppo"
 msgid "Set password for user %s"
 msgstr "Imposta la password per l'utente %s"
 
-#: src/lum/interface/user_password_dialog.py:22
+#: src/lum/interface/user_password_dialog.py:26
 msgid "Not matching passwords, retry."
 msgstr "Le password non coincidono, riprovare."
 
@@ -289,10 +289,6 @@ msgid "Copyright (C) 2010 Leonardo Robol"
 msgstr "Copyright (C) 2010 Leonardo Robol"
 
 #: tmp/LumAbout.ui.h:2
-msgid "Lum is freesoftware; "
-msgstr "Lum è software libero; "
-
-#: tmp/LumAbout.ui.h:3
 msgid "Official website"
 msgstr "Sito ufficiale"
 
@@ -537,6 +533,9 @@ msgstr "Inserire la password per autenticarsi sul server LDAP:"
 #: tmp/LumPasswordEntry.ui.h:2
 msgid "Password requested"
 msgstr "Password richiesta"
+
+#~ msgid "Lum is freesoftware; "
+#~ msgstr "Lum è software libero; "
 
 #~ msgid "Internal application error! Try reloading user list"
 #~ msgstr ""

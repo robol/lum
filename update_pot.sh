@@ -10,3 +10,10 @@ xgettext -p locale/ --language=Python --keyword=_ --keyword=N_ \
 	tmp/*.h
 
 rm tmp -rf
+
+cd locale
+for po in *.po; do
+	echo -n "Updating $po "
+	msgmerge -o "$po.new" "$po" lum.pot
+	mv "$po.new" "$po"
+done

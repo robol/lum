@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-09 23:17+0200\n"
-"PO-Revision-Date: 2010-10-09 23:18+0200\n"
+"POT-Creation-Date: 2010-10-13 15:14+0200\n"
+"PO-Revision-Date: 2010-10-13 15:15+0200\n"
 "Last-Translator: Leonardo Robol <robol@poisson.phc.unipi.it>\n"
 "Language-Team: Leonardo Robol <robol@poisson.phc.unipi.it>\n"
 "Language: it\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/lum/interface/app.py:127
+#: src/lum/interface/app.py:131
 #, python-format
 msgid ""
 "The following organizational units are missing in the database, add them?\n"
@@ -24,21 +24,21 @@ msgstr ""
 "aggiungerle?\n"
 "%s"
 
-#: src/lum/interface/app.py:131
+#: src/lum/interface/app.py:135
 msgid "You will not be able to perform any operation without these OUs"
 msgstr "Non sarà possibile effettuare alcuna operazione senza queste OUs"
 
-#: src/lum/interface/app.py:140
+#: src/lum/interface/app.py:144
 #, python-format
 msgid "Disconnected from %s"
 msgstr "Disconnessione da %s effettuata"
 
-#: src/lum/interface/app.py:170
+#: src/lum/interface/app.py:174
 #, python-format
 msgid "Connecting to %s."
 msgstr "Connessione a %s"
 
-#: src/lum/interface/app.py:199
+#: src/lum/interface/app.py:203
 msgid ""
 "Error while connecting to the server, check your credentials and your "
 "connectivity"
@@ -46,32 +46,37 @@ msgstr ""
 "Errore durante la connessione al server, controllare le proprie credenziali "
 "e la connessione alla rete"
 
-#: src/lum/interface/app.py:203
+#: src/lum/interface/app.py:207
 msgid "Connection failed."
 msgstr "Connessione fallita."
 
-#: src/lum/interface/app.py:207
+#: src/lum/interface/app.py:211
 #, python-format
 msgid "Connection to %s initialized"
 msgstr "Connessione a %s inizializzata"
 
-#: src/lum/interface/app.py:290
+#: src/lum/interface/app.py:266
 msgid "Select a user to delete!"
 msgstr "Selezionare un utente da cancellare!"
 
-#: src/lum/interface/app.py:295
+#: src/lum/interface/app.py:271
 #, python-format
 msgid "Really delete user <b>%s</b>?"
 msgstr "Cancellare l'utente <b>%s</b>?"
 
-#: src/lum/interface/app.py:302
+#: src/lum/interface/app.py:278
 msgid "Insufficient permissions to delete user"
 msgstr "Permessi insufficienti per eliminare l'utente"
 
-#: src/lum/interface/app.py:308
+#: src/lum/interface/app.py:284
 #, python-format
 msgid "User %s deleted."
 msgstr "Utente %s cancellato."
+
+#: src/lum/interface/app.py:350
+#, python-format
+msgid "Group %s modified successfully"
+msgstr "Gruppo %s modificato correttamente"
 
 #: src/lum/interface/app.py:357
 msgid "Select a user to modify"
@@ -209,6 +214,10 @@ msgstr "Inserire l'organizational unit dei gruppi"
 msgid "Connection to LDAP server"
 msgstr "Connessione al server LDAP"
 
+#: src/lum/interface/edit_group_members_dialog.py:77
+msgid "Insert uid here"
+msgstr "Inserire lo username"
+
 #: src/lum/interface/edit_user_dialog.py:49
 #, python-format
 msgid "Editing user %s"
@@ -230,6 +239,10 @@ msgstr "Cambia password"
 #: src/lum/interface/menu_item.py:50
 msgid "Properties"
 msgstr "Proprietà"
+
+#: src/lum/interface/menu_item.py:51 tmp/LumApp.ui.h:2
+msgid "Edit members"
+msgstr "Modifica membri"
 
 #: src/lum/interface/new_group_dialog.py:27
 msgid "Insert a valid gid"
@@ -283,47 +296,47 @@ msgstr "Lum è software libero; "
 msgid "Official website"
 msgstr "Sito ufficiale"
 
-#: tmp/LumApp.ui.h:2
+#: tmp/LumApp.ui.h:3
 msgid "Find group:"
 msgstr "Cerca gruppo:"
 
-#: tmp/LumApp.ui.h:3
+#: tmp/LumApp.ui.h:4
 msgid "Find user:"
 msgstr "Cerca utente:"
 
-#: tmp/LumApp.ui.h:4
+#: tmp/LumApp.ui.h:5
 msgid "Forget password"
 msgstr "Dimentica password"
 
-#: tmp/LumApp.ui.h:5
+#: tmp/LumApp.ui.h:6
 msgid "Groups management"
 msgstr "Gestione gruppi"
 
-#: tmp/LumApp.ui.h:6
+#: tmp/LumApp.ui.h:7
 msgid "Ldap User Manager"
 msgstr "Ldap User Manager"
 
-#: tmp/LumApp.ui.h:7
+#: tmp/LumApp.ui.h:8
 msgid "Reload user list"
 msgstr "Aggiorna lista utenti"
 
-#: tmp/LumApp.ui.h:8
+#: tmp/LumApp.ui.h:9
 msgid "Users management"
 msgstr "Gestione utenti"
 
-#: tmp/LumApp.ui.h:9
+#: tmp/LumApp.ui.h:10
 msgid "_File"
 msgstr "_File"
 
-#: tmp/LumApp.ui.h:10
+#: tmp/LumApp.ui.h:11
 msgid "_Group"
 msgstr "Gruppo"
 
-#: tmp/LumApp.ui.h:11
+#: tmp/LumApp.ui.h:12
 msgid "_Help"
 msgstr "_Help"
 
-#: tmp/LumApp.ui.h:12
+#: tmp/LumApp.ui.h:13
 msgid "_User"
 msgstr "_Utente"
 
@@ -350,6 +363,10 @@ msgstr "Ripetere password"
 #: tmp/LumConnectDialog.ui.h:1
 msgid "Connect to LDAP server"
 msgstr "Connetti al server LDAP"
+
+#: tmp/LumEditGroupMembers.ui.h:1
+msgid "Edit members of the group in the list below"
+msgstr "Modifica i membri del gruppo nella lista qui sotto"
 
 #: tmp/LumEditUserDialog.ui.h:1
 msgid "Edit user"

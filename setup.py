@@ -6,7 +6,7 @@ import glob, os, sys
 from distutils.dep_util import newer
 from distutils.log import info
 
-PO_DIR="locale"
+PO_DIR="po"
 
 class InstallData(install_data):
 

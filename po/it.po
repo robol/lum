@@ -1,18 +1,22 @@
-#
-# Leonardo Robol <robol@poisson.phc.unipi.it>, 2010.
+# Italian translation for lum
+# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# This file is distributed under the same license as the lum package.
+# Leonardo Robol <leo@robol.it>, 2011.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 0.1\n"
+"Project-Id-Version: lum\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-10-13 16:38+0200\n"
-"PO-Revision-Date: 2010-10-13 15:15+0200\n"
-"Last-Translator: Leonardo Robol <robol@poisson.phc.unipi.it>\n"
-"Language-Team: Leonardo Robol <robol@poisson.phc.unipi.it>\n"
+"PO-Revision-Date: 2011-06-28 09:11+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Italian <it@li.org>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2011-06-28 09:16+0000\n"
+"X-Generator: Launchpad (build 13299)\n"
 
 #: src/lum/interface/app.py:131
 #, python-format
@@ -534,22 +538,21 @@ msgstr "Inserire la password per autenticarsi sul server LDAP:"
 msgid "Password requested"
 msgstr "Password richiesta"
 
-#~ msgid "Lum is freesoftware; "
-#~ msgstr "Lum è software libero; "
+msgid "Lum is freesoftware; "
+msgstr "Lum è software libero; "
 
-#~ msgid "Internal application error! Try reloading user list"
-#~ msgstr ""
-#~ "Errore interno nell'applicazione! Provare a ricaricare la lista degli "
-#~ "utenti"
+msgid "Internal application error! Try reloading user list"
+msgstr ""
+"Errore interno nell'applicazione! Provare a ricaricare la lista degli utenti"
 
-#~ msgid "Insert server name"
-#~ msgstr "Inserire il nome del server"
+msgid "Insert server name"
+msgstr "Inserire il nome del server"
 
-#~ msgid "Insert bind DN"
-#~ msgstr "Inserire il bind DN"
+msgid "Insert bind DN"
+msgstr "Inserire il bind DN"
 
-#~ msgid "Insert base DN"
-#~ msgstr "Inserire il base DN"
+msgid "Insert base DN"
+msgstr "Inserire il base DN"
 
-#~ msgid "Insert group organizational unit"
-#~ msgstr "Inserire l'organizational unit dei gruppi"
+msgid "Insert group organizational unit"
+msgstr "Inserire l'organizational unit dei gruppi"

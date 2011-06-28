@@ -1,4 +1,4 @@
-# Italian translation for lum
+# Translation template for lum. 
 # Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the lum package.
 # Leonardo Robol <leo@robol.it>, 2011.

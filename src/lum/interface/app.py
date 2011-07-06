@@ -8,14 +8,15 @@
 #
 
 import pygtk
+
+# Require a recent pygtk version
+pygtk.require("2.0")
+
 import gtk
 import gobject
 import os
 import gnomekeyring
 import time
-
-# Require a recent pygtk version
-pygtk.require("2.0")
 
 # Import modules from lum
 from lum.ldap_protocol import UserModel, Connection
@@ -67,9 +68,9 @@ class lumApp(gobject.GObject):
         signals = {
         
             # Quit signals
-            'on_quit_menu_item_activate':         gtk.main_quit,
-            'window_destroy_event_cb':            gtk.main_quit,
-            'on_window_destroy':                gtk.main_quit,
+            'on_quit_menu_item_activate':         self.on_destroy,
+            'window_destroy_event_cb':            self.on_destroy,
+            'on_window_destroy':                  self.on_destroy,
             
             # Callbacks
             'on_about_menu_item_activate':        self.show_about_dialog,
@@ -111,7 +112,12 @@ class lumApp(gobject.GObject):
         self.__group_popup_menu = lumGroupTreeViewMenu(self)
 
     def __del__(self):
+        self.disconnect()
         lum_application = None
+
+    def on_destroy(self, widget = None):
+        self.disconnect()
+        gtk.main_quit()
     
     def start(self):
         """Start lumApp"""
@@ -139,7 +145,9 @@ class lumApp(gobject.GObject):
     def disconnect(self, menu_item = None):
         self.clear_user_list()
         self.clear_group_list()
-        self.__connection = None
+        if self.__connection is not None:
+            self.__connection.stop()
+            self.__connection = None
         if self.__uri is not None:
             self.statusbar_update(_("Disconnected from %s") % self.__uri)
             self.__uri = None
@@ -150,7 +158,7 @@ class lumApp(gobject.GObject):
         
         # Determine which server to connect to
         connect_dialog = lumConnectDialog(self.__datapath, self.__configuration)
-        uri, bind_dn, base_dn, users_ou, groups_ou = connect_dialog.run()
+        uri, bind_dn, base_dn, users_ou, groups_ou, ssh_server, ssh_username = connect_dialog.run()
         
         # Update internal information
         self.__uri = uri 
@@ -158,6 +166,8 @@ class lumApp(gobject.GObject):
         self.__base_dn = base_dn
         self.__users_ou = users_ou
         self.__groups_ou = groups_ou
+        self.__ssh_server = ssh_server
+        self.__ssh_username = ssh_username
 
         if uri is None:
             return
@@ -168,15 +178,27 @@ class lumApp(gobject.GObject):
         if not self.__groups_ou.endswith(self.__base_dn): self.__groups_ou += ",%s" % self.__base_dn
         
         # Get password from keyring
-        password = self.ask_password()
+        password, ssh_password = self.ask_password()
         
         # Notify user of connection
         self.statusbar_update(_("Connecting to %s.") % uri)
 
+        # Configure SSH tunnel if needed
+        tunnel = False
+        if ssh_server != "":
+            tunnel = {
+                'host': ssh_server,
+                'username': ssh_username,
+                'password': ssh_password
+                }
+
+
         self.__connection =  Connection(uri = self.__uri, bind_dn = self.__bind_dn, 
                                         password = password, 
                                         base_dn = self.__base_dn, users_ou = self.__users_ou, 
-                                        groups_ou = self.__groups_ou)
+                                        groups_ou = self.__groups_ou, tunnel = tunnel)
+
+            
 
         self.__connection.connect("missing-ou", self.missing_ou_cb)
         self.__connection.connect("connection-completed", self.connection_completed_cb)
@@ -230,15 +252,16 @@ class lumApp(gobject.GObject):
         """A simple routine that ask for password, if it is not yet in
         the keyring"""
         display_name = "@".join([self.__bind_dn, self.__uri])
-        if gnomekeyring.is_available():
-            for pw_id in gnomekeyring.list_item_ids_sync('login'):
-                pw = gnomekeyring.item_get_info_sync("login", pw_id)
-                if pw.get_display_name() == display_name:
-                    return pw.get_secret()
+        if self.__ssh_server == "":
+            if gnomekeyring.is_available():
+                for pw_id in gnomekeyring.list_item_ids_sync('login'):
+                    pw = gnomekeyring.item_get_info_sync("login", pw_id)
+                    if pw.get_display_name() == display_name:
+                        return pw.get_secret(), None
         
         # Ask for password...
         password_dialog = lumPasswordEntry(self.__datapath)
-        password = password_dialog.run()
+        password, ssh_password = password_dialog.run()
         if password is not None:
         
             atts = { 
@@ -251,7 +274,7 @@ class lumApp(gobject.GObject):
             
             pw_id = gnomekeyring.item_create_sync('login', gnomekeyring.ITEM_GENERIC_SECRET,
                                           display_name, atts, password, True)
-        return password
+        return password, ssh_password
         
     def show_about_dialog(self, menu_item):
         """Show about dialog"""

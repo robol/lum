@@ -2,23 +2,8 @@
 <interface>
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy project-wide -->
-  <object class="GtkListStore" id="server_store">
-    <columns>
-      <!-- column-name icon -->
-      <column type="GdkPixbuf"/>
-      <!-- column-name uri -->
-      <column type="gchararray"/>
-      <!-- column-name bind_dn -->
-      <column type="gchararray"/>
-      <!-- column-name base_dn -->
-      <column type="gchararray"/>
-      <!-- column-name users_ou -->
-      <column type="gchararray"/>
-      <!-- column-name groups_ou -->
-      <column type="gchararray"/>
-    </columns>
-  </object>
   <object class="GtkDialog" id="connect_dialog">
+    <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Connect to LDAP server</property>
     <property name="default_width">600</property>
@@ -28,10 +13,57 @@
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
         <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkHButtonBox" id="dialog-action_area1">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton" id="cancel_button">
+                <property name="label">gtk-cancel</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_action_appearance">False</property>
+                <property name="use_stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="connect_button">
+                <property name="label">gtk-connect</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_action_appearance">False</property>
+                <property name="use_stock">True</property>
+                <signal name="activate" handler="on_connect_button_activate" swapped="no"/>
+                <signal name="clicked" handler="on_connect_button_activate" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
         <child>
           <object class="GtkVBox" id="vbox1">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <child>
               <object class="GtkScrolledWindow" id="scrolledwindow1">
                 <property name="visible">True</property>
@@ -45,7 +77,7 @@
                     <property name="model">server_store</property>
                     <property name="headers_clickable">False</property>
                     <property name="search_column">1</property>
-                    <signal name="row_activated" handler="on_treeview_row_activated"/>
+                    <signal name="row-activated" handler="on_treeview_row_activated" swapped="no"/>
                     <child>
                       <object class="GtkTreeViewColumn" id="treeviewcolumn1">
                         <property name="resizable">True</property>
@@ -66,8 +98,8 @@
                         <property name="expand">True</property>
                         <child>
                           <object class="GtkCellRendererText" id="uri_cellrenderer">
-                            <signal name="edited" handler="on_uri_cellrenderer_edited"/>
-                            <signal name="editing_started" handler="on_uri_cellrenderer_editing_started"/>
+                            <signal name="editing-started" handler="on_uri_cellrenderer_editing_started" swapped="no"/>
+                            <signal name="edited" handler="on_uri_cellrenderer_edited" swapped="no"/>
                           </object>
                           <attributes>
                             <attribute name="text">1</attribute>
@@ -83,7 +115,7 @@
                         <property name="expand">True</property>
                         <child>
                           <object class="GtkCellRendererText" id="bind_dn_cellrenderer">
-                            <signal name="edited" handler="on_bind_dn_edited"/>
+                            <signal name="edited" handler="on_bind_dn_edited" swapped="no"/>
                           </object>
                           <attributes>
                             <attribute name="text">2</attribute>
@@ -98,7 +130,7 @@
                         <property name="title">Base DN</property>
                         <child>
                           <object class="GtkCellRendererText" id="base_dn_cellrenderer">
-                            <signal name="edited" handler="on_base_dn_edited"/>
+                            <signal name="edited" handler="on_base_dn_edited" swapped="no"/>
                           </object>
                           <attributes>
                             <attribute name="text">3</attribute>
@@ -113,7 +145,7 @@
                         <property name="title">Users OU</property>
                         <child>
                           <object class="GtkCellRendererText" id="users_ou_cellrenderer">
-                            <signal name="edited" handler="on_users_ou_edited"/>
+                            <signal name="edited" handler="on_users_ou_edited" swapped="no"/>
                           </object>
                           <attributes>
                             <attribute name="text">4</attribute>
@@ -128,7 +160,7 @@
                         <property name="title">Groups OU</property>
                         <child>
                           <object class="GtkCellRendererText" id="groups_ou_cellrenderer">
-                            <signal name="edited" handler="on_groups_ou_edited"/>
+                            <signal name="edited" handler="on_groups_ou_edited" swapped="no"/>
                           </object>
                           <attributes>
                             <attribute name="text">5</attribute>
@@ -140,22 +172,28 @@
                 </child>
               </object>
               <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
                 <property name="position">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkHBox" id="hbox1">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <child>
                   <object class="GtkButton" id="remove_button">
                     <property name="label">gtk-remove</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="use_action_appearance">False</property>
                     <property name="use_stock">True</property>
-                    <signal name="clicked" handler="on_remove_button_clicked"/>
+                    <signal name="clicked" handler="on_remove_button_clicked" swapped="no"/>
                   </object>
                   <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
@@ -165,65 +203,30 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="use_action_appearance">False</property>
                     <property name="use_stock">True</property>
-                    <signal name="clicked" handler="on_add_button_activate"/>
-                    <signal name="activate" handler="on_add_button_activate"/>
+                    <signal name="activate" handler="on_add_button_activate" swapped="no"/>
+                    <signal name="clicked" handler="on_add_button_activate" swapped="no"/>
                   </object>
                   <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
               </object>
               <packing>
                 <property name="expand">False</property>
+                <property name="fill">True</property>
                 <property name="padding">5</property>
                 <property name="position">1</property>
               </packing>
             </child>
           </object>
           <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
             <property name="position">1</property>
-          </packing>
-        </child>
-        <child internal-child="action_area">
-          <object class="GtkHButtonBox" id="dialog-action_area1">
-            <property name="visible">True</property>
-            <property name="layout_style">end</property>
-            <child>
-              <object class="GtkButton" id="cancel_button">
-                <property name="label">gtk-cancel</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="connect_button">
-                <property name="label">gtk-connect</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-                <signal name="clicked" handler="on_connect_button_activate"/>
-                <signal name="activate" handler="on_connect_button_activate"/>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="pack_type">end</property>
-            <property name="position">0</property>
           </packing>
         </child>
       </object>
@@ -232,5 +235,25 @@
       <action-widget response="0">cancel_button</action-widget>
       <action-widget response="1">connect_button</action-widget>
     </action-widgets>
+  </object>
+  <object class="GtkListStore" id="server_store">
+    <columns>
+      <!-- column-name icon -->
+      <column type="GdkPixbuf"/>
+      <!-- column-name uri -->
+      <column type="gchararray"/>
+      <!-- column-name bind_dn -->
+      <column type="gchararray"/>
+      <!-- column-name base_dn -->
+      <column type="gchararray"/>
+      <!-- column-name users_ou -->
+      <column type="gchararray"/>
+      <!-- column-name groups_ou -->
+      <column type="gchararray"/>
+      <!-- column-name ssh_server -->
+      <column type="gchararray"/>
+      <!-- column-name ssh_username -->
+      <column type="gchararray"/>
+    </columns>
   </object>
 </interface>

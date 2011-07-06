@@ -61,9 +61,18 @@ class lumConnectDialog():
                 groups_ou = self.__configuration.get(uri, "groups_ou")
             else:
                 groups_ou = _("Insert groups organizational unit")
+            if self.__configuration.has_option(uri, "ssh_server"):
+                ssh_server = self.__configuration.get(uri, "ssh_server")
+            else:
+                ssh_server = ""
+            if self.__configuration.has_option(uri, "ssh_username"):
+                ssh_username = self.__configuration.get(uri, "ssh_username")
+            else:
+                ssh_username = ""
+            
             
             self.__builder.get_object("server_store").append((self.__pixbuf, uri, bind_dn,
-                                            base_dn, users_ou, groups_ou))
+                                            base_dn, users_ou, groups_ou, ssh_server, ssh_username))
 
         self.__dialog.set_title(_("Connection to LDAP server"))
         
@@ -85,13 +94,15 @@ class lumConnectDialog():
         
         if t_iter is None:
             # TODO: Messagebox
-            self.__credentials = (None, None, None, None, None)
+            self.__credentials = (None, None, None, None, None, None, None)
         else:
             self.__credentials = (t_model.get_value(t_iter, 1),
                                   t_model.get_value(t_iter, 2),
                                   t_model.get_value(t_iter, 3),
                                   t_model.get_value(t_iter, 4),
-                                  t_model.get_value(t_iter, 5))
+                                  t_model.get_value(t_iter, 5),
+                                  t_model.get_value(t_iter, 6),
+                                  t_model.get_value(t_iter, 7))
                                   
     def on_remove_button_cb(self, button):
         treeview = self.__builder.get_object("treeview")
@@ -107,11 +118,12 @@ class lumConnectDialog():
         # Create new server dialog
         dialog = lumNewServerDialog()
         t_model = self.__builder.get_object("server_store")
-        uri, bind_dn, base_dn, users_ou, groups_ou = dialog.run()
+        uri, bind_dn, base_dn, users_ou, groups_ou, ssh_server, ssh_username = dialog.run()
         if uri is None:
             return None
         it = t_model.append((self.__pixbuf, uri, bind_dn,
-                             base_dn, users_ou, groups_ou))
+                             base_dn, users_ou, groups_ou, 
+                             ssh_server, ssh_username))
 
         # Call this to update the configuration
         if not self.__configuration.has_section(uri):
@@ -121,6 +133,8 @@ class lumConnectDialog():
         self.__configuration.set(uri, "base_dn", base_dn)
         self.__configuration.set(uri, "users_ou", users_ou)
         self.__configuration.set(uri, "groups_ou", groups_ou)
+        self.__configuration.set(uri, "ssh_server", ssh_server)
+        self.__configuration.set(uri, "ssh_username", ssh_username)
         
         
     def on_uri_edited(self, renderer, path, new_text):

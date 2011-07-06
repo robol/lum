@@ -25,8 +25,11 @@ class lumNewServerDialog():
             users_ou = self.__builder.get_object("users_ou_entry").get_text()
             groups_ou = self.__builder.get_object("groups_ou_entry").get_text()
 
+            ssh_server = self.__builder.get_object("ssh_server_entry").get_text()
+            ssh_username = self.__builder.get_object("ssh_username_entry").get_text()
+
             dialog.destroy()
-            return (uri, bind_dn, base_dn, users_ou, groups_ou)
+            return (uri, bind_dn, base_dn, users_ou, groups_ou, ssh_server, ssh_username)
 
         else:
             dialog.destroy()

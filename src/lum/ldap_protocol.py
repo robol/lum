@@ -293,7 +293,7 @@ class Connection(gobject.GObject):
                                  ())
         }
     
-    def __init__(self, uri, bind_dn, password, base_dn, users_ou, groups_ou, need_tunnel = False):
+    def __init__(self, uri, bind_dn, password, base_dn, users_ou, groups_ou, tunnel = False):
         """
         Create a connection to the specified uri.
         
@@ -320,8 +320,7 @@ class Connection(gobject.GObject):
         self.__ssh_username = None
         self.__ssh_password = None
         
-        print need_tunnel
-        if need_tunnel == False:
+        if tunnel == False:
             self.__ldap = ldap.initialize(uri)
         else:
             if not "ldaps" in uri:
@@ -332,8 +331,9 @@ class Connection(gobject.GObject):
                 print "ldaps://localhost:%d" % forward_port
 
             # Save username and password for the SSH connection
-            self.__ssh_username = need_tunnel['username']
-            self.__ssh_password = need_tunnel['password']
+            self.__ssh_remote_host = tunnel['host']
+            self.__ssh_username = tunnel['username']
+            self.__ssh_password = tunnel['password']
 
     def create_tunnel(self, uri):
         """Create a tunnel to the remote uri using paramiko"""
@@ -341,16 +341,13 @@ class Connection(gobject.GObject):
         # Determine port
         if ":" in uri[5:]:
             port = int(uri[5:].split(":")[1])
-            host = uri.split(":")[1].split("//")[1]
         elif "ldaps" in uri:
             port = 636
-            host = uri[8:]
         else:
             port = 389
-            host = uri[7:]
 
         # Create the forwarder
-        self.__forwarder = PortForwarder(host, port, 
+        self.__forwarder = PortForwarder(self.__ssh_remote_host, port, 
                                          self.__ssh_username, self.__ssh_password)
         self.__forwarder.connect("tunnel-opened", lambda server : self.start())
 

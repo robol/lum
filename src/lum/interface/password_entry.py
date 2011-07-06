@@ -14,6 +14,9 @@ class lumPasswordEntry():
 
         pe = self.__builder.get_object("password_entry")
         pe.connect("activate", lambda widget : self.__dialog.response(1))
+
+        spe = self.__builder.get_object("ssh_password_entry")
+        spe.connect("activate", lambda widget : self.__dialog.response(1))
         
     def run(self):
 
@@ -21,9 +24,11 @@ class lumPasswordEntry():
 
         if (ret == 1):
             password = self.__builder.get_object("password_entry").get_text()
+            ssh_password = self.__builder.get_object("ssh_password_entry").get_text()
         else:
             password = None
+            ssh_password = None
             
         self.__dialog.destroy ()
-        return password
+        return password, ssh_password
         

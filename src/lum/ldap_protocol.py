@@ -6,12 +6,11 @@ from crypt import crypt
 from exceptions import *
 from configuration import Configuration
 from port_forwarder import PortForwarder, forward_port
-import gobject, gtk
+import gobject
 import paramiko
 
 random.seed()
 gobject.threads_init()
-gtk.gdk.threads_init()
 
 # This is just for debug
 ldifwriter = ldif.LDIFWriter(sys.stdout)
@@ -290,7 +289,11 @@ class Connection(gobject.GObject):
         'missing-ou': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
                        (gobject.TYPE_PYOBJECT,)),
         'connection-completed': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
-                                 ())
+                                 ()),
+        'authentication-failed': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
+                                  ()),
+        'error-occurred': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
+                           (gobject.TYPE_STRING,))
         }
     
     def __init__(self, uri, bind_dn, password, base_dn, users_ou, groups_ou, tunnel = False):
@@ -339,8 +342,8 @@ class Connection(gobject.GObject):
         """Create a tunnel to the remote uri using paramiko"""
         print "Creating tunnel"
         # Determine port
-        if ":" in uri[5:]:
-            port = int(uri[5:].split(":")[1])
+        if ":" in uri[6:]:
+            port = int(uri[6:].split(":")[1])
         elif "ldaps" in uri:
             port = 636
         else:
@@ -350,29 +353,36 @@ class Connection(gobject.GObject):
         self.__forwarder = PortForwarder(self.__ssh_remote_host, port, 
                                          self.__ssh_username, self.__ssh_password)
         self.__forwarder.connect("tunnel-opened", lambda server : self.start())
+        self.__forwarder.connect("error-occurred", self.forwarder_error_occurred_cb)
 
+    def forwarder_error_occurred_cb(self, forwarder, error):
+        self.emit("error-occurred", error)
+        self.__forwarder.stop_serving()
+        self.__forwarder = None
 
     def set_password(self, password):
         self.__password = password
 
     def start(self):
 
-        print "Start called, port_forwarder = %s" % self.__forwarder
+        print "start() called"
 
         if self.__forwarder is None:
             self.create_tunnel(self.__uri)
             self.__forwarder.start()
 
             # This function will automatically recalled by the PortForwader once the
-            # tunnel has been setup
+            # tunnel has been set up
             return
 
         # Bind to the database with the provided credentials
         try:
-            print self.__bind_dn, self.__password
+            print "Binding with DN=", self.__bind_dn
             self.__ldap.simple_bind_s(self.__bind_dn, self.__password)
         except Exception, e:
-            raise LumError('Error connecting to the server, check your credentials')
+            self.stop()
+            self.emit("authentication-failed")
+            return
 
         # Check if there are missing ou and add them
         missing_ou = []
@@ -382,8 +392,6 @@ class Connection(gobject.GObject):
         if not self.is_present(self.__groups_ou):
             missing_ou.append(self.__users_ou)
 
-        print "done"
-        
         if missing_ou != []:
             self.emit("missing-ou", missing_ou)
         else:
@@ -392,6 +400,7 @@ class Connection(gobject.GObject):
     def stop(self):
         if not self.__forwarder is None:
             self.__forwarder.stop_serving()
+            self.__forwarder = None
 
     def add_user(self, user):
         """

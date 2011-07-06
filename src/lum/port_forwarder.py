@@ -8,14 +8,22 @@
 # Port to use for the tunnelled connections
 forward_port = 62342
 
+import paramiko, threading, SocketServer, gobject, select
+import sys, gettext, socket
 
-import paramiko, threading, SocketServer, gobject, select, sys
+gobject.threads_init()
+
+_ = gettext.gettext
 
 class PortForwarder(threading.Thread, gobject.GObject):
 
+    daemon = True
+
     __gsignals__ = {
         'tunnel-opened': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, 
-                          ())
+                          ()),
+        'error-occurred': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
+                           (gobject.TYPE_STRING,))
         }
 
     def __init__(self, remote_host, remote_port, username, password):
@@ -23,63 +31,96 @@ class PortForwarder(threading.Thread, gobject.GObject):
         transport"""
         self.remote_host = remote_host
         self.remote_port = remote_port
-
-        self.is_active = False
-
-        self.__client = paramiko.SSHClient()
-        self.__client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        self.__client.connect(remote_host, username = username, password = password)
-        self.transport = self.__client.get_transport()
+        self.username = username
+        self.password = password
 
         # Constructors
         threading.Thread.__init__(self)
         gobject.GObject.__init__(self)
-
-        self.server = ForwardServer(self.remote_host,
-                                    self.remote_port,
-                                    self.transport)
-
+        self.server = None
 
     def stop_serving(self):
         self.server.shutdown()
+        self.server.socket.shutdown(socket.SHUT_RDWR)
+        self.server.socket.close()
+        self.__client.close()
+        print "Server shutdown"
 
     def run(self):
         """Actually serve the request to the forwarder port"""        
-        gobject.idle_add(lambda x : self.emit("tunnel-opened"), False)
+        print "Connecting via SSH...",
+        self.__client = paramiko.SSHClient()
+        self.__client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        self.__client.connect(self.remote_host, 
+                              username = self.username, 
+                              password = self.password)
+        self.transport = self.__client.get_transport()
+        print "done"
+
+        print "Creating the server",
+        self.server = ForwardServer(self.remote_host,
+                                    self.remote_port,
+                                    self.transport)
+        self.server.forwarder = self
+        print "done"
+
+        print "Starting the server...",
+        if not self.server.setup_successful:
+            self.stop_serving()
+            print "no, setup wasn't successful"
+            return
+
+        gobject.timeout_add(500, lambda x : self.emit("tunnel-opened"), False)
         self.server.serve_forever()
 
-class ForwardServer (SocketServer.ThreadingTCPServer):
+
+        
+        print "starting"
+
+
+class ForwardServer (SocketServer.ThreadingTCPServer, gobject.GObject):
 
     daemon_threads = True
     allow_reuse_address = True
 
     def __init__(self, remote_host, remote_port, transport):
+        self.setup_successful = False
         self.remote_host = remote_host
         self.remote_port = int(remote_port)
         self.transport = transport
-        SocketServer.ThreadingTCPServer.__init__(self, ('127.0.0.1', forward_port), Handler)
+        gobject.GObject.__init__(self)
+        try:
+            SocketServer.ThreadingTCPServer.__init__(self, ('127.0.0.1', forward_port), Handler)
+        except Exception, e:
+            print e
+            self.forwarder.emit("error-occurred", 
+                                _("Error binding the server for the port forwarding. Maybe there is another instance of lum running?"))
+        else:
+            self.setup_successful = True
      
 class Handler (SocketServer.BaseRequestHandler): 
+
     def handle(self):
-        print "Hello"
-        sys.stdout.flush()
-        print "Calling self.server.transport.open_channel('direct-tcpip', (%s, %d), (%s, %d))" % (self.server.remote_host,
-                                                                                                  self.server.remote_port,
-                                                                                                  '127.0.0.1', forward_port)
-        chan = self.server.transport.open_channel('direct-tcpip',
-                                                  (self.server.remote_host, self.server.remote_port),
-                                                  ('127.0.0.1',forward_port))
-        while True:
-            r, w, x = select.select([self.request, chan], [], [])
-            if self.request in r:
-                data = self.request.recv(1024)
-                if len(data) == 0:
-                    break
-                chan.send(data)
-            if chan in r:
-                data = chan.recv(1024)
-                if len(data) == 0:
-                    break
-                self.request.send(data)
-        chan.close()
-        self.request.close()
+
+        try:
+            chan = self.server.transport.open_channel('direct-tcpip',
+                                                      ('127.0.0.1', self.server.remote_port),
+                                                      ('127.0.0.1',forward_port))
+            while True:
+                r, w, x = select.select([self.request, chan], [], [])
+                if self.request in r:
+                    data = self.request.recv(1024)
+                    if len(data) == 0:
+                        break
+                    chan.send(data)
+                if chan in r:
+                    data = chan.recv(1024)
+                    if len(data) == 0:
+                        break
+                    self.request.send(data)
+            chan.close()
+            self.request.close()
+        except Exception, e:
+            print e
+            self.server.forwarder.emit("error-occurred", e)
+            return

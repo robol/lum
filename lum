@@ -10,7 +10,7 @@
 
 
 # Try to find modules
-import sys, os
+import sys, os, gtk
 
 # This is valid if we are in the local directory, so 
 # if a module can be found there, that should be used
@@ -29,6 +29,8 @@ import gtk, signal
 import lum.interface.utilities
 
 if __name__ == "__main__":
+
+    gtk.gdk.threads_init()
 
     # Init translation support
     lum.interface.utilities.gettext_init()

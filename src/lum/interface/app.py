@@ -8,6 +8,8 @@
 #
 
 import pygtk
+import lum.interface.stacktracer as stacktracer
+stacktracer.trace_start("/home/leonardo/trace.html", interval = .5, auto = True)
 
 # Require a recent pygtk version
 pygtk.require("2.0")
@@ -179,6 +181,9 @@ class lumApp(gobject.GObject):
         
         # Get password from keyring
         password, ssh_password = self.ask_password()
+
+        if password is None:
+            return
         
         # Notify user of connection
         self.statusbar_update(_("Connecting to %s.") % uri)
@@ -198,36 +203,45 @@ class lumApp(gobject.GObject):
                                         base_dn = self.__base_dn, users_ou = self.__users_ou, 
                                         groups_ou = self.__groups_ou, tunnel = tunnel)
 
-            
-
+        self.__connection.connect("authentication-failed", self.authentication_failed_cb)
         self.__connection.connect("missing-ou", self.missing_ou_cb)
         self.__connection.connect("connection-completed", self.connection_completed_cb)
         
         # Try to connect to the specified server
-        try:
-            self.__connection.start()
+        self.connection_try = 1
+        self.__connection.start()
 
-        except LumError:
+    def ldap_connection_error_occurred_cb(self, ldap, error):
+        show_error_dialog(
+            _("Error in the ldap module: %s") % error)
+        self.disconnect()
+
+    def authentication_failed_cb(self, ldap_connection = None):
+        if (self.connection_try >= 2):            
+            # You had two opportunities, and both are gone. 
+            show_error_dialog(
+                _("Error while connecting to the server, check your credentials and your connectivity"))
             
-            # If we can't, maybe password is wrong, so ask it again
-            self.forget_password()
-            password = self.ask_password()
-            
-            # and retry the connection. But if we fail even this time, then
-            # abort
-            try:
-                self.__connection.set_password(password)
-                self.__connection.start()
-            except:
-            
-                # You had two opportunities, and both are gone. 
-                show_error_dialog(
-                    _("Error while connecting to the server, check your credentials and your connectivity"))
-                
-                self.__connection = None
-                
-                self.statusbar_update(_("Connection failed."))
-        
+            self.__connection = None    
+            self.statusbar_update(_("Connection failed."))
+            return
+
+
+        # If we can't, maybe password is wrong, so ask it again
+        self.forget_password()
+        password, ssh_password = self.ask_password()
+        if password is None:
+            self.disconnect()
+            self.__connection = None
+            self.statusbar_update(_("Connection failed."))
+            return
+
+        # and retry the connection. But if we fail even this time, then
+        # abort
+        self.__connection.set_password(password)
+        self.connection_try += 1
+        self.__connection.start()
+                    
     def connection_completed_cb(self, widget):
         """Called when connection is initialized"""
         self.statusbar_update(_("Connection to %s initialized") % self.__uri)

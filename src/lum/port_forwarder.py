@@ -116,7 +116,6 @@ class Handler (SocketServer.BaseRequestHandler):
                                                       ('127.0.0.1',forward_port))
             while True:
                 r, w, x = select.select([self.request, chan], [], [], 0.4)
-                print "select() just returned"
                 if self.server.stop_requested:
                     break
 

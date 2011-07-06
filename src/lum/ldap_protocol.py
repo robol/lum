@@ -355,7 +355,7 @@ class Connection(gobject.GObject):
         # Create the forwarder
         self.__forwarder = PortForwarder(self.__ssh_remote_host, port, 
                                          self.__ssh_username, self.__ssh_password)
-        self.__forwarder.connect("tunnel-opened", lambda server : self.start())
+        self.__forwarder.connect("tunnel-opened", lambda server : gobject.idle_add(self.start))
         self.__forwarder.connect("error-occurred", self.forwarder_error_occurred_cb)
 
     def forwarder_error_occurred_cb(self, forwarder, error):
@@ -367,7 +367,6 @@ class Connection(gobject.GObject):
         self.__password = password
 
     def start(self):
-
         print "start() called"
         self.init_ldap()
 
@@ -394,6 +393,7 @@ class Connection(gobject.GObject):
             result = self.__ldap.result(self.__bind_id)[0]
         except Exception, e:
             self.stop()
+            self.emit("authentication-failed")
             return False
         else:
             if result is None:
@@ -401,6 +401,7 @@ class Connection(gobject.GObject):
                     return True
                 else:
                     self.stop()
+                    self.emit("authentication-failed")
                     return False
             
         # Check if there are missing ou and add them

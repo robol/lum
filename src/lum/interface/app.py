@@ -208,7 +208,6 @@ class lumApp(gobject.GObject):
         self.__connection.connect("connection-completed", self.connection_completed_cb)
         
         # Try to connect to the specified server
-        self.connection_try = 1
         self.__connection.start()
 
     def ldap_connection_error_occurred_cb(self, ldap, error):
@@ -217,31 +216,20 @@ class lumApp(gobject.GObject):
         self.disconnect()
 
     def authentication_failed_cb(self, ldap_connection = None):
-        if (self.connection_try >= 2):            
-            # You had two opportunities, and both are gone. 
-            show_error_dialog(
-                _("Error while connecting to the server, check your credentials and your connectivity"))
-            
-            self.__connection = None    
-            self.statusbar_update(_("Connection failed."))
-            return
-
+        # You had your opportunities, and both are gone. 
+        gtk.gdk.threads_enter()
+        show_error_dialog(
+            _("Error while connecting to the server, check your credentials and your connectivity"))
+        gtk.gdk.threads_leave()
 
         # If we can't, maybe password is wrong, so ask it again
         self.forget_password()
-        password, ssh_password = self.ask_password()
-        if password is None:
-            self.disconnect()
-            self.__connection = None
-            self.statusbar_update(_("Connection failed."))
-            return
 
-        # and retry the connection. But if we fail even this time, then
-        # abort
-        self.__connection.set_password(password)
-        self.connection_try += 1
-        self.__connection.start()
-                    
+        gtk.gdk.threads_enter()
+        self.statusbar_update(_("Connection failed."))
+        gtk.gdk.threads_leave()
+        return
+
     def connection_completed_cb(self, widget):
         """Called when connection is initialized"""
         self.statusbar_update(_("Connection to %s initialized") % self.__uri)

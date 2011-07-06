@@ -8,8 +8,6 @@
 #
 
 import pygtk
-import lum.interface.stacktracer as stacktracer
-stacktracer.trace_start("/home/leonardo/trace.html", interval = .5, auto = True)
 
 # Require a recent pygtk version
 pygtk.require("2.0")

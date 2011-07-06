@@ -10,7 +10,10 @@
 
 
 # Try to find modules
-import sys, os, gtk
+import sys, os, gtk, gobject
+
+gobject.threads_init()
+gtk.gdk.threads_init()
 
 # This is valid if we are in the local directory, so 
 # if a module can be found there, that should be used
@@ -25,7 +28,7 @@ for p in sys.path:
 sys.path.extend(additional_paths)
 
 from lum.interface.app import lumApp
-import gtk, signal
+import signal
 import lum.interface.utilities
 
 if __name__ == "__main__":
@@ -46,6 +49,8 @@ if __name__ == "__main__":
     signal.signal(signal.SIGTERM, lambda x,y : gtk.main_quit())
     
     # Start the gtk main loop
+    # gtk.gdk.threads_enter()
     gtk.main()
+    # gtk.gdk.threads_leave()
     
     

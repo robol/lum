@@ -8,9 +8,9 @@ from configuration import Configuration
 from port_forwarder import PortForwarder, forward_port
 import gobject
 import paramiko
+import time
 
 random.seed()
-gobject.threads_init()
 
 # This is just for debug
 ldifwriter = ldif.LDIFWriter(sys.stdout)
@@ -322,11 +322,14 @@ class Connection(gobject.GObject):
         self.__forwarder = None
         self.__ssh_username = None
         self.__ssh_password = None
+        self.__tunnel = tunnel
+
+    def init_ldap(self):
         
-        if tunnel == False:
-            self.__ldap = ldap.initialize(uri)
+        if self.__tunnel == False:
+            self.__ldap = ldap.initialize(self.__uri)
         else:
-            if not "ldaps" in uri:
+            if not "ldaps" in self.__uri:
                 self.__ldap = ldap.initialize("ldap://localhost:%d" % forward_port)
                 print "ldap://localhost:%d" % forward_port
             else:
@@ -334,9 +337,9 @@ class Connection(gobject.GObject):
                 print "ldaps://localhost:%d" % forward_port
 
             # Save username and password for the SSH connection
-            self.__ssh_remote_host = tunnel['host']
-            self.__ssh_username = tunnel['username']
-            self.__ssh_password = tunnel['password']
+            self.__ssh_remote_host = self.__tunnel['host']
+            self.__ssh_username = self.__tunnel['username']
+            self.__ssh_password = self.__tunnel['password']
 
     def create_tunnel(self, uri):
         """Create a tunnel to the remote uri using paramiko"""
@@ -366,6 +369,7 @@ class Connection(gobject.GObject):
     def start(self):
 
         print "start() called"
+        self.init_ldap()
 
         if self.__forwarder is None:
             self.create_tunnel(self.__uri)
@@ -376,14 +380,29 @@ class Connection(gobject.GObject):
             return
 
         # Bind to the database with the provided credentials
+        print "Binding with DN=", self.__bind_dn, "..."
+        self.__bind_id = self.__ldap.simple_bind(self.__bind_dn, self.__password)
+        print "request started"
+        
+        gobject.timeout_add(100, self.check_bind_response)
+        self.request_started = time.time()
+
+    def check_bind_response(self):
+
+        result = None
         try:
-            print "Binding with DN=", self.__bind_dn
-            self.__ldap.simple_bind_s(self.__bind_dn, self.__password)
+            result = self.__ldap.result(self.__bind_id)[0]
         except Exception, e:
             self.stop()
-            self.emit("authentication-failed")
-            return
-
+            return False
+        else:
+            if result is None:
+                if time.time() - self.request_started < 5:
+                    return True
+                else:
+                    self.stop()
+                    return False
+            
         # Check if there are missing ou and add them
         missing_ou = []
         if not self.is_present(self.__users_ou):
@@ -397,10 +416,18 @@ class Connection(gobject.GObject):
         else:
             self.emit("connection-completed")
 
+        return False
+
     def stop(self):
+        if self.__ldap is not None:
+            self.__ldap.unbind_s()
+            self.__ldap = None
+            print "Unbinded"
         if not self.__forwarder is None:
             self.__forwarder.stop_serving()
+            self.__forwarder.join()
             self.__forwarder = None
+            print "Forwarder exited"
 
     def add_user(self, user):
         """

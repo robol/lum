@@ -41,7 +41,7 @@ class lumConnectDialog():
         image.set_from_file(os.path.join(datapath, "ui/server.png"))
         self.__pixbuf = image.get_pixbuf()
         
-        self.__credentials = (None, None, None, None, None)
+        self.__credentials = (None, None, None, None, None, None, None)
         self.__old_uri = None
         
         for uri in self.__configuration.sections():
